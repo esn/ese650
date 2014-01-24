@@ -1,4 +1,4 @@
-init_script
+init_dataset
 
 dirstruct = dir('train/*.png');
 for i = 1:length(dirstruct)
