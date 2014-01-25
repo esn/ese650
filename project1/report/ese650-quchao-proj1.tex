@@ -54,6 +54,12 @@
 \fancyhead[C]{ESE650 Learning in Robotics $\bullet$ January 2014 $\bullet$ Project 1} % Custom header text
 \fancyfoot[RO,LE]{\thepage} % Custom footer text
 
+\usepackage[pdftex]{graphicx}
+\usepackage{subfigure}
+\usepackage{amsmath,amssymb,amsopn,amstext,amsfonts}
+\usepackage{url}
+\graphicspath{{fig/}}
+
 %----------------------------------------------------------------------------------------
 %	TITLE SECTION
 %----------------------------------------------------------------------------------------
@@ -103,11 +109,26 @@
 This document describes 
 
 %----------------------------------------------------------------------------------------
-%	ARTICLE CONTENTS
+%	PRE-PROCESSING
 %----------------------------------------------------------------------------------------
 
 \section{Pre-processing}
+Before doing any actual learning, we need to pre-process all the training images.
 
+The first thing we do on the images is to \textbf{sub-sample} them. Since the original images 
+come with high resolution of $1200\times 1600$, it will take a long time to go through 
+all the pixels. We thus sub-sample all the images down to $1/4$ its original scale, which 
+is now $300\times 400$. This speeds up the following learning process significantly, while 
+preserving most of the information in the image.
+
+We then divide all the training image into a \textbf{training} set and a \textbf{validation} set. 
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\columnwidth]{cspace.pdf}
+    \caption{Scatter plot for different color spaces}
+    \label{fig:colorspace}
+\end{figure}
 
 \begin{compactitem}
 \item Donec dolor arcu, rutrum id molestie in, viverra sed diam
