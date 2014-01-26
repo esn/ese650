@@ -1,11 +1,16 @@
-all: ese650-quchao-proj1.tex
+NAME=ese650-quchao-proj1
+
+all: $(NAME).tex
+	rubber -d $<
+
+% : %.tex
 	rubber -d $<
 
 edit:
-	texmaker  ese650-quchao-proj1.tex &
+	texmaker $(NAME).tex &
 
 test:
-	evince ese650-quchao-proj1.pdf &
+	evince $(NAME).pdf &
 
 clean:
-	rm -f *.aux *.log *.out *.pdf *.pdfsync *.synctex.gz *.blg *.bbl
+	rm -f *.aux *.log *.out *.pdf *.pdfsync *.synctex.gz *.blg *.bbl *.tex.bak

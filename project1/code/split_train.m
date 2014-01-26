@@ -30,15 +30,18 @@ for i = 1:length(distinct_dist)
         k = base_index + perm(j); % Get index
         im = imread([train_path dirstruct(k).name]);
         im = im_downsample(im, 4); % Downsample image
+        bw = roipoly(im);
         if j <= num_train
             i_train = i_train + 1;
             train(i_train).name = dirstruct(k).name;
             train(i_train).im = im;
+            train(i_train).bw = bw;
             train(i_train).d = all_dist(k);
         else
             i_valid = i_valid + 1;
             valid(i_valid).name = dirstruct(k).name;
             valid(i_valid).im = im;
+            valid(i_train).bw = bw;
             valid(i_valid).d = all_dist(k);
         end
     end
