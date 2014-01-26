@@ -41,7 +41,7 @@ for i = 1:length(distinct_dist)
             i_valid = i_valid + 1;
             valid(i_valid).name = dirstruct(k).name;
             valid(i_valid).im = im;
-            valid(i_train).bw = bw;
+            valid(i_valid).bw = bw;
             valid(i_valid).d = all_dist(k);
         end
     end
