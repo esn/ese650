@@ -20,7 +20,7 @@ for i = 1:length(id)
     
     % Do kmeans
     for n = 1:3
-        num_cluster = n + 4;
+        num_cluster = n + 5;
         ax(n) = subplot(2,2,n+1);
          % Kmeans
         [cluster_idx, ~] = ...
