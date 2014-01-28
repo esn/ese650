@@ -58,10 +58,10 @@
 \usepackage{subfigure}
 \usepackage{amsmath,amssymb,amsopn,amstext,amsfonts}
 \usepackage{url}
-\usepackage{color}
+\usepackage[usenames,dvipsnames]{color}
 \graphicspath{{fig/}}
 \newcommand{\red}[1]{\textcolor{red}{#1}}
-\newcommand{\blue}[1]{\textcolor{blue}{#1}}
+\newcommand{\brown}[1]{\textcolor{brown}{#1}}
 %----------------------------------------------------------------------------------------
 %	TITLE SECTION
 %----------------------------------------------------------------------------------------
@@ -130,32 +130,43 @@ We then divide all the training images into a \textbf{training} set and a \textb
 \begin{figure}[H]
   \centering
   \includegraphics[width=\columnwidth]{data_split.png}
-    \caption{Split all training image into $80\%$ training and $20\%$ testing}
+    \caption{Split all images into $80\%$ training and $20\%$ testing}
     \label{fig:data_split}
 \end{figure}
 
-As suggested in the project write-up, the default RGB colorspace is not recommended, as it has problems with different lighting condition. We then explore some other colorspace options that are supported in MATLAB. The colorspaces that are being inspected are \textbf{RGB}, \textbf{YCbCr}, \textbf{L*a*b} and \textbf{HSV}. We use $5$ images with distance $1$ to generate the 3D scatter plot in different colorspaces (shown in Fig.\ref{fig:colorspace}). \red{Red} dots are pixels from the barrel while \blue{blue} dots are pixels from the rest of the images. As can be seen from the figure, 
+As suggested in the project write-up, the default RGB colorspace is not recommended, as it has problems with different lighting condition. We then explore some other colorspace options that are supported in MATLAB. The colorspaces that are being inspected are \textbf{RGB}, \textbf{YCbCr}, \textbf{L*a*b} and \textbf{HSV}. We use $5$ images with distance $1$ to generate the 3D scatter plot in different colorspaces (shown in Fig.\ref{fig:cspace}). \red{Red} dots are pixels from the barrel while dots in other colors are pixels from the rest of the images. As can be seen from the figure, the \textbf{L*a*b} and \textbf{YCbCr} are much better than the rest colorspace in the sense that they have more concentrated clusters.
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=\columnwidth]{cspace.pdf}
     \caption{3D scatter plot for different color spaces}
-    \label{fig:colorspace}
+    \label{fig:cspace}
 \end{figure}
+
+A closer look at the two colorspace reveals that pixels in the \textbf{L*a*b} colorspace that represent the red barrel are more concentrated than the rest colospaces (shown in Fig.\ref{fig:cspace_2d}. Thus we pick L*a*b and convert all RGB images to that colorspace. 
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=\columnwidth]{cspace_lab_ycrcb_2d.pdf}
+  \includegraphics[width=\columnwidth]{cspace_2d.pdf}
     \caption{2D scatter plot on the 2 color channels of L*a*b and YCbCr}
-    \label{fig:colorspace_2d}
+    \label{fig:cspace_2d}
 \end{figure}
+
+Also, we notice that in the 2d plot of L*a*b, there are two clusters of red pixels. The darker but smaller cluster is closer to non-barrel pixels while the lighter ones are far away. This is due to the fact that the images are taken under different lighting conditions. This observation encourages us to learn maybe two models for light and dark conditions or maybe to use a \textbf{Gaussian Mixture Model}. An example of confusing images under different lighting conditions are shown in Fig.\ref{fig:confusing}.
 
 \begin{figure}[H]
   \centering
   \includegraphics[width=0.4\columnwidth]{barrel_dark.png}
   \;\;\;
   \includegraphics[width=0.4\columnwidth]{barrel_red.png}
-  \caption{Training images that are confusing. \label{fig:confusing}}
+  \caption{Images under different lighting conditions. \label{fig:confusing}}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\columnwidth]{lum_level.pdf}
+    \caption{Median of L channel of each image}
+    \label{fig:lum_level}
 \end{figure}
 
 \begin{compactitem}

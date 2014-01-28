@@ -35,7 +35,6 @@ for i = 1:length(id)
     x = round(x); y = round(y);
     clicked_ax = gca;
     n = find(ax == clicked_ax);
-    num_cluster = n + 3;
     selected_pixel_labels = pixel_labels{n};
     selected_label = selected_pixel_labels(y,x);
     

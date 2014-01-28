@@ -1,7 +1,7 @@
 function plot_colorspace(data, id, s)
 % PLOT_COLORSPACE 
 if nargin < 3, s = 50; end
-if nargin < 2, id = 1:length(data); end
+if nargin < 2 || isempty(id), id = 1:length(data); end
 figure(1)
 cspace_label = {'RGB', 'YCbCr', 'Lab', 'HSV'};
 xlabels = {'R', 'Y', 'L', 'H'};
@@ -57,5 +57,5 @@ for i = 1:length(id)
             '.', 'MarkerSize', 2, 'Color', ave_rgb_out/255)
     end
 end
-change_font(gcf, 12)
+
 end

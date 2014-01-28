@@ -1,7 +1,7 @@
 function plot_colorspace_2d(data, id, s)
 % PLOT_COLORSPACE 
 if nargin < 3, s = 50; end
-if nargin < 2, id = 1:length(data); end
+if nargin < 2 || isempty(id), id = 1:length(data); end
 figure(1)
 cspace_label = {'YCbCr', 'Lab'};
 xlabels = {'Y', 'L'};
@@ -12,6 +12,7 @@ for i = 1:length(cspace_label)
     title(cspace_label{i})
     xlabel(ylabels{i})
     ylabel(zlabels{i})
+    set(gca, 'Box', 'On')
     hold on
     axis equal
     grid on
@@ -50,10 +51,10 @@ for i = 1:length(id)
     % Plot
     for k = 1:length(im_cspace)
         plot(h(k), im_in{k}(1:s:end,2), im_in{k}(1:s:end,3), ...
-            '+', 'MarkerSize', 2, 'Color', ave_rgb_in/255)
+            '+', 'MarkerSize', 4, 'Color', ave_rgb_in/255)
         plot(h(k), im_out{k}(1:s:end,2), im_out{k}(1:s:end,3), ...
-            '.', 'MarkerSize', 2, 'Color', ave_rgb_out/255)
+            'o', 'MarkerSize', 4, 'Color', ave_rgb_out/255)
     end
 end
-change_font(gcf, 12)
+
 end
