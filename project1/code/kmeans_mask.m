@@ -1,6 +1,6 @@
 function data = kmeans_mask( data, id)
 % KMEANS_MASK Use kmeans to create mask for each image
-area_thresh = 50;
+area_thresh = 150;
 if nargin < 2, id = 1:length(data); end
 for i = 1:length(id)
     j = id(i);
