@@ -25,7 +25,7 @@ for i = 1:length(id)
     data_j = data(j);
     
     % Generate different colorspace
-    im_rgb = data_j.im;
+    im_rgb = data_j.rgb;
     im_ycbcr = rgb2ycbcr(im_rgb);
     im_lab = data_j.lab;
     im_hsv = rgb2hsv(im_rgb);

@@ -1,7 +1,7 @@
 init_dataset
 load gm
-data = train;
-id = 40;
+data = valid;
+id = 3;
 
 im = data(id).im;
 im_lab = data(id).lab;

@@ -1,6 +1,6 @@
 function [bw_barrel, rp_barrel] = predict_barrel( bw, barrel_model )
 
-barrel_thresh = 2.5;
+barrel_thresh = 2.3;
 
 cc = bwconncomp(bw);
 if cc.NumObjects == 0
@@ -19,7 +19,7 @@ for i = 1:length(rp)
 end
 
 
-P = predict_gauss(X, barrel_model.mu, barrel_model.sigma);
+P = predict_gauss(X, barrel_model.mu, barrel_model.sigma)
 [val, ind] = max(P);
 
 if val < barrel_thresh
