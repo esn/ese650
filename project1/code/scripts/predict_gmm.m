@@ -1,7 +1,7 @@
 init_dataset
 load gm
 data = train;
-id = 17;
+id = 40;
 
 im = data(id).im;
 im_lab = data(id).lab;
@@ -41,6 +41,7 @@ P_red_given_x = P_x_given_red * P_red ./ P_x;
 P_nred_given_x = P_x_given_nred * P_nred ./ P_x;
 bw = P_red_given_x > P_nred_given_x;
 bw = reshape(bw, nrows, ncols);
+bw = bwareaopen(bw, 150);
 figure(1)
 subplot(1,2,1)
 imshow(im)

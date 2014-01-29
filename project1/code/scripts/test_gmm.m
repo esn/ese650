@@ -1,6 +1,6 @@
 % Test gmm
 data = train;
-id = 1:40;
+id = [1:4, 9:12, 13:16];
 s = 20;
 % Prepare for X_red and X_nred
 X_red = [];

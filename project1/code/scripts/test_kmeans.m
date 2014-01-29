@@ -1,8 +1,8 @@
-data = valid;
-i = 2;
+data = train;
+i = 22;
 im_lab = data(i).lab;
 im_rgb = data(i).im;
-area_thresh = 140;
+area_thresh = 120;
 lum_thresh = 100;
 ab = double(im_lab(:,:,2:3));
 nrows = size(ab, 1);
@@ -19,7 +19,7 @@ end
 
 figure()
 
-num_cluster = 4;
+num_cluster = 5;
 [cluster_idx, cluster_center] = ...
     kmeans(ab, num_cluster, 'distance', 'sqEuclidean', 'emptyaction', 'singleton', 'Replicates', 5);
 pixel_labels = reshape(cluster_idx, nrows, ncols);
