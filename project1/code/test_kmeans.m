@@ -1,5 +1,5 @@
-data = train;
-i = 13;
+data = valid;
+i = 2;
 im_lab = data(i).lab;
 im_rgb = data(i).im;
 area_thresh = 140;

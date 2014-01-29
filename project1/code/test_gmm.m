@@ -1,7 +1,7 @@
 % Test gmm
 data = train;
 id = 1:40;
-
+s = 20;
 % Prepare for X_red and X_nred
 X_red = [];
 X_nred = [];
@@ -17,10 +17,12 @@ for i = 1:length(id)
     X_nred = [X_nred; ab(~data_j.bw,:)];
 end
 
-X_red = X_red(1:10:end,:);
-X_nred = X_nred(1:10:end,:);
+X_red = X_red(1:s:end,:);
+X_nred = X_nred(1:s:end,:);
 
 options = statset('Display', 'final');
 gm_red = gmdistribution.fit(X_red, 2, 'Replicates', 3, 'SharedCov', false, 'Options', options);
-
-gm_nred = gmdistribution.fit(X_nred, 5, 'Replicates', 3, 'SharedCov', false, 'Options', options);
+gm_nred = gmdistribution.fit(X_nred, 4, 'Replicates', 3, 'SharedCov', false, 'Options', options);
+gm.red = gm_red;
+gm.nred = gm_nred;
+gm.P_red = length(X_red)/(length(X_red) + length(X_nred));
