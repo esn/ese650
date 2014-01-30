@@ -17,4 +17,4 @@
 % P = predict_gauss(X, barrel_model.mu, barrel_model.sigma);
 
 load train
-iter_kmeans_lab(train(36));
+predict_kmeans_lab(train(36));
