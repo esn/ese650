@@ -1,4 +1,4 @@
-load result
+% load result
 [d_true, ind] = sort(dist_hist);
 d_test = d_hist(ind);
 figure(1);

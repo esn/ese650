@@ -1,6 +1,6 @@
 init_dataset
 
-dir_name = 'data/';
+dir_name = '../data/test/';
 dirstruct = dir([dir_name '*.png']);
 for i = 1:length(dirstruct)
     % Current test image
@@ -15,6 +15,8 @@ for i = 1:length(dirstruct)
     % of connected regions, etc.
     d_hist(i) = d;
     dist_hist(i) = dist;
+    fig2pic(gcf, sprintf('./fig/test_%d.png', i), 'png')
     hold off;
     pause;
+    
 end
