@@ -90,11 +90,11 @@
 %	ABSTRACT
 %----------------------------------------------------------------------------------------
 
-\begin{abstract}
-
-\noindent \lipsum[1] % Dummy abstract text
-
-\end{abstract}
+%\begin{abstract}
+%
+%\noindent Hey, I'm just an abstract. % Dummy abstract text
+%
+%\end{abstract}
 
 %----------------------------------------------------------------------------------------
 %	ARTICLE CONTENTS
@@ -233,24 +233,59 @@ When K-means fails, GMM comes in. Since K-means can do good enough on most of th
 \section{DISCUSSION}
 
 \subsection{RESULTS}
-In this section we show some of results detected by our model.
+In this section we show some of results detected by our model. We first look at all the estimated depth result (shown in \ref{fig:depth}).
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\columnwidth]{result.pdf}
+    \caption{Estimate depth vs. true depth}
+    \label{fig:depth}
+\end{figure}
+
+We then look at some of the detected barrels.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\columnwidth]{t20.png}
+    \caption{Sample detected barrel}
+    \label{fig:t20}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\columnwidth]{t30.png}
+    \caption{Sample detected barrel}
+    \label{fig:t30}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\columnwidth]{t40.png}
+    \caption{Sample detected barrel}
+    \label{fig:t40}
+\end{figure}
 
 \subsection{IMPROVEMENT}
 There are several improvements that can be made to this project.
+\begin{enumerate}
+\item Increase the speed of GMM.
+\item Train a better model on the barrel.
+\item Train a better mode for distance estimation.
+\end{enumerate}
 
 %----------------------------------------------------------------------------------------
 %	REFERENCE LIST
 %----------------------------------------------------------------------------------------
 
-\begin{thebibliography}{99} % Bibliography - this is intentionally simple in this template
-
-\bibitem[Figueredo and Wolf, 2009]{Figueredo:2009dg}
-Figueredo, A.~J. and Wolf, P. S.~A. (2009).
-\newblock Assortative pairing and life history strategy - a cross-cultural
-  study.
-\newblock {\em Human Nature}, 20:317--330.
- 
-\end{thebibliography}
+%\begin{thebibliography}{99} % Bibliography - this is intentionally simple in this template
+%
+%\bibitem[Figueredo and Wolf, 2009]{Figueredo:2009dg}
+%Figueredo, A.~J. and Wolf, P. S.~A. (2009).
+%\newblock Assortative pairing and life history strategy - a cross-cultural
+%  study.
+%\newblock {\em Human Nature}, 20:317--330.
+% 
+%\end{thebibliography}
 
 %----------------------------------------------------------------------------------------
 
