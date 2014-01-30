@@ -49,8 +49,12 @@ hold on
 plot(rp_barrel.Centroid(1), rp_barrel.Centroid(2), 'r+', 'MarkerSize', 8, 'LineWidth', 3)
 rectangle('Position', rp_barrel.BoundingBox, 'EdgeColor', 'g', 'LineWidth', 2)
 hold off
-x = 0;
-y = 0;
-d = 0;
+X = [sqrt(rp_barrel.Area), rp_barrel.BoundingBox(3), rp_barrel.BoundingBox(4)];
+x = rp_barrel.Centroid(1);
+y = rp_barrel.Centroid(2);
+load dist_model
+d = X*dist_model.w;
+d = 1/d;
+title(num2str(d))
 
 end
