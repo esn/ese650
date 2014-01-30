@@ -90,11 +90,11 @@
 %	ABSTRACT
 %----------------------------------------------------------------------------------------
 
-\begin{abstract}
-
-\noindent \lipsum[1] % Dummy abstract text
-
-\end{abstract}
+%\begin{abstract}
+%
+%\noindent Hey, I'm just an abstract. % Dummy abstract text
+%
+%\end{abstract}
 
 %----------------------------------------------------------------------------------------
 %	ARTICLE CONTENTS
@@ -162,7 +162,7 @@ Also, we notice that in the 2d plot of L*a*b, there are two clusters of red pixe
   \caption{Images under different lighting conditions. \label{fig:confusing}}
 \end{figure}
 
-Finally, in order to tell our algorithm which part of the image contains the barerl, we hand labelled all the barrels in training images and creating a mask for each image (shown in Fig.\ref{fig:barrel_mask.png}).
+Finally, in order to tell our algorithm which part of the image contains the barerl, we hand labelled all the barrels in training images and creating a mask for each image (shown in Fig.\ref{fig:barrel_mask}).
 
 \begin{figure}[H]
   \centering
@@ -170,6 +170,7 @@ Finally, in order to tell our algorithm which part of the image contains the bar
     \caption{Barrel mask for each training image}
     \label{fig:barrel_mask}
 \end{figure}
+
 %----------------------------------------------------------------------------------------
 %	METHODS
 %----------------------------------------------------------------------------------------
@@ -178,7 +179,7 @@ Finally, in order to tell our algorithm which part of the image contains the bar
 After pre-processing the data, I start playing with different methods and models. Here I describe the learning and predicting workflow that I use for color segmentation and barrel detection.
 
 \subsection{Barrel Shape Model}
-Since we already have a black-white image to mask the barrel, we could learn some useful information from that. We looked at various properties of the part of mask being labelled and decided to use the aspect ratio and percentage of filled pixels to model the barrel. From the training image, we extract all those information and build a 2D Gaussian distribution. And for any new mask coming in, we will be able to tell the probability of it being a barrel or not. The equations used for estimating such a multivariate gaussian is shown in (Eq.\ref{eq:mle1} and \ref{eq:mle2})
+Since we already have a black-white image to mask the barrel, we could learn some useful information from that. We looked at various properties of the part of mask being labelled and decided to use the aspect ratio and percentage of filled pixels to model the barrel. From the training image, we extract all those information and build a 2D Gaussian distribution. And for any new mask coming in, we will be able to tell the probability of it being a barrel or not. The equations used for estimating such a multivariate gaussian is shown in (Eq.\ref{eq:mle1} and \ref{eq:mle2}) and the result are shown in Fig.\ref{fig:barrel_model}.
 
 \begin{equation}
 \mu_{MLE} = \frac{1}{N}\sum_{i=1}^N\mathbf{x}^i
@@ -189,42 +190,102 @@ Since we already have a black-white image to mask the barrel, we could learn som
 \label{eq:mle2}
 \end{equation}
 
-\subsection{Distance Model}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\columnwidth]{barrel_model.pdf}
+    \caption{Using barrel model to select the most possible shape}
+    \label{fig:barrel_model}
+\end{figure}
 
-\lipsum[5] % Dummy text
+
+\subsection{Distance Model}
+For distance estimation, we adopt the simple approach of ridge regression with 3 features: height and width of the bounding box and square root of the area of the mask. The equations used for estimating such a ridge regression is shown in (Eq.\ref{eq:ridge}).
 
 \begin{equation}
-\label{eq:emc}
-e = mc^2
+\mathbf{w}_{MLE} = (\mathbf{X}\mathbf{X}^\top + \lambda \mathbf{I})^{-1}\mathbf{X}^\top \mathbf{y}
+\label{eq:ridge}
 \end{equation}
 
-\lipsum[6] % Dummy text
+\subsection{K-means Clustering}
+For color segmentation, we first use the K-means algorithm on channel a and b of the lab colorspace image. We start with an initial clusters of 4 and keep increasing until we get a shape that has a high probability of being a barrel. For most of the image, the barrel can be segmented with in 1 or 2 iterations or K-means. For those harder cases, it can also be found at higher cluster number. Since there are two different lighting conditions, we compare the L channel of each image to a lightness threshold and based on that we select which cluster to be the barrel or red (shown in Fig.\ref{fig:kmeans.png}).
 
-%------------------------------------------------
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\columnwidth]{kmeans.png}
+    \caption{Sample results of K-means}
+    \label{fig:kmeans}
+\end{figure}
 
-\section{Discussion}
+\subsection{Gaussian Mixture Model}
+When K-means fails, GMM comes in. Since K-means can do good enough on most of the images, we use GMM only for those cases where K-means cannot detect a good shape of barrel. We use all the pixels in the aforementioned masks to train a GMM model for red with 2 mixtures. Then for each given image, we calculate the probability of them being red. We then threshold and normalize them to create a black white image that is similar to what we get from K-means. Then we apply the same process to the black white image and get the most possible shape to be a barrel (shown in Fig.\ref{fig:gmm}).
 
-\subsection{Subsection One}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\columnwidth]{gmm.pdf}
+    \caption{Sample results of GMM}
+    \label{fig:gmm}
+\end{figure}
 
-\lipsum[7] % Dummy text
+%----------------------------------------------------------------------------------------
+%	RESULTS
+%----------------------------------------------------------------------------------------
 
-\subsection{Subsection Two}
+\section{DISCUSSION}
 
-\lipsum[8] % Dummy text
+\subsection{RESULTS}
+In this section we show some of results detected by our model. We first look at all the estimated depth result (shown in \ref{fig:depth}).
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\columnwidth]{result.pdf}
+    \caption{Estimate depth vs. true depth}
+    \label{fig:depth}
+\end{figure}
+
+We then look at some of the detected barrels.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\columnwidth]{t20.png}
+    \caption{Sample detected barrel}
+    \label{fig:t20}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\columnwidth]{t30.png}
+    \caption{Sample detected barrel}
+    \label{fig:t30}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\columnwidth]{t40.png}
+    \caption{Sample detected barrel}
+    \label{fig:t40}
+\end{figure}
+
+\subsection{IMPROVEMENT}
+There are several improvements that can be made to this project.
+\begin{enumerate}
+\item Increase the speed of GMM.
+\item Train a better model on the barrel.
+\item Train a better mode for distance estimation.
+\end{enumerate}
 
 %----------------------------------------------------------------------------------------
 %	REFERENCE LIST
 %----------------------------------------------------------------------------------------
 
-\begin{thebibliography}{99} % Bibliography - this is intentionally simple in this template
-
-\bibitem[Figueredo and Wolf, 2009]{Figueredo:2009dg}
-Figueredo, A.~J. and Wolf, P. S.~A. (2009).
-\newblock Assortative pairing and life history strategy - a cross-cultural
-  study.
-\newblock {\em Human Nature}, 20:317--330.
- 
-\end{thebibliography}
+%\begin{thebibliography}{99} % Bibliography - this is intentionally simple in this template
+%
+%\bibitem[Figueredo and Wolf, 2009]{Figueredo:2009dg}
+%Figueredo, A.~J. and Wolf, P. S.~A. (2009).
+%\newblock Assortative pairing and life history strategy - a cross-cultural
+%  study.
+%\newblock {\em Human Nature}, 20:317--330.
+% 
+%\end{thebibliography}
 
 %----------------------------------------------------------------------------------------
 

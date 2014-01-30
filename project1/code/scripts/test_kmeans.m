@@ -1,5 +1,5 @@
 data = train;
-i = 22;
+i = 21;
 im_lab = data(i).lab;
 im_rgb = data(i).im;
 area_thresh = 120;
@@ -19,31 +19,38 @@ end
 
 figure()
 
-num_cluster = 5;
+num_cluster = 4;
 [cluster_idx, cluster_center] = ...
     kmeans(ab, num_cluster, 'distance', 'sqEuclidean', 'emptyaction', 'singleton', 'Replicates', 5);
 pixel_labels = reshape(cluster_idx, nrows, ncols);
-subplot(2,2,1)
+subplot(1,2,1)
 imshow(im_rgb)
-subplot(2,2,2)
+title('Original image')
+subplot(1,2,2)
 imshow(pixel_labels, []);
 title(sprintf('k = %d, image labeled by cluster index', num_cluster));
 [val, ind] = min(abs(cluster_center(:,1) - barrel(1)));
 bw = pixel_labels == ind;
 
-subplot(2,2,3)
+figure(2)
+subplot(1,2,1)
 imshow(bw)
-
-subplot(2,2,4)
+title('Pixels from Kmeans')
+subplot(1,2,2)
 seD = strel('diamond', 1);
 bw = bwareaopen(bw, area_thresh); % remove anything with area less than 50
 bw = imfill(bw, 'holes');
 imshow(bw)
+
 cc = bwconncomp(bw);
 rp = regionprops(cc, 'Area', 'BoundingBox', 'Centroid', 'MajorAxisLength', 'MinorAxisLength');
 hold on
 for i = 1:length(rp)
-    plot(rp(i).Centroid(1), rp(i).Centroid(2), 'r+', 'MarkerSize', 8, 'LineWidth', 3)
+    plot(rp(i).Centroid(1), rp(i).Centroid(2), 'r+', 'MarkerSize', 8, 'LineWidth', 2)
     rectangle('Position', rp(i).BoundingBox, 'EdgeColor', 'g', 'LineWidth', 2)
+    if i == 3
+    rectangle('Position', rp(i).BoundingBox, 'EdgeColor', 'm', 'LineWidth', 2)
+    end
 end
 hold off
+title('Barrel Candidates')
