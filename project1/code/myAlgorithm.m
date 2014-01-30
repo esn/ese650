@@ -34,7 +34,6 @@ else
     bw_barrel = bw_kmeans;
 end
 
-
 subplot(2,2,4)
 imshow(bw_barrel)
 
@@ -46,8 +45,7 @@ imshow(test.im)
 subplot(1,2,2)
 imshow(bw_barrel)
 hold on
-plot(rp_barrel.Centroid(1), rp_barrel.Centroid(2), 'r+', 'MarkerSize', 8, 'LineWidth', 3)
-rectangle('Position', rp_barrel.BoundingBox, 'EdgeColor', 'g', 'LineWidth', 2)
+plot_detection(rp_barrel)
 hold off
 X = [sqrt(rp_barrel.Area), rp_barrel.BoundingBox(3), rp_barrel.BoundingBox(4)];
 x = rp_barrel.Centroid(1);

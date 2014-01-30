@@ -11,6 +11,6 @@ for i = 1:length(train)
 end
 
 X = [ar(:) w(:) h(:)];
-W = inv(X'*X+1000*eye(size(X,2)))*X'*Y(:);
+W = inv(X'*X+500*eye(size(X,2)))*X'*Y(:);
 dist_model.w = W;
 save('dist_model.mat', 'dist_model')

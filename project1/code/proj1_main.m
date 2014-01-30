@@ -2,22 +2,13 @@ init_dataset
 
 dir_name = 'data/';
 dirstruct = dir([dir_name '*.png']);
-for i = 1:length(dirstruct)
-    
+for i = 46:length(dirstruct)
     % Current test image
     im = imread([dir_name dirstruct(i).name]);
     dist = get_dist_from_fname(dirstruct(i).name);
     
     % Your algorithm here!
     [x, y, d] = myAlgorithm(im);
-    
-    % Display results:
-%     hf = figure(1);
-%     image(im);
-%     hold on;
-%     plot(x, y, 'g+');
-    
-%     title(sprintf('Barrel distance: %.1f m', dist));
     
     % You may also want to plot and display other
     % diagnostic information such as the outlines
