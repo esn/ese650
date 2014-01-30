@@ -162,44 +162,34 @@ Also, we notice that in the 2d plot of L*a*b, there are two clusters of red pixe
   \caption{Images under different lighting conditions. \label{fig:confusing}}
 \end{figure}
 
+Finally, in order to tell our algorithm which part of the image contains the barerl, we hand labelled all the barrels in training images and creating a mask for each image (shown in Fig.\ref{fig:barrel_mask.png}).
+
 \begin{figure}[H]
   \centering
-  \includegraphics[width=\columnwidth]{lum_level.pdf}
-    \caption{Median of L channel of each image}
-    \label{fig:lum_level}
+  \includegraphics[width=\columnwidth]{barrel_mask.png}
+    \caption{Barrel mask for each training image}
+    \label{fig:barrel_mask}
 \end{figure}
-
-\begin{compactitem}
-\item Donec dolor arcu, rutrum id molestie in, viverra sed diam
-\item Curabitur feugiat
-\item turpis sed auctor facilisis
-\item arcu eros accumsan lorem, at posuere mi diam sit amet tortor
-\item Fusce fermentum, mi sit amet euismod rutrum
-\item sem lorem molestie diam, iaculis aliquet sapien tortor non nisi
-\item Pellentesque bibendum pretium aliquet
-\end{compactitem}
-\lipsum[4] % Dummy text
-
 %----------------------------------------------------------------------------------------
-%	RESULTS
+%	METHODS
 %----------------------------------------------------------------------------------------
 
-\section{Results}
+\section{METHODS}
+After pre-processing the data, I start playing with different methods and models. Here I describe the learning and predicting workflow that I use for color segmentation and barrel detection.
 
-\begin{table}[H]
-\caption{Example table}
-\centering
-\begin{tabular}{llr}
-\toprule
-\multicolumn{2}{c}{Name} \\
-\cmidrule(r){1-2}
-First name & Last Name & Grade \\
-\midrule
-John & Doe & $7.5$ \\
-Richard & Miles & $2$ \\
-\bottomrule
-\end{tabular}
-\end{table}
+\subsection{Barrel Shape Model}
+Since we already have a black-white image to mask the barrel, we could learn some useful information from that. We looked at various properties of the part of mask being labelled and decided to use the aspect ratio and percentage of filled pixels to model the barrel. From the training image, we extract all those information and build a 2D Gaussian distribution. And for any new mask coming in, we will be able to tell the probability of it being a barrel or not. The equations used for estimating such a multivariate gaussian is shown in (Eq.\ref{eq:mle1} and \ref{eq:mle2})
+
+\begin{equation}
+\mu_{MLE} = \frac{1}{N}\sum_{i=1}^N\mathbf{x}^i
+\label{eq:mle1}
+\end{equation}
+\begin{equation}
+\Sigma_{MLE} = \frac{1}{N}\sum_{i=1}^N(\mathbf{x}-\mu)(\mathbf{x}-\mu)^{\top}
+\label{eq:mle2}
+\end{equation}
+
+\subsection{Distance Model}
 
 \lipsum[5] % Dummy text
 
