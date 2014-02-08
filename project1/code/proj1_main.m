@@ -6,10 +6,10 @@ for i = 1:length(dirstruct)
     % Current test image
     im = imread([dir_name dirstruct(i).name]);
     dist = get_dist_from_fname(dirstruct(i).name);
-    
+
     % Your algorithm here!
     [x, y, d] = myAlgorithm(im);
-    
+
     % You may also want to plot and display other
     % diagnostic information such as the outlines
     % of connected regions, etc.
@@ -18,5 +18,4 @@ for i = 1:length(dirstruct)
 %     fig2pic(gcf, sprintf('./fig/test_%d.png', i), 'png')
     hold off;
     pause;
-    
 end

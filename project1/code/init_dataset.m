@@ -5,7 +5,7 @@ if exist('train', 'var') && exist('valid', 'var')
 else
     cd_list = what(pwd);
     mat_exist = 0;
-    
+
     if ~isempty(cd_list.mat)
         for i = 1:length(cd_list)
             if strcmp(cd_list.mat{i}, 'train.mat')
