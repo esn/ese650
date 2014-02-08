@@ -14,7 +14,7 @@ if isempty(rp_barrel)
     load gm_rgb 
     % Try gmm
     P_rgb = predict_gmm_rgb(test, gm_rgb);
-    bw = P_rgb > 0.06;
+    bw = P_rgb > 0.05;
     bw = bw_clean(bw, 100);
     [bw_barrel, rp_barrel] = predict_barrel(bw, barrel_model, 0);
     % If GMM fails

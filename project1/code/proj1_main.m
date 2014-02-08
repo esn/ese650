@@ -1,4 +1,4 @@
-init_dataset
+% init_dataset
 
 dir_name = '../data/test/';
 dirstruct = dir([dir_name '*.png']);
@@ -13,9 +13,9 @@ for i = 1:length(dirstruct)
     % You may also want to plot and display other
     % diagnostic information such as the outlines
     % of connected regions, etc.
-    d_hist(i) = d;
-    dist_hist(i) = dist;
-    fig2pic(gcf, sprintf('./fig/test_%d.png', i), 'png')
+%     d_hist(i) = d;
+%     dist_hist(i) = dist;
+%     fig2pic(gcf, sprintf('./fig/test_%d.png', i), 'png')
     hold off;
     pause;
     
