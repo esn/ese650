@@ -17,4 +17,4 @@ test:
 	evince $(NAME).pdf &
 
 clean:
-	rm -f *.aux *.log *.out *.pdf *.pdfsync *.synctex.gz *.blg *.bbl *.tex.bak
+	rm -f $(NAME).pdf *.aux *.log *.out *.pdfsync *.synctex.gz *.blg *.bbl *.tex.bak
