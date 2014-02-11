@@ -25,11 +25,11 @@ for i = 1:length(rots)
     tic
     if i == 1
         hpatch = myrotplot(rots(:,:,i));
-        htitle = title(sprintf('t = %3.3f', ts(i)));
+        htitle = title(sprintf('t = %3.3f', ts(i) - ts(1)));
         dt = 0;
     else
         myrotplot(rots(:,:,i), hpatch);
-        set(htitle, 'String', sprintf('t = %3.3f', ts(i)));
+        set(htitle, 'String', sprintf('t = %3.3f', ts(i) - ts(1)));
         dt = ts(i) - ts(i - 1);
     end
     drawnow;
