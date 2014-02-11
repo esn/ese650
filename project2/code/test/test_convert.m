@@ -13,7 +13,7 @@ g_raw = sqrt(sum((acc_rest - 1023/2).^2));
 acc_scale = 1/g_raw;
 acc_bias = 1023/2;
 acc_scale = acc_scale * [-1; -1; 1];
-acc = bsxfun(@times, acc_bias - acc_raw, acc_scale);
+acc = bsxfun(@times, acc_raw - acc_bias, acc_scale);
 
 omg_scale = 0.0171;
 omg_bias = omg_rest;

@@ -16,12 +16,20 @@ vic_t = ts;
 vic_rot = rots;
 
 % Convert to physical unit
-acc_scale = 0.0106*[-1; -1; 1];
-acc_bias  = 1023/2;
-acc = bsxfun(@times, acc_bias - acc_raw, acc_scale);
+acc_real = raw2real(acc_raw, 'acc');
+omg_real = raw2real(omg_raw, 'omg');
 
-omg_scale = 0.0171;
-omg_bias  = [374; 375; 370]; % [bwx, bwy, bwz]
-omg = bsxfun(@minus, omg_raw, omg_bias) * omg_scale;
-
-%%
+%% UKF
+n_data = length(imu_t);
+for i = 1:n_data
+    t = imu_t(i);
+    acc = acc_real(:,i);
+    omg = omg_real(:,i);
+    
+    % Initialize UKF
+    if i == 1
+        x = [1; 0; 0; 0;
+    else
+        
+    end
+end
