@@ -55,7 +55,6 @@ Session.vim
 *.aux
 *.log
 *.out
-*.pdf
 *.pdfsync
 *.synctex.gz
 *.blg
