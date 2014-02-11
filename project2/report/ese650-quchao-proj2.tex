@@ -59,6 +59,7 @@
 \usepackage{amsmath,amssymb,amsopn,amstext,amsfonts}
 \usepackage{url}
 \usepackage[usenames,dvipsnames]{color}
+\usepackage{siunitx}
 \graphicspath{{fig/}}
 \newcommand{\red}[1]{\textcolor{red}{#1}}
 \newcommand{\brown}[1]{\textcolor{brown}{#1}}
@@ -114,6 +115,7 @@
 %----------------------------------------------------------------------------------------
 
 \section{Pre-processing}
+The raw IMU data we get is 10-bit ADC values, which technically ranges from 0 to 1023. Since it's difficult to use those values directly in our filter, we have to convert them so that they have real-world physical units and meanings. Our goal here is to convert the readings from the micro-controller to acceleration with a unit of \si{m/s^2} and angular velocity with a unit of \si{\radian/s}.
 %\begin{figure}[H]
 %  \centering
 %  \includegraphics[width=\columnwidth]{cspace_2d.pdf}
