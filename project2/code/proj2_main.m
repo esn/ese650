@@ -21,15 +21,23 @@ omg_real = raw2real(omg_raw, 'omg');
 
 %% UKF
 n_data = length(imu_t);
-for i = 1:n_data
-    t = imu_t(i);
-    acc = acc_real(:,i);
-    omg = omg_real(:,i);
+for k = 1:n_data
+    t = imu_t(k);
+    acc = acc_real(:,k);
+    omg = omg_real(:,k);
     
     % Initialize UKF
-    if i == 1
-        x = [1; 0; 0; 0;
+    if k == 1
+        quat0 = [1; 0; 0; 0];
+        omg0  = omg;
+        x = [quat0; omg0]; % state vector x, 7x1
+        P = diag(0.01*ones(1,7)); % state covariance P, 7x7
+        pt = t; % previous time
     else
+        dt = t - pt; % delta t
+        pt = t;
         
+        alpha_d = norm(omg,2) * dt;
+        e_d = omg / norm(omg,2);
     end
 end

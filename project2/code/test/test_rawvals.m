@@ -1,7 +1,7 @@
 clear all; close all; clc;
 
 %%
-load ../imu/imuRaw9
+load ../imu/imuRaw1
 acc_raw = vals(1:3,:);
 omg_raw = vals([5 6 4],:);
 
