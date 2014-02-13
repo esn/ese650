@@ -1,6 +1,6 @@
 clear all; close all; clc
 %% Test integration
-data_id = 4;
+data_id = 3;
 
 load(sprintf('../imu/imuRaw%d.mat', data_id));
 imu_t = ts;
@@ -32,13 +32,7 @@ for i = 2:length(imu_t)
     q_hist(:,i) = q;
 end
 
-% [eul_est(3,:), eul_est(2,:), eul_est(1,:)] = quat2angle(quatconj(q_hist'), 'zyx');
 eul_est = vicon2rpy(quat2dcm(quatconj(q_hist')));
-% for i = 1:length(q_hist)
-%     rot = quat2matrix(q_hist(:,i));
-%     
-%     eul_est(:,i) = wrb2rpy_zyx(rot);
-% end
 figure()
 for i = 1:3
     subplot(3,1,i)
@@ -48,9 +42,4 @@ for i = 1:3
     hold off
     grid on
     axis tight
-end
-figure()
-for i = 1:4
-    subplot(4,1,i)
-    plot(q_hist(i,:))
 end

@@ -11,10 +11,11 @@ alpha_W = vec2norm(W_q, 1);
 e_W = bsxfun(@rdivide, W_q, alpha_W);
 e_W(isnan(e_W)) = 0;
 q_W = [cos(alpha_W/2); bsxfun(@times, e_W, sin(alpha_W/2))];
-X_qi = zeros(size(q_W));
-for i = 1:size(q_W, 2)
-    X_qi(:,i) = quatmultiply(X_q', q_W(:,i)')';
-end
+% X_qi = zeros(size(q_W));
+% for i = 1:size(q_W, 2)
+%     X_qi(:,i) = quatmultiply(X_q', q_W(:,i)')';
+% end
+X_qi = quatmultiply(X_q', q_W')';
 Xs_q = [X_q, X_qi];
 
 % Propagates angular velocity
