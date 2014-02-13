@@ -1,9 +1,8 @@
 function [ Ys ] = ukf_process_ut( Xs, dt )
 %UKF_PROCESS_UT Unscented transform for ukf process model
-[nstate, nsigma] = size(Xs);
-Y = zeros(nstate,1);
+[n_state, n_sigma] = size(Xs);
 Ys = zeros(size(Xs));
-for i = 1:nsigma
+for i = 1:n_sigma
     Ys(:,i) = ukf_process(Xs(:,i), dt);
 end
 
