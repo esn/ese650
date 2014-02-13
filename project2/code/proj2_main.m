@@ -35,7 +35,7 @@ for k = 1:n_data
         P = diag(0.001*ones(1,6));  % state covariance P, 6x6
         Q = diag(0.001*ones(1,6));  % process covariance Q, 6x6
         
-        % Get ukf weights
+        % Generate ukf weights
         n = 6; % or 7?
         alpha = 0.33; % small value between 0 and 1
         beta = 2; % optimal for gaussian noise
@@ -45,7 +45,10 @@ for k = 1:n_data
         dt = t - pt; % delta t
         pt = t;
         
-        % Generate sigma points
-        
+        % Generate sigma points Xi
+        Xs = ukf_quat_sigma(X, P, Q, C);
+        % Transform sigma points Xi to get Yi through process model
+        Ys = ukf_process_ut(Xs, dt);
+        % Transform sigma points Yi to get Zi through measurement model
     end
 end
