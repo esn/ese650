@@ -10,9 +10,11 @@ function [ varargout ] = wrb2rpy_zyx( wRb )
 %        cos(theta)*sin(phi), ...
 %        cos(phi)*cos(theta)];
 
-theta = -asin(wRb(3,1));
-phi   = atan2(wRb(3,2)/cos(theta), wRb(3,3)/cos(theta));
-psi   = atan2(wRb(2,1)/cos(theta), wRb(1,1)/cos(theta));
+theta = asin(-wRb(3,1));
+% phi   = atan2(wRb(3,2)/cos(theta), wRb(3,3)/cos(theta));
+% psi   = atan2(wRb(2,1)/cos(theta), wRb(1,1)/cos(theta));
+phi   = atan2(wRb(3,2), wRb(3,3));
+psi   = atan2(wRb(2,1), wRb(1,1));
 
 if nargout == 1 || nargout == 0
     varargout{1} = [phi; theta; psi];

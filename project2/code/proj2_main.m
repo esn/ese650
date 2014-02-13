@@ -3,7 +3,7 @@ addpath(genpath('./'))
 addpath(genpath('../'))
 
 %% Select dataset
-data_id = 5;
+data_id = 8;
 
 % Load corresponding dataset
 load(sprintf('../imu/imuRaw%d.mat', data_id));
@@ -43,6 +43,8 @@ for k = 1:n_data
         beta = 2; % optimal for gaussian noise
         kappa = 0; % or 3 - n
         [Wm, Wc, C] = ukf_weight(n, alpha, beta, kappa); % C = gamma^2
+        
+        X_hist(:,1) = X0;
     else
         dt = t - pt; % delta t
         pt = t;
@@ -53,13 +55,18 @@ for k = 1:n_data
         Ys = ukf_process_ut(Xs, dt);
         % Use barycentric mean with renormalization to calculate
         % quaternion mean
-        Y  = ukf_sigma_mean(Ys, Wm);
+        Y  = ukf_sigma_mean_y(Ys, Wm);
+        % Calculate a priori state vector covariance
+%         P  = ukf_apriori_state_cov(Ys, Y, Wc);
         X  = [Y(1:4); omg];
-        X_hist(:,k) = X;
+        
         % Transform sigma points Yi to get Zi through measurement model
+        
+        % Save state
+        X_hist(:,k) = X;
     end
 end
-X_hist(:,1) = X0;
+
 
 %% Compare results
 q_hist = X_hist(1:4,:)';
@@ -68,9 +75,9 @@ eul_vic = vicon2rpy(vic_rot);
 figure()
 for i = 1:3
     subplot(3,1,i)
-    plot(imu_t, eul_est(i,:), 'b', 'LineWidth', 2);
+    plot(imu_t - min(imu_t(1), vic_t(1)), eul_est(i,:), 'b', 'LineWidth', 2);
     hold on
-    plot(vic_t, eul_vic(i,:), 'r', 'LineWidth', 2);
+    plot(vic_t - min(imu_t(1), vic_t(1)), eul_vic(i,:), 'r', 'LineWidth', 2);
     hold off
     grid on
     axis tight

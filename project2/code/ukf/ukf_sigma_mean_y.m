@@ -1,4 +1,4 @@
-function [ Y ] = ukf_sigma_mean( Ys, Wm )
+function [ Y ] = ukf_sigma_mean_y( Ys, Wm )
 %UKF_SIGMA_MEAN calculate quaternion mean by the barycentric mean with
 %renormalization
 %[ Y ] = ukf_sigma_mean( Ys, Wm )
