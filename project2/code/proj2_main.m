@@ -30,14 +30,22 @@ for k = 1:n_data
     if k == 1
         quat0 = [1; 0; 0; 0];
         omg0  = omg;
-        x = [quat0; omg0]; % state vector x, 7x1
-        P = diag(0.01*ones(1,7)); % state covariance P, 7x7
         pt = t; % previous time
+        X = [quat0; omg0];          % state vector X, 7x1
+        P = diag(0.001*ones(1,6));  % state covariance P, 6x6
+        Q = diag(0.001*ones(1,6));  % process covariance Q, 6x6
+        
+        % Get ukf weights
+        n = 6; % or 7?
+        alpha = 0.33; % small value between 0 and 1
+        beta = 2; % optimal for gaussian noise
+        kappa = 0; % or 3 - n
+        [Wm, Wc, C] = ukf_weight(n, alpha, beta, kappa); % C = gamma^2
     else
         dt = t - pt; % delta t
         pt = t;
         
-        alpha_d = norm(omg,2) * dt;
-        e_d = omg / norm(omg,2);
+        % Generate sigma points
+        
     end
 end
