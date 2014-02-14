@@ -1,19 +1,3 @@
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Journal Article
-% LaTeX Template
-% Version 1.3 (9/9/13)
-%
-% This template has been downloaded from:
-% http://www.LaTeXTemplates.com
-%
-% Original author:
-% Frits Wenneker (http://www.howtotex.com)
-%
-% License:
-% CC BY-NC-SA 3.0 (http://creativecommons.org/licenses/by-nc-sa/3.0/)
-%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 %----------------------------------------------------------------------------------------
 %	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
 %----------------------------------------------------------------------------------------
@@ -116,26 +100,32 @@
 
 \section{Pre-processing}
 The raw IMU data we get is 10-bit ADC values, which technically ranges from 0 to 1023. Since it's difficult to use those values directly in our filter, we have to convert them so that they have real-world physical units and meanings. Our goal here is to convert the readings from the micro-controller to acceleration with a unit of \si{m/s^2} and angular velocity with a unit of \si{\radian/s}.
-%\begin{figure}[H]
-%  \centering
-%  \includegraphics[width=\columnwidth]{cspace_2d.pdf}
-%    \caption{2D scatter plot on the 2 color channels of L*a*b and YCbCr}
-%    \label{fig:cspace_2d}
-%\end{figure}
-
-%\begin{figure}[H]
-%  \centering
-%  \includegraphics[width=0.4\columnwidth]{barrel_dark.png}
-%  \;\;\;
-%  \includegraphics[width=0.4\columnwidth]{barrel_red.png}
-%  \caption{Images under different lighting conditions. \label{fig:confusing}}
-%\end{figure}
+The equations used for converting raw values to real values are shown in Eq.\ref{eq:convert_acc} and Eq.\ref{eq:convert_omg}.
+\begin{align}
+\label{eq:convert_acc}
+\vec{a} &= (\vec{a}_{raw} - \vec{a}_{bias}) * s_{a}\\
+\vec{\omega} &= (\vec{\omega}_{raw} - \vec{\omega}_{bias}) * s_{\omega}
+\label{eq:convert_omg}
+\end{align}
+where $\vec{a}_{bias}$ is $[511.5,\;511.5,\;511.5]$ and $\vec{\omega}_{bias}$ is determined empirically by averaging the first 100 readings of one of the IMU data and is $[373.63\;, 375.20\;, 369.66]$. $s_{a}$ and $s_{\omega}$ are the scale factors and their values are $0.0106$ and $0.0171$.
 
 %----------------------------------------------------------------------------------------
 %	METHODS
 %----------------------------------------------------------------------------------------
 
 \section{Methods}
+For the main unscented kalman filter algorithm, I basically followed the steps outlined in Kraft's paper \cite{Kraft03}. For calculating quaternion mean, I used the method proposed by Cheon \cite{Cheon07} instead of gradient descent. Another difference is that Kraft uses only $2n$ Sigma points uniform weights, while Cheon uses $2n+1$ Sigma points with weights determined by parameters such as $\alpha$, $\beta$ and $\kappa$. Here I will describe the algorithm in detail. The following content is either from Kraft or from Cheon.
+
+\subsection{Process Model}
+Process model in kalman filter takes the from of
+\begin{equation}
+x_{k+1} = A(x_k, w_k)    
+\end{equation}
+where $x$ is the state vector and $w$ is the process noise. 
+\subsection{Measurement Model}
+\subsection{Initialization}
+\subsection{Prediction}
+\subsection{Correction}
 
 %----------------------------------------------------------------------------------------
 %	RESULTS
@@ -147,15 +137,15 @@ The raw IMU data we get is 10-bit ADC values, which technically ranges from 0 to
 %	REFERENCE LIST
 %----------------------------------------------------------------------------------------
 
-%\begin{thebibliography}{99} % Bibliography - this is intentionally simple in this template
-%
-%\bibitem[Figueredo and Wolf, 2009]{Figueredo:2009dg}
-%Figueredo, A.~J. and Wolf, P. S.~A. (2009).
-%\newblock Assortative pairing and life history strategy - a cross-cultural
-%  study.
-%\newblock {\em Human Nature}, 20:317--330.
-%
-%\end{thebibliography}
+\begin{thebibliography}{2} % Bibliography - this is intentionally simple in this template
+
+\bibitem{Kraft03}
+Edgar Kraft, \emph{A quaternion-based unscented kalman filter for orientation tracking}. Information Fusion, 2003. Proceedings of the Sixth International Conference on Information Fusion, Vol. 1 (2003), pp. 47-54.
+
+\bibitem{Cheon07}
+Y.-J. Cheon and J.-H. Kim, \emph{Unscented filtering in a unit quaternion space for spacecraft attitude estimation}. IEEE International Symposium on Industrial Electronics (ISIE 2007) (2007), pp. 66-71.
+
+\end{thebibliography}
 
 %----------------------------------------------------------------------------------------
 
