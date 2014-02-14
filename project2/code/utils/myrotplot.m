@@ -17,8 +17,8 @@ end
 
 fcolors = [1 1 1; 0 0 1; 1 1 1; 1 0 0; 1 1 1; 1 1 1];
 falphas = [0; 1; 0; 1; 0; 0];
-verts = vs * R';
-faces = f;
+verts   = vs * R';
+faces   = f;
 
 if nargin < 2
     % plot R and get a new patch object

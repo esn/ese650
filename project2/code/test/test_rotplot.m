@@ -19,7 +19,7 @@ end
 
 %% Test animation
 figure()
-load ../vicon/viconRot1
+load ../vicon/viconRot2
 ts = ts - ts(1);
 for i = 1:length(rots)
     tic

@@ -6,7 +6,7 @@ euler_out = wrb2rpy_zyx(R);
 disp([euler euler_out])
 
 %% show seperate plot of euler angles
-load ../vicon/viconRot8
+load ../vicon/viconRot1
 figure()
 eulers = vicon2rpy(rots);
 for i = 1:3

@@ -3,7 +3,7 @@ addpath(genpath('./'))
 addpath(genpath('../'))
 
 %% Select dataset
-data_id = 4;
+data_id = 9;
 
 % Load corresponding dataset
 load(sprintf('../imu/imuRaw%d.mat', data_id));
@@ -28,7 +28,7 @@ for k = 1:n_data
     t = imu_t(k);
     acc = acc_real(:,k);
     omg = omg_real(:,k);
-    
+
     % Initialize UKF
     if k == 1
         pt = t; % previous time
@@ -36,19 +36,19 @@ for k = 1:n_data
         X  = X0;
         P  = diag(0.0001*ones(1,6));  % state covariance P, 6x6
         Q  = diag(0.0001*ones(1,6));  % process covariance Q, 6x6
-        R  = diag([[1 1 1]*0.1 [1 1 1]*0.0001]);  % measurement covariance R, 6x6
+        R  = diag([[1 1 1] [1 1 1]*0.001]);  % measurement covariance R, 6x6
         % Generate ukf weights
         n = 6; % or 7?
-        alpha = 0.5; % small value between 0 and 1
+        alpha = 0.9; % small value between 0 and 1
         beta = 2; % optimal for gaussian noise
         kappa = 0; % or 3 - n
         [Wm, Wc, C] = ukf_weight(n, alpha, beta, kappa); % C = gamma^2
-        
+
         X_hist(:,1) = X0;
     else
         dt  = t - pt; % delta t
         pt  = t;
-        
+
         % Generate sigma points Xi
         Xs  = ukf_quat_sigma(X, P, Q, C);
         % Transform sigma points Xi to get Yi through process model
@@ -76,7 +76,6 @@ for k = 1:n_data
         X   = ukf_kalman_update(Y, V, K);
         P   = P - K * Pvv * K';
         % Save state
-%         X = [Y(1:4); omg];
         X_hist(:,k) = X;
     end
 end
@@ -94,3 +93,4 @@ for i = 1:3
     grid on
     axis tight
 end
+figure()
