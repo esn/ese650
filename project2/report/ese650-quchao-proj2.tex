@@ -44,6 +44,10 @@
 \usepackage{url}
 \usepackage[usenames,dvipsnames]{color}
 \usepackage{siunitx}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+
 \graphicspath{{fig/}}
 \newcommand{\red}[1]{\textcolor{red}{#1}}
 \newcommand{\brown}[1]{\textcolor{brown}{#1}}
@@ -107,22 +111,66 @@ The equations used for converting raw values to real values are shown in Eq.\ref
 \vec{\omega} &= (\vec{\omega}_{raw} - \vec{\omega}_{bias}) * s_{\omega}
 \label{eq:convert_omg}
 \end{align}
-where $\vec{a}_{bias}$ is $[511.5,\;511.5,\;511.5]$ and $\vec{\omega}_{bias}$ is determined empirically by averaging the first 100 readings of one of the IMU data and is $[373.63\;, 375.20\;, 369.66]$. $s_{a}$ and $s_{\omega}$ are the scale factors and their values are $0.0106$ and $0.0171$.
+where 
+\begin{equation}
+\vec{a}_{bias} = \begin{bmatrix}511.5 & 511.5 & 511.5\end{bmatrix}
+\end{equation}
+and $\vec{\omega}_{bias}$ is determined empirically by averaging the first 100 readings of one of the IMU data
+\begin{equation}
+\vec{\omega}_{bias} = \begin{bmatrix}373.63 & 375.20 & 369.66\end{bmatrix}
+\end{equation}
+$s_{a}$ and $s_{\omega}$ are the scale factors and their values are $0.0106$ and $0.0171$.
 
 %----------------------------------------------------------------------------------------
 %	METHODS
 %----------------------------------------------------------------------------------------
 
 \section{Methods}
-For the main unscented kalman filter algorithm, I basically followed the steps outlined in Kraft's paper \cite{Kraft03}. For calculating quaternion mean, I used the method proposed by Cheon \cite{Cheon07} instead of gradient descent. Another difference is that Kraft uses only $2n$ Sigma points uniform weights, while Cheon uses $2n+1$ Sigma points with weights determined by parameters such as $\alpha$, $\beta$ and $\kappa$. Here I will describe the algorithm in detail. The following content is either from Kraft or from Cheon.
+For the main unscented kalman filter algorithm, I basically followed the steps outlined in Kraft's paper \cite{Kraft03}. For calculating quaternion mean, I used the method proposed by Cheon \cite{Cheon07} instead of gradient descent. Another difference is that Kraft uses only $2n$ Sigma points uniform weights, while Cheon uses $2n+1$ Sigma points with weights determined by parameters such as $\alpha$, $\beta$ and $\kappa$. Here I will describe the algorithm in detail. The following content is either from Kraft or from Cheon, and it focuses more on the steps and implementations than the underlying theorems and principles.
 
 \subsection{Process Model}
-Process model in kalman filter takes the from of
+Process model in kalman filter takes the from
 \begin{equation}
 x_{k+1} = A(x_k, w_k)    
 \end{equation}
-where $x$ is the state vector and $w$ is the process noise. 
+where $x$ is the state vector and $w$ is the process noise. The first 3 components of $w_k$ affect the orientation and the last three components of $w_k$ affects angular velocity.
+\begin{equation}
+w_k = \begin{pmatrix}\vec{w}_q \\ \vec{w}_\omega \end{pmatrix}
+\end{equation}
+The final process model is 
+\begin{equation}
+x_{k+1} = A(x_k, w_k) = \begin{pmatrix} q_k q_w q_{\Delta}\\ \vec{\omega}_k + \vec{w}_\omega \end{pmatrix}
+\end{equation}
+where $q_k$ is the quaternion of the previous time step and $q_w$ is the quaternion representing process noise
+\begin{align}
+q_w &= \begin{bmatrix}
+\cos\left(\frac{\alpha_w}{2}\right) & \vec{e}_w \sin \left(\frac{\alpha_w}{2} \right)\end{bmatrix}\\
+\alpha_w &= \|w_q\|, \quad\qquad \vec{e}_w = \frac{w_q}{\|w_q\|}
+\end{align}
+and $q_\Delta$ is the quaternion representing the rotation during the interval of sensor update
+\begin{align}
+q_\Delta &= \begin{bmatrix}
+\cos\left(\frac{\alpha_\Delta}{2}\right) & \vec{e}_\Delta \sin \left(\frac{\alpha_\Delta}{2} \right)\end{bmatrix}\\
+\alpha_\Delta &= \|\vec{\omega}_k\|\cdot \Delta t, \quad \vec{e}_\Delta = \frac{\vec{\omega}_k}{\|\vec{\omega}_k|}
+\end{align}
+
 \subsection{Measurement Model}
+Measurement model in kalman filter takes the from
+\begin{equation}
+z_k = H(x_k, v_k)
+\end{equation}
+Since we have gyro and accelerometer, we have two different type of measurement. The two measurement models are
+\begin{align}
+H_1: \quad \vec{z}_{rot} &= \vec{\omega}_k + \vec{v}_{rot} \\
+H_2: \quad \vec{z}_{acc} &= \vec{g'} + \vec{v}_{acc} 
+\end{align}
+where
+\begin{align}
+&g' = q_k g q_k^{-1} \\
+&g  = (0,\;[g_x,g_y,g_z])
+\end{align}
+and $[g_x,g_y,g_z]$ is the acceleration readings from the IMU.
+
 \subsection{Initialization}
 \subsection{Prediction}
 \subsection{Correction}

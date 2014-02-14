@@ -37,7 +37,7 @@ for k = 1:n_data
         X  = X0;
         P  = diag(0.0001*ones(1,6));  % state covariance P, 6x6
         Q  = diag(0.0001*ones(1,6));  % process covariance Q, 6x6
-        R  = diag([0.1 0.1 0.1 0.001 0.001 0.001]);  % measurement covariance R, 6x6
+        R  = diag([0.1 0.1 0.1 0.0001 0.0001 0.0001]);  % measurement covariance R, 6x6
         % Generate ukf weights
         n = 6; % or 7?
         alpha = 0.5; % small value between 0 and 1
@@ -77,7 +77,7 @@ for k = 1:n_data
         X   = ukf_kalman_update(Y, V, K);
         P   = P - K * Pvv * K';
         % Save state
-        X = [Y(1:4); omg];
+%         X = [Y(1:4); omg];
         X_hist(:,k) = X;
     end
 end
