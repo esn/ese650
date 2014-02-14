@@ -1,9 +1,9 @@
-clear all; close all; clc
+% clear all; close all; clc
 addpath(genpath('./'))
 addpath(genpath('../'))
 
 %% Select dataset
-data_id = 9;
+data_id = 4;
 
 % Load corresponding dataset
 load(sprintf('../imu/imuRaw%d.mat', data_id));
@@ -22,7 +22,6 @@ omg_real = raw2real(omg_raw, 'omg');
 %% UKF
 % Debug
 X_hist = zeros(7, length(imu_t));
-
 % Main loop
 n_data = length(imu_t);
 for k = 1:n_data
@@ -37,7 +36,7 @@ for k = 1:n_data
         X  = X0;
         P  = diag(0.0001*ones(1,6));  % state covariance P, 6x6
         Q  = diag(0.0001*ones(1,6));  % process covariance Q, 6x6
-        R  = diag([0.1 0.1 0.1 0.0001 0.0001 0.0001]);  % measurement covariance R, 6x6
+        R  = diag([[1 1 1]*0.1 [1 1 1]*0.0001]);  % measurement covariance R, 6x6
         % Generate ukf weights
         n = 6; % or 7?
         alpha = 0.5; % small value between 0 and 1
@@ -83,8 +82,7 @@ for k = 1:n_data
 end
 
 %% Compare results
-q_hist = X_hist(1:4,:)';
-eul_est = vicon2rpy(quat2dcm(quatconj(q_hist)));
+eul_est = vicon2rpy(quat2dcm(quatconj(X_hist(1:4,:)')));
 eul_vic = vicon2rpy(vic_rot);
 figure()
 for i = 1:3

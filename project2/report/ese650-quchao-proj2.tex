@@ -49,6 +49,10 @@
 \usepackage{amssymb}
 
 \graphicspath{{fig/}}
+\newcommand{\W}{\mathcal{W}}
+\newcommand{\X}{\mathcal{X}}
+\newcommand{\Y}{\mathcal{Y}}
+\newcommand{\Z}{\mathcal{Z}}
 \newcommand{\red}[1]{\textcolor{red}{#1}}
 \newcommand{\brown}[1]{\textcolor{brown}{#1}}
 %----------------------------------------------------------------------------------------
@@ -107,8 +111,8 @@ The raw IMU data we get is 10-bit ADC values, which technically ranges from 0 to
 The equations used for converting raw values to real values are shown in Eq.\ref{eq:convert_acc} and Eq.\ref{eq:convert_omg}.
 \begin{align}
 \label{eq:convert_acc}
-\vec{a} &= (\vec{a}_{raw} - \vec{a}_{bias}) * s_{a}\\
-\vec{\omega} &= (\vec{\omega}_{raw} - \vec{\omega}_{bias}) * s_{\omega}
+\vec{a} &= (\vec{a}_{raw} - \vec{a}_{bias}) \cdot s_{a}\\
+\vec{\omega} &= (\vec{\omega}_{raw} - \vec{\omega}_{bias}) \cdot s_{\omega}
 \label{eq:convert_omg}
 \end{align}
 where 
@@ -126,14 +130,14 @@ $s_{a}$ and $s_{\omega}$ are the scale factors and their values are $0.0106$ and
 %----------------------------------------------------------------------------------------
 
 \section{Methods}
-For the main unscented kalman filter algorithm, I basically followed the steps outlined in Kraft's paper \cite{Kraft03}. For calculating quaternion mean, I used the method proposed by Cheon \cite{Cheon07} instead of gradient descent. Another difference is that Kraft uses only $2n$ Sigma points uniform weights, while Cheon uses $2n+1$ Sigma points with weights determined by parameters such as $\alpha$, $\beta$ and $\kappa$. Here I will describe the algorithm in detail. The following content is either from Kraft or from Cheon, and it focuses more on the steps and implementations than the underlying theorems and principles.
+For the main unscented kalman filter algorithm, I basically followed the steps outlined in Kraft's paper \cite{Kraft03}. For calculating quaternion mean, I used the method proposed by Cheon \cite{Cheon07} instead of gradient descent. Another difference is that Kraft uses only $2n$ Sigma points with uniform weights, while Cheon uses $2n+1$ Sigma points with weights determined by parameters such as $\alpha$, $\beta$ and $\kappa$. Here I will describe the algorithm in detail. The following content is either from Kraft or from Cheon. It focuses more on the steps and implementations than the underlying theorems and principles, which serves the purpose for my personal review later.
 
 \subsection{Process Model}
 Process model in kalman filter takes the from
 \begin{equation}
 x_{k+1} = A(x_k, w_k)    
 \end{equation}
-where $x$ is the state vector and $w$ is the process noise. The first 3 components of $w_k$ affect the orientation and the last three components of $w_k$ affects angular velocity.
+where $x$ is the state vector and $w$ is the process noise with $0$ mean and covariance $Q$. The first 3 components of $w_k$ affect the orientation and the last three components of $w_k$ affects angular velocity.
 \begin{equation}
 w_k = \begin{pmatrix}\vec{w}_q \\ \vec{w}_\omega \end{pmatrix}
 \end{equation}
@@ -144,13 +148,13 @@ x_{k+1} = A(x_k, w_k) = \begin{pmatrix} q_k q_w q_{\Delta}\\ \vec{\omega}_k + \v
 where $q_k$ is the quaternion of the previous time step and $q_w$ is the quaternion representing process noise
 \begin{align}
 q_w &= \begin{bmatrix}
-\cos\left(\frac{\alpha_w}{2}\right) & \vec{e}_w \sin \left(\frac{\alpha_w}{2} \right)\end{bmatrix}\\
-\alpha_w &= \|w_q\|, \quad\qquad \vec{e}_w = \frac{w_q}{\|w_q\|}
+\cos\left(\alpha_w/2\right) & \vec{e}_w \sin \left(\alpha_w/2 \right)\end{bmatrix}\\
+\alpha_w &= \|w_q\|, \quad \vec{e}_w = \frac{w_q}{\|w_q\|}
 \end{align}
 and $q_\Delta$ is the quaternion representing the rotation during the interval of sensor update
 \begin{align}
 q_\Delta &= \begin{bmatrix}
-\cos\left(\frac{\alpha_\Delta}{2}\right) & \vec{e}_\Delta \sin \left(\frac{\alpha_\Delta}{2} \right)\end{bmatrix}\\
+\cos\left(\alpha_\Delta/2\right) & \vec{e}_\Delta \sin \left(\alpha_\Delta/2\right)\end{bmatrix}\\
 \alpha_\Delta &= \|\vec{\omega}_k\|\cdot \Delta t, \quad \vec{e}_\Delta = \frac{\vec{\omega}_k}{\|\vec{\omega}_k|}
 \end{align}
 
@@ -172,7 +176,69 @@ where
 and $[g_x,g_y,g_z]$ is the acceleration readings from the IMU.
 
 \subsection{Initialization}
+At the initialization step, we first initialize the state vector to be
+\begin{equation}
+x_0 = \begin{pmatrix}q_0 \\ \omega_0\end{pmatrix}
+=\begin{bmatrix}
+1 & 0 & 0 & 0 & 0 & 0 & 0
+\end{bmatrix}^\top
+\end{equation}
+because we roughly know that at the beginning the platform is stationary on the ground. Then we generates the weights $W^{(m)}$ and $W^{(c)}$ using the following parameters
+\begin{equation}
+\alpha = 0.5, \quad \beta = 2, \quad \kappa = 0
+\end{equation}
+Details for calculating the weights can be found in \cite{Julier97}. We then initialize the state covariance $P$, process covariance $Q$ and measurement covariance $R$, all of them are $6\times6$ diagonal matrices.
+
 \subsection{Prediction}
+At the prediction step, given the state vector $x_k$, state covariance $P_k$ and process covariance $Q_k$, we calculate a set of $(2n+1)$ sigma points $\X_i$ using the following equations
+\begin{equation}
+\X_i = \begin{pmatrix}q_k & q_k q_\W \\ \vec{\omega}_k & \vec{\omega}_k + \vec{\omega}_\W\end{pmatrix}
+\end{equation}
+in which
+\begin{align}
+\W_i          &= \mbox{columns}(\pm \gamma \sqrt{P_k + Q_k}) \\
+\gamma        &= \sqrt{n+\lambda}, \quad n = 6 \\
+\lambda       &= \alpha^2(n+\kappa) - n \\
+\W_{i,q}      &= \mbox{first 3 rows}(\W_i) \\
+\W_{i,\omega} &= \mbox{last 3 rows}(\W_i) = \vec{\omega}_\W
+\end{align}
+then
+\begin{align}
+q_\W &= \begin{bmatrix}\cos(\alpha_\W/2) & \vec{e}_\W \sin(\alpha_\W/2)\end{bmatrix} \\
+\alpha_\W &= \|\W_{i,q}\|, \quad \vec{e}_\W = \frac{\W_{i,q}}{\|\W_{i,q}\|}
+\end{align}
+We then transform the sigma points ahead of time through the process model
+\begin{equation}
+\Y_i = A(\X_i,0)
+\end{equation}
+using the process model we described in previous section.
+The set $\{\Y_i\}$ samples the probability distribution of the \textit{a priori} estimate. And the mean and covariance of this distribution are
+\begin{align}
+\hat{x}^-_k &= \mbox{mean}(\{\Y_i\}) \\
+P^-_k &= \mbox{cov}(\{\Y_i\})
+\end{align}
+Calculating the mean of quaternions is a little bit tricky in this case. Instead of using a gradient descent method, we use a barycentric mean with renormalization which is proposed in \cite{Cheon07}. The equation for calculating quaternion mean is
+\begin{equation}
+\hat{q}^-_k = \frac{\sum^{2n}_{i=0}W_i \Y^q_i}{\|\sum^{2n}_{i=0}W_i \Y^q_i\|}
+\end{equation}
+This ensures that the result quaternion mean also lies on the unit quaternion sphere.
+We then need to calculate covariance $P^-_k$, this is done by 
+\begin{equation}
+P^-_k = \sum^{2n}_{i=0}\W_i'\W_i'^\top
+\end{equation}
+$\W_i'$ has a rotation vector component $\vec{r}_{\W'}$ and an angular velocity vector component $\vec{\omega}_{\W'}$
+\begin{equation}
+\W_i'=\begin{pmatrix}\vec{r}_{\W'} \\ \vec{\omega}_{\W'}\end{pmatrix}
+\end{equation}
+$\vec{\omega}_{\W'}$ is the difference of the angular velocity components of $\Y_i$ and $\hat{x}^-_k$
+\begin{equation}
+\vec{\omega}_{\W'} = \vec{\omega}_i - \bar{\vec{\omega}}
+\end{equation}
+$\vec{r}_{\W'}$ is a representation of the rotation which turns the orientation part of $\hat{x}^-_k$ into $\Y_i$. The corresponding quaternion of this rotation is 
+\begin{equation}
+r_{\W'} = q_i \bar{q}^{-1}
+\end{equation}
+
 \subsection{Correction}
 
 %----------------------------------------------------------------------------------------
@@ -192,6 +258,9 @@ Edgar Kraft, \emph{A quaternion-based unscented kalman filter for orientation tr
 
 \bibitem{Cheon07}
 Y.-J. Cheon and J.-H. Kim, \emph{Unscented filtering in a unit quaternion space for spacecraft attitude estimation}. IEEE International Symposium on Industrial Electronics (ISIE 2007) (2007), pp. 66-71.
+
+\bibitem{Julier97}
+S.J. Julier, and J.K. Uhlmann, \emph{A new extension of the Kalman filter to nonlinear systems}. Proc. of AeroSense: The 11th Int. Symp. on Aerospace/Defense Sensing, Simulations and Controls, (1997).
 
 \end{thebibliography}
 

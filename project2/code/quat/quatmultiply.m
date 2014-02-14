@@ -30,29 +30,29 @@ function qout = quatmultiply( q, varargin )
 
 %   Note: Quaternion multiplication is not commutative.
 
-narginchk(1, 2);
+% narginchk(1, 2);
 
-if any(~isreal(q(:)))
-    error(message('aero:quatnorm:isNotReal1'));
-end
-
-if (size(q,2) ~= 4)
-    error(message('aero:quatnorm:wrongDimension1'));
-end
-
+% if any(~isreal(q(:)))
+%     error(message('aero:quatnorm:isNotReal1'));
+% end
+% 
+% if (size(q,2) ~= 4)
+%     error(message('aero:quatnorm:wrongDimension1'));
+% end
+% 
 if nargin == 1
     r = q;
 else
     r = varargin{1};
-    if any(~isreal(r(:)))
-        error(message('aero:quatnorm:isNotReal2'));
-    end
-    if (size(r,2) ~= 4)
-        error(message('aero:quatnorm:wrongDimension2'));
-    end
-    if (size(r,1) ~= size(q,1) && ~( size(r,1) == 1 || size(q,1) == 1))
-         error(message('aero:quatnorm:wrongDimension3'));
-    end
+%     if any(~isreal(r(:)))
+%         error(message('aero:quatnorm:isNotReal2'));
+%     end
+%     if (size(r,2) ~= 4)
+%         error(message('aero:quatnorm:wrongDimension2'));
+%     end
+%     if (size(r,1) ~= size(q,1) && ~( size(r,1) == 1 || size(q,1) == 1))
+%          error(message('aero:quatnorm:wrongDimension3'));
+%     end
 end
 
 % Calculate vector portion of quaternion product
