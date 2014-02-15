@@ -39,7 +39,7 @@ for k = 1:n_data
         R  = diag([[1 1 1] [1 1 1]*0.001]);  % measurement covariance R, 6x6
         % Generate ukf weights
         n = 6; % or 7?
-        alpha = 0.9; % small value between 0 and 1
+        alpha = 0.7; % small value between 0 and 1
         beta = 2; % optimal for gaussian noise
         kappa = 0; % or 3 - n
         [Wm, Wc, C] = ukf_weight(n, alpha, beta, kappa); % C = gamma^2
@@ -93,4 +93,3 @@ for i = 1:3
     grid on
     axis tight
 end
-figure()
