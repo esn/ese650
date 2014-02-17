@@ -1,5 +1,6 @@
 clear all; close all; clc;
-load ../imu/imuRaw8
+load ../imu/imuRaw1
+load ../vicon/viconRot1
 
 %% calculate scale factor for accelerometer
 acc_raw = vals(1:3,:);
@@ -26,17 +27,21 @@ for i = 1:3
     xlabel('t'); ylabel('m/s^2');
 end
 
-figure()
-for i = 1:3
-    subplot(3,1,i)
-    plot(omg(i,:))
-    xlabel('t'); ylabel('m/s^2');
-end
-
 %% Calcualte variance for gyro and accelerometer
 omg_sample = omg(:,1:500);
 acc_sample = acc(:,1:500);
 for i = 1:3
     omg_var(i) = var(omg_sample(i,:));
     acc_var(i) = var(acc_sample(i,:));
+end
+
+%% 
+for i = 1:length(ts)
+    acc_rot(:,i) = rots(:,:,i)' * [0;0;1];
+end
+figure()
+for i = 1:3
+    subplot(3,1,i)
+    plot(acc_rot(i,:))
+    xlabel('t'); ylabel('m/s^2');
 end

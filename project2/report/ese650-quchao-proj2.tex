@@ -125,6 +125,33 @@ and $\vec{\omega}_{bias}$ is determined empirically by averaging the first 100 r
 \end{equation}
 $s_{a}$ and $s_{\omega}$ are the scale factors and their values are $0.0106$ and $0.0171$.
 
+We then look at the rotations in details.
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.5\columnwidth]{fig/rot.png} 
+\caption{A simple rotation along z-axis, with angle $\psi$}
+\label{fig:rotz}
+\end{figure}
+Assume at some time $t_0$, the IMU is perfectly aligned with the world frame. In the next time step $t_0+\Delta t$, there's a very small rotation along the z-axis, and the gyro thus measures an angular velocity $\omega_z$, and thus an angle $\Psi = \omega_z \cdot \Delta t$. This is shown in Fig.\ref{fig:rotz}. The rotation matrix of the rotation is denoted by $R_z(\psi)$ and it physically rotates the world SRT into the body SRT. Thus we call the rotation matrix \textit{World-to-Body} and written in $^BR_W$. If there's rotation in all 3 axes, then we use a sequence of euler angles to indicate angular movement along each axis and this can be written as
+\begin{equation}
+^BR_W = R_x(\phi)R_y(\theta)R_z(\psi)
+\end{equation}
+where each of them is
+\begin{equation}
+R_x(\phi) = \left(\begin{array}{ccc} 1 & 0 & 0\\ 0 & \cos\!\left(\phi{}\right) & \sin\!\left(\phi{}\right)\\ 0 & - \sin\!\left(\phi{}\right) & \cos\!\left(\phi{}\right) \end{array}\right)
+\end{equation}
+\begin{equation}
+R_y(\theta) = \left(\begin{array}{ccc} \cos\!\left(\theta{}\right) & 0 & - \sin\!\left(\theta{}\right)\\ 0 & 1 & 0\\ \sin\!\left(\theta{}\right) & 0 & \cos\!\left(\theta{}\right) \end{array}\right)
+\end{equation}
+\begin{equation}
+R_z(\psi) = \left(\begin{array}{ccc} \cos\!\left(\psi{}\right) & \sin\!\left(\psi{}\right) & 0\\ - \sin\!\left(\psi{}\right) & \cos\!\left(\psi{}\right) & 0\\ 0 & 0 & 1 \end{array}\right)
+\end{equation}
+and we also notice that if the world coordinates and body coordinates of the gravity vector can be related by this rotation matrix
+\begin{equation}
+\begin{Bmatrix}0 \\ 0 \\ g\end{Bmatrix} = 
+^WR_B \begin{Bmatrix}a_x \\ a_y \\ a_z\end{Bmatrix}
+\end{equation}
+where $a_x$, $a_y$ and $a_z$ are measurements by the accelerometer.
 %----------------------------------------------------------------------------------------
 %	METHODS
 %----------------------------------------------------------------------------------------
