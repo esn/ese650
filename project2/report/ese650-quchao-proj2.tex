@@ -100,7 +100,7 @@
 \begin{multicols}{2} % Two-column layout throughout the main article text
 
 \section{Introduction}
-\lettrine[nindent=0em,lines=2]{O}rientation Tgracking
+\lettrine[nindent=0em,lines=2]{O}rientation Tracking is another important yet interesting topic in robotics. In this project, we are given raw sensor data, and are asked to track the rotation of a camera and stitch its images using our tracking results. We will implement a Unscented Kalman filter with quaternion for the tracking orientation.
 
 %----------------------------------------------------------------------------------------
 %	PRE-PROCESSING
@@ -151,7 +151,8 @@ and we also notice that if the world coordinates and body coordinates of the gra
 \begin{Bmatrix}0 \\ 0 \\ g\end{Bmatrix} = 
 ^WR_B \begin{Bmatrix}a_x \\ a_y \\ a_z\end{Bmatrix}
 \end{equation}
-where $a_x$, $a_y$ and $a_z$ are measurements by the accelerometer.
+where $a_x$, $a_y$ and $a_z$ are measurements by the accelerometer, where I use the convention that when the accelerometer is sitting rest, the reading would be $+1g$. The rotation matrix from vicon is $^WR_B$.
+
 %----------------------------------------------------------------------------------------
 %	METHODS
 %----------------------------------------------------------------------------------------
@@ -267,13 +268,50 @@ r_{\W'} = q_i \bar{q}^{-1}
 \end{equation}
 
 \subsection{Correction}
-
+At correction step, we transform a priori state sigma points ${\Y_i}$ through measurement model $H$ to get measurement sigma points ${\Z_i}$. Since ${\Z_i}$ is just acceleration and angular velocity, we could get their mean by simply averaging them. The measurement estimate covariance is 
+\begin{equation}
+P_{zz} = \sum_{i=0}^{2n}W_i^{(c)}[\Z_i-z^-_k][\Z_i-z^-_k]^\top
+\end{equation}
+and innovation covariance 
+\begin{equation}
+P_{vv} = P_{zz} + R
+\end{equation}
+The cross correlation matrix is 
+\begin{equation}
+P_{xz} =  \sum_{i=0}^{2n}W_i^{(c)}[\W_i'][\Z_i-z^-_k]^\top
+\end{equation}
+With these covariance matices, we can finally calculate the Kalman gain and do the Kalman update.
+\begin{equation}
+K_k = P_{xz}P_{vv}^{-1}
+\end{equation}
+\begin{equation}
+\hat{x}_k = \hat{x}_k^- + K_k \nu_k
+\end{equation}
+Thus, we've finished one iteration of our Unscented Kalman filter for orientation estimation.
 %----------------------------------------------------------------------------------------
 %	RESULTS
 %----------------------------------------------------------------------------------------
 
-\section{Discussion}
+\section{Results}
+Here are some results from the dataset provided for training.
+\begin{figure}[H]
+\centering
+\includegraphics[width=\columnwidth]{fig/data3.pdf} 
+\caption{Result for dataset 3, blue is estimation}
+\label{fig:data3}
+\end{figure}
 
+\begin{figure}[H]
+\centering
+\includegraphics[width=\columnwidth]{fig/data8.pdf} 
+\caption{Result for dataset 8, blue is estimation}
+\label{fig:data8}
+\end{figure}
+%----------------------------------------------------------------------------------------
+%	DISCUSSION
+%----------------------------------------------------------------------------------------
+\section{Discussion}
+I also implemented a filter with different process and measurement model. The process model sees the gyro readings as input, and the measurement would just be acceleration. The state vector is also 7-dimensional, with 4 quaternion and 3 angular rate bias. This model seems to be perform better than the previous one.
 %----------------------------------------------------------------------------------------
 %	REFERENCE LIST
 %----------------------------------------------------------------------------------------

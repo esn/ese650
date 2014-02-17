@@ -3,9 +3,9 @@ addpath(genpath('./'))
 addpath(genpath('../'))
 
 %% Select dataset
-data_id = 1;
+data_id = 4;
 correction = true;
-anim = true;
+anim = false;
 % Load corresponding dataset
 load(sprintf('../imu/imuRaw%d.mat', data_id));
 t_imu = ts;
@@ -13,7 +13,7 @@ acc_raw = vals(1:3,:);
 omg_raw = vals([5 6 4], :);
 imu_raw = [acc_raw; omg_raw];
 load(sprintf('../vicon/viconRot%d.mat', data_id));
-t_vic = ts;
+t_vic   = ts;
 rot_vic = rots;
 
 % Convert to physical unit
@@ -37,9 +37,9 @@ for k = 1:n_data
         pt  = t; % previous time
         X0  = [[1;0;0;0]; [0;0;0]];   % state vector X, 7x1
         X   = X0;
-        P   = diag([[1e-3, 1e-3 1e-3], [1e-3, 1e-3, 1e-3]]); % state covariance P, 6x6
-        Q   = diag([[1e-4, 1e-4, 1e-4], [1e-6, 1e-6, 1e-6]]);  % process covariance Q, 6x6
-        R   = diag([1, 1, 1]*0.115);  % measurement covariance R, 3x3
+        P   = diag([ones(3,1)*0.001; ones(3,1)*0.001]); % state covariance P, 6x6
+        Q   = diag([ones(3,1)*0.0001; ones(3,1)*0.00001]);  % process covariance Q, 6x6
+        R   = diag(ones(3,1)*0.115);  % measurement covariance R, 3x3
         
         % Generate ukf weights
         n       = 6; % or 7?
@@ -105,12 +105,15 @@ end
 rot_est = quat2dcm(quatconj(X_hist(1:4,:)'));
 eul_est = vicon2rpy(rot_est);
 eul_vic = vicon2rpy(rot_vic);
+ylabels = {'roll', 'pitch', 'yaw'};
 figure()
 for i = 1:3
     subplot(3,1,i)
     hold on
     plot(t_vic - min(t_imu(1), t_vic(1)), eul_vic(i,:), 'r', 'LineWidth', 2);
     plot(t_imu - min(t_imu(1), t_vic(1)), eul_est(i,:), 'b', 'LineWidth', 2);
+    xlabel(ylabels(i));
+    set(gca, 'Box', 'On')
     hold off
     grid on
     axis tight
