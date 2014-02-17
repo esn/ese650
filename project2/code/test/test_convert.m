@@ -1,5 +1,5 @@
 clear all; close all; clc;
-load ../imu/imuRaw1
+load ../imu/imuRaw8
 
 %% calculate scale factor for accelerometer
 acc_raw = vals(1:3,:);
@@ -22,13 +22,21 @@ omg = bsxfun(@minus, omg_raw, omg_bias) * omg_scale;
 figure()
 for i = 1:3
     subplot(3,1,i)
-    plot(ts - ts(1), acc(i,:))
+    plot(acc(i,:))
     xlabel('t'); ylabel('m/s^2');
 end
 
 figure()
 for i = 1:3
     subplot(3,1,i)
-    plot(ts - ts(1), omg(i,:))
+    plot(omg(i,:))
     xlabel('t'); ylabel('m/s^2');
+end
+
+%% Calcualte variance for gyro and accelerometer
+omg_sample = omg(:,1:500);
+acc_sample = acc(:,1:500);
+for i = 1:3
+    omg_var(i) = var(omg_sample(i,:));
+    acc_var(i) = var(acc_sample(i,:));
 end
