@@ -3,7 +3,7 @@ addpath(genpath('./'))
 addpath(genpath('../'))
 
 %% Select dataset
-data_id = 9;
+data_id = 1;
 
 % Load corresponding dataset
 load(sprintf('../imu/imuRaw%d.mat', data_id));
@@ -34,9 +34,9 @@ for k = 1:n_data
         pt = t; % previous time
         X0 = [[1;0;0;0]; omg];       % state vector X, 7x1
         X  = X0;
-        P  = diag(0.0001*ones(1,6));  % state covariance P, 6x6
+        P  = diag([[1e-4, 1e-4, 1e-4], [0, 0, 0]]);  % state covariance P, 6x6
         Q  = diag(0.0001*ones(1,6));  % process covariance Q, 6x6
-        R  = diag([[1 1 1] [1 1 1]*0.001]);  % measurement covariance R, 6x6
+        R  = diag([[0.1, 0.1, 0.1], [1e-4, 1e-4, 1e-4]]);  % measurement covariance R, 6x6
         % Generate ukf weights
         n = 6; % or 7?
         alpha = 0.7; % small value between 0 and 1
