@@ -1,11 +1,11 @@
 clear all; close all; clc;
 
-data_id = 8;
+data_id = 10;
 
-load(sprintf('../vicon/viconRot%d.mat', data_id));
+load(sprintf('../Project2_Test/vicon/viconRot%d.mat', data_id));
 rot_vic = rots;
 t_vic   = ts;
-load(sprintf('../cam/cam%d.mat', data_id));
+load(sprintf('../Project2_Test/cam/cam%d.mat', data_id));
 t_cam   = ts;
 
 %%
@@ -27,7 +27,7 @@ if 0
 end
 
 %% 
-f = 300;
+f = 283;
 [nr, nc, ~, ~] = size(cam);
 nr_canvas = 1000;
 nc_canvas = ceil(2*pi*f)+2;
