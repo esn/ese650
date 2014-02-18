@@ -132,7 +132,7 @@ We then look at the rotations in details.
 \caption{A simple rotation along z-axis, with angle $\psi$}
 \label{fig:rotz}
 \end{figure}
-Assume at some time $t_0$, the IMU is perfectly aligned with the world frame. In the next time step $t_0+\Delta t$, there's a very small rotation along the z-axis, and the gyro thus measures an angular velocity $\omega_z$, and thus an angle $\Psi = \omega_z \cdot \Delta t$. This is shown in Fig.\ref{fig:rotz}. The rotation matrix of the rotation is denoted by $R_z(\psi)$ and it physically rotates the world SRT into the body SRT. Thus we call the rotation matrix \textit{World-to-Body} and written in $^BR_W$. If there's rotation in all 3 axes, then we use a sequence of euler angles to indicate angular movement along each axis and this can be written as
+Assume at some time $t_0$, the IMU is perfectly aligned with the world frame. In the next time step $t_0+\Delta t$, there's a very small rotation along the z-axis, and the gyro thus measures an angular velocity $\omega_z$, and thus an angle $\psi = \omega_z \cdot \Delta t$. This is shown in Fig.\ref{fig:rotz}. The rotation matrix of the rotation is denoted by $R_z(\psi)$ and it physically rotates the world SRT into the body SRT. Thus we call the rotation matrix \textit{World-to-Body} and written in $^BR_W$. If there's rotation in all 3 axes, then we use a sequence of euler angles to indicate angular movement along each axis and this can be written as
 \begin{equation}
 ^BR_W = R_x(\phi)R_y(\theta)R_z(\psi)
 \end{equation}
