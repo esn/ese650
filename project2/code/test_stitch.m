@@ -1,6 +1,6 @@
 clear all; close all; clc;
 
-data_id = 9;
+data_id = 8;
 
 load(sprintf('../vicon/viconRot%d.mat', data_id));
 rot_vic = rots;
@@ -26,16 +26,16 @@ if 0
     end
 end
 
-%%
+%% 
 f = 300;
 [nr, nc, ~, ~] = size(cam);
-nr_canvas = 400;
+nr_canvas = 1000;
 nc_canvas = ceil(2*pi*f)+2;
 x_c_hat = nc_canvas/2;
 y_c_hat = nr_canvas/2;
 canvas = zeros(nr_canvas, nc_canvas, 3, 'uint8');
 
-for i = 190:5:length(cam) - 200
+for i = 200:5:length(cam) - 200
     img = cam(:,:,:,i);
     vic_i = find(t_vic > t_cam(i), 1, 'first');
     wrb = rot_vic(:,:,vic_i);

@@ -289,6 +289,20 @@ K_k = P_{xz}P_{vv}^{-1}
 \end{equation}
 Thus, we've finished one iteration of our Unscented Kalman filter for orientation estimation.
 
+\subsection{Stitching}
+As for the image stitching part, I worked together with Tarik Tosun. We use a cylindrical coordinate system to project images on to a cylinder and unwrap the cylinder to get a panorama image. The idea is that you first find a vector that points from the optical center to a pixel in the image plane, you then rotate that vector into the world frame, using the rotation matrix you found either from your estimation or from vicon. Then you project the rotated vector onto a unit cylinder, and convert $(X,Y,Z)$ to cylindrical coordinate $(\cos\theta, \sin\theta, h)$. Finally, you one that cylinder with some scaling to get the final image. We assume a unit cylinder that has $z$ pointing along the cylinder. The equations we use are
+\begin{align}
+^BP &= \begin{Bmatrix}X_B \\ Y_B\\ F\end{Bmatrix} \\
+^WP &= ^WR_B * \begin{Bmatrix}X_B \\ Y_B\\ F\end{Bmatrix} = \begin{Bmatrix}X_W \\ Y_W\\ Z_W\end{Bmatrix}
+\end{align}
+\begin{align}
+\theta &= \arctan(\frac{Y_W}{X_W})\\
+h &= \frac{Z_B}{\sqrt{X_W^2+Y_W^2}}
+\end{align}
+\begin{equation}
+(\hat{x}, \hat{y}) = -(f\theta, fh) + (\hat{x}_c, \hat{y}_c)
+\end{equation}
+
 %----------------------------------------------------------------------------------------
 %	RESULTS
 %----------------------------------------------------------------------------------------
@@ -298,8 +312,14 @@ Here are some results from the dataset provided for training.
 \begin{figure}[H]
 \centering
 \includegraphics[width=\columnwidth]{fig/data3.pdf} 
+\caption{Result for dataset 3, blue is estimation}
+\label{fig:estimation}
+\end{figure}
+
+\begin{figure}[H]
+\centering
 \includegraphics[width=\columnwidth]{fig/data8.pdf} 
-\caption{Result for dataset 3 and 8, blue is estimation}
+\caption{Result for dataset8, blue is estimation}
 \label{fig:estimation}
 \end{figure}
 
