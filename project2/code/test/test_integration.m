@@ -1,6 +1,6 @@
 clear all; close all; clc
 %% Test integration
-data_id = 9;
+data_id = 3;
 
 load(sprintf('../imu/imuRaw%d.mat', data_id));
 imu_t = ts;

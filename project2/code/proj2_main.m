@@ -3,7 +3,7 @@ addpath(genpath('./'))
 addpath(genpath('../'))
 
 %% Select dataset
-data_id = 4;
+data_id = 9;
 correction = true;
 anim = false;
 % Load corresponding dataset
@@ -69,17 +69,14 @@ for k = 1:n_data
         
         X   = Y;
         
-        q   = X(1:4);
-        g   = [0; 0; 0; 1];
-        g_q = quatmultiply(quatmultiply(quatconj(q'), g'), q');
-        Z   = g_q(2:4)';
         % Correction =======================
         
+        
+        % Transform sigma points Yi to get Zi through measurement model
+        Zs  = ukf_measurement_ut(Ys);
+        % Use barycentric mean to calculate measuremtn mean
+        Z   = sum(bsxfun(@times, Zs, Wm), 2);
         if correction
-            % Transform sigma points Yi to get Zi through measurement model
-            Zs  = ukf_measurement_ut(Ys);
-            % Use barycentric mean to calculate measuremtn mean
-            Z   = sum(bsxfun(@times, Zs, Wm), 2);
             % Calculate measurement estimate covariance
             Wz  = bsxfun(@minus, Zs, Z);
             Pzz = Wz * diag(Wc) * Wz';

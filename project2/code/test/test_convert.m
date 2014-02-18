@@ -1,6 +1,8 @@
 clear all; close all; clc;
-load ../imu/imuRaw1
-load ../vicon/viconRot1
+load ../imu/imuRaw3
+t_imu   = ts;
+load ../vicon/viconRot3
+t_vic   = ts;
 
 %% calculate scale factor for accelerometer
 acc_raw = vals(1:3,:);
@@ -20,10 +22,24 @@ omg_scale = 0.0171;
 omg_bias = omg_rest;
 omg = bsxfun(@minus, omg_raw, omg_bias) * omg_scale;
 
+
+acc_rot = zeros(3, length(t_imu));
+for i = 1:length(ts)
+    acc_rot(:,i) = rots(:,:,i)' * [0;0;1];
+end
+
 figure()
 for i = 1:3
     subplot(3,1,i)
     plot(acc(i,:))
+    plot(acc_rot(i,:))
+    xlabel('t'); ylabel('m/s^2');
+end
+
+figure()
+for i = 1:3
+    subplot(3,1,i)
+    plot(omg(i,:))
     xlabel('t'); ylabel('m/s^2');
 end
 
@@ -36,12 +52,10 @@ for i = 1:3
 end
 
 %% 
-for i = 1:length(ts)
-    acc_rot(:,i) = rots(:,:,i)' * [0;0;1];
-end
+
 figure()
 for i = 1:3
-    subplot(3,1,i)
-    plot(acc_rot(i,:))
+    subplot(3,1,i);
+    
     xlabel('t'); ylabel('m/s^2');
 end
