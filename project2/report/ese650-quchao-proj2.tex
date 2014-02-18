@@ -288,6 +288,7 @@ K_k = P_{xz}P_{vv}^{-1}
 \hat{x}_k = \hat{x}_k^- + K_k \nu_k
 \end{equation}
 Thus, we've finished one iteration of our Unscented Kalman filter for orientation estimation.
+
 %----------------------------------------------------------------------------------------
 %	RESULTS
 %----------------------------------------------------------------------------------------
@@ -297,21 +298,27 @@ Here are some results from the dataset provided for training.
 \begin{figure}[H]
 \centering
 \includegraphics[width=\columnwidth]{fig/data3.pdf} 
-\caption{Result for dataset 3, blue is estimation}
-\label{fig:data3}
+\includegraphics[width=\columnwidth]{fig/data8.pdf} 
+\caption{Result for dataset 3 and 8, blue is estimation}
+\label{fig:estimation}
 \end{figure}
 
+and here's some stitching images.
 \begin{figure}[H]
 \centering
-\includegraphics[width=\columnwidth]{fig/data8.pdf} 
-\caption{Result for dataset 8, blue is estimation}
-\label{fig:data8}
+\includegraphics[width=\columnwidth]{fig/stitching8.png} \;
+\includegraphics[width=\columnwidth]{fig/stitching9.png} 
+\caption{Stitching for dataset 8 and 9}
+\label{fig:stitch}
 \end{figure}
+
 %----------------------------------------------------------------------------------------
 %	DISCUSSION
 %----------------------------------------------------------------------------------------
+
 \section{Discussion}
 I also implemented a filter with different process and measurement model. The process model sees the gyro readings as input, and the measurement would just be acceleration. The state vector is also 7-dimensional, with 4 quaternion and 3 angular rate bias. This model seems to be perform better than the previous one.
+
 %----------------------------------------------------------------------------------------
 %	REFERENCE LIST
 %----------------------------------------------------------------------------------------

@@ -3,9 +3,9 @@ addpath(genpath('./'))
 addpath(genpath('../'))
 
 %% Select dataset
-data_id = 9;
+data_id = 8;
 correction = true;
-anim = false;
+anim = true;
 % Load corresponding dataset
 load(sprintf('../imu/imuRaw%d.mat', data_id));
 t_imu = ts;
@@ -71,7 +71,6 @@ for k = 1:n_data
         
         % Correction =======================
         
-        
         % Transform sigma points Yi to get Zi through measurement model
         Zs  = ukf_measurement_ut(Ys);
         % Use barycentric mean to calculate measuremtn mean
@@ -127,16 +126,33 @@ for i = 1:3
     axis tight
 end
 
+%% Animation
 if anim
-    figure()
-    for i = 1:min(length(t_imu), length(t_vic))
-        if i == 1
+    figure();
+    % Find start and stop indices
+    if t_imu(1) > t_vic(1)
+        imu_start_i = 1;
+    else
+        imu_start_i = find(t_imu > t_vic(1), 1 ,'first');
+    end
+    if t_imu(end) < t_vic(end)
+        imu_stop_i = length(t_imu);
+    else
+        imu_en_i = find(t_imu < t_vic(end), 1, 'last');
+    end
+    % Start animation
+    for i = imu_start_i : imu_stop_i
+        vic_i = find(t_imu(i) < t_vic, 1, 'first');
+        if isempty(vic_i), vic_i = length(t_vic); end
+        if i == imu_start_i
             subplot(1,2,1)
-            h_vic = myrotplot(rot_vic(:,:,i));
+            h_vic = myrotplot(rot_vic(:,:,vic_i));
+            title('Vicon')
             subplot(1,2,2)
             h_est = myrotplot(rot_est(:,:,i));
+            title('Estimation')
         else
-            myrotplot(rot_vic(:,:,i), h_vic);
+            myrotplot(rot_vic(:,:,vic_i), h_vic);
             myrotplot(rot_est(:,:,i), h_est);
         end
         drawnow
