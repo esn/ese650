@@ -124,12 +124,20 @@ figure()
 for i = 1:3
     subplot(3,1,i)
     hold on
-    plot(vic_t - min(imu_t(1), vic_t(1)), eul_vic(i,:), 'r', 'LineWidth', 2);
-    plot(imu_t - min(imu_t(1), vic_t(1)), eul_est(i,:), 'b', 'LineWidth', 2);
+    if use_vicon
+        plot(t_vic - min(t_imu(1), t_vic(1)), eul_vic(i,:), 'r', 'LineWidth', 2);
+        plot(t_imu - min(t_imu(1), t_vic(1)), eul_est(i,:), 'b', 'LineWidth', 2);
+    else
+        plot(t_imu, eul_est(i,:), 'b', 'LineWidth', 2);
+    end
+    
+    xlabel(ylabels(i));
+    set(gca, 'Box', 'On')
     hold off
     grid on
     axis tight
 end
+
 figure()
 for i = 1:3
     subplot(3,1,i)
@@ -143,4 +151,91 @@ for i = 1:3
     hold off
     grid on
     axis tight
+end
+
+%% Animation
+if anim
+    figure();
+    % Find start and stop indices
+    if use_vicon
+        if t_imu(1) > t_vic(1)
+            imu_start_i = 1;
+        else
+            imu_start_i = find(t_imu > t_vic(1), 1 ,'first');
+        end
+        if t_imu(end) < t_vic(end)
+            imu_stop_i = length(t_imu);
+        else
+            imu_en_i = find(t_imu < t_vic(end), 1, 'last');
+        end
+        
+    else
+        imu_start_i = 1;
+        imu_stop_i = length(t_imu);
+    end
+    % Start animation
+    for i = imu_start_i : imu_stop_i
+        if use_vicon
+            vic_i = find(t_imu(i) < t_vic, 1, 'first');
+            if isempty(vic_i), vic_i = length(t_vic); end
+        end
+        if i == imu_start_i
+            if use_vicon
+                subplot(1,2,1)
+                h_vic = myrotplot(rot_vic(:,:,vic_i));
+                title('Vicon')
+                subplot(1,2,2)
+                h_est = myrotplot(rot_est(:,:,i));
+                title('Estimation')
+            else
+                h_est = myrotplot(rot_est(:,:,i));
+                title('Estimation')
+            end
+        else
+            if use_vicon
+                myrotplot(rot_vic(:,:,vic_i), h_vic);
+                myrotplot(rot_est(:,:,i), h_est);
+            else
+                myrotplot(rot_est(:,:,i), h_est);
+            end
+        end
+        drawnow
+    end
+end
+
+%% Stitching
+figure()
+f = 283;
+[nr, nc, ~, ~] = size(cam);
+nr_canvas = 1000;
+nc_canvas = ceil(2*pi*f)+2;
+x_c_hat = nc_canvas/2;
+y_c_hat = nr_canvas/2;
+canvas = zeros(nr_canvas, nc_canvas, 3, 'uint8');
+
+for i = 150:3:length(cam) - 100
+    img = cam(:,:,:,i);
+    if use_vicon
+        vic_i = find(t_vic > t_cam(i), 1, 'first');
+        wrb = rot_vic(:,:,vic_i);
+    else
+        imu_i = find(t_imu > t_cam(i), 1, 'first');
+        wrb = rot_est(:,:,imu_i);
+    end
+    [x_img, y_img] = meshgrid(1:nc, 1:nr);
+    x_img = x_img(:); y_img = y_img(:); z_img = ones(size(y_img)) * f;
+    P_b = bsxfun(@plus, [z_img'; -x_img'; -y_img'], [0; nc/2; nr/2]);
+    P_w = wrb * P_b;
+    theta = atan2(P_w(2,:), P_w(1,:));
+    h       = bsxfun(@rdivide, P_w(3,:), sqrt(P_w(1,:).^2 + P_w(2,:).^2));
+    x_hat   = round(-f * theta + x_c_hat);
+    y_hat   = round(-f * h + y_c_hat);
+    
+    for k = 1:length(x_hat)
+        if y_hat(k) < nr_canvas - 1 && y_hat(k) > 1
+            canvas(y_hat(k), x_hat(k), :) = img(y_img(k), x_img(k), :);
+        end
+    end
+    imshow(canvas)
+    drawnow
 end
