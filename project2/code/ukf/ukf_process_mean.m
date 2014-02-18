@@ -3,12 +3,12 @@ function [ Y ] = ukf_process_mean( Ys, Wm )
 %renormalization
 %[ Y ] = ukf_sigma_mean( Ys, Wm )
 
-Ys_q = Ys(1:4,:);
-Ys_q_wsum = sum(bsxfun(@times, Ys_q, Wm), 2); % barycentric mean
-Y_q = Ys_q_wsum / norm(Ys_q_wsum, 2); % renormalization
+Ys_q    = Ys(1:4,:);
+Ys_q_s  = sum(bsxfun(@times, Ys_q, Wm), 2); % barycentric mean
+Y_q     = Ys_q_s / norm(Ys_q_s, 2); % renormalization
 
-Ys_omg = Ys(5:7,:);
-Y_omg = mean(Ys_omg, 2);
+Ys_b    = Ys(5:7,:);
+Y_b     = mean(Ys_b, 2);
 
-Y = [Y_q; Y_omg];
+Y       = [Y_q; Y_b];
 end

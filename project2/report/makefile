@@ -1,7 +1,9 @@
 NAME=ese650-quchao-proj2
 CC=pdflatex
 
-all: $(NAME).tex
+all: pdf
+
+pdf: $(NAME).tex
 	$(CC) $<
 
 % : %.tex
@@ -13,7 +15,7 @@ edit:
 texm:
 	texmaker $(NAME).tex &
 
-test:
+test: pdf
 	evince $(NAME).pdf &
 
 clean:

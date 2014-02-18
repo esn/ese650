@@ -100,7 +100,7 @@
 \begin{multicols}{2} % Two-column layout throughout the main article text
 
 \section{Introduction}
-\lettrine[nindent=0em,lines=2]{O}rientation Tgracking
+\lettrine[nindent=0em,lines=2]{O}rientation Tracking is another important yet interesting topic in robotics. In this project, we are given raw sensor data, and are asked to track the rotation of a camera and stitch its images using our tracking results. We will implement a Unscented Kalman filter with quaternion for the tracking orientation.
 
 %----------------------------------------------------------------------------------------
 %	PRE-PROCESSING
@@ -124,6 +124,34 @@ and $\vec{\omega}_{bias}$ is determined empirically by averaging the first 100 r
 \vec{\omega}_{bias} = \begin{bmatrix}373.63 & 375.20 & 369.66\end{bmatrix}
 \end{equation}
 $s_{a}$ and $s_{\omega}$ are the scale factors and their values are $0.0106$ and $0.0171$.
+
+We then look at the rotations in details.
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.5\columnwidth]{fig/rot.png} 
+\caption{A simple rotation along z-axis, with angle $\psi$}
+\label{fig:rotz}
+\end{figure}
+Assume at some time $t_0$, the IMU is perfectly aligned with the world frame. In the next time step $t_0+\Delta t$, there's a very small rotation along the z-axis, and the gyro thus measures an angular velocity $\omega_z$, and thus an angle $\psi = \omega_z \cdot \Delta t$. This is shown in Fig.\ref{fig:rotz}. The rotation matrix of the rotation is denoted by $R_z(\psi)$ and it physically rotates the world SRT into the body SRT. Thus we call the rotation matrix \textit{World-to-Body} and written in $^BR_W$. If there's rotation in all 3 axes, then we use a sequence of euler angles to indicate angular movement along each axis and this can be written as
+\begin{equation}
+^BR_W = R_x(\phi)R_y(\theta)R_z(\psi)
+\end{equation}
+where each of them is
+\begin{equation}
+R_x(\phi) = \left(\begin{array}{ccc} 1 & 0 & 0\\ 0 & \cos\!\left(\phi{}\right) & \sin\!\left(\phi{}\right)\\ 0 & - \sin\!\left(\phi{}\right) & \cos\!\left(\phi{}\right) \end{array}\right)
+\end{equation}
+\begin{equation}
+R_y(\theta) = \left(\begin{array}{ccc} \cos\!\left(\theta{}\right) & 0 & - \sin\!\left(\theta{}\right)\\ 0 & 1 & 0\\ \sin\!\left(\theta{}\right) & 0 & \cos\!\left(\theta{}\right) \end{array}\right)
+\end{equation}
+\begin{equation}
+R_z(\psi) = \left(\begin{array}{ccc} \cos\!\left(\psi{}\right) & \sin\!\left(\psi{}\right) & 0\\ - \sin\!\left(\psi{}\right) & \cos\!\left(\psi{}\right) & 0\\ 0 & 0 & 1 \end{array}\right)
+\end{equation}
+and we also notice that if the world coordinates and body coordinates of the gravity vector can be related by this rotation matrix
+\begin{equation}
+\begin{Bmatrix}0 \\ 0 \\ g\end{Bmatrix} = 
+^WR_B \begin{Bmatrix}a_x \\ a_y \\ a_z\end{Bmatrix}
+\end{equation}
+where $a_x$, $a_y$ and $a_z$ are measurements by the accelerometer, where I use the convention that when the accelerometer is sitting rest, the reading would be $+1g$. The rotation matrix from vicon is $^WR_B$.
 
 %----------------------------------------------------------------------------------------
 %	METHODS
@@ -240,12 +268,76 @@ r_{\W'} = q_i \bar{q}^{-1}
 \end{equation}
 
 \subsection{Correction}
+At correction step, we transform a priori state sigma points ${\Y_i}$ through measurement model $H$ to get measurement sigma points ${\Z_i}$. Since ${\Z_i}$ is just acceleration and angular velocity, we could get their mean by simply averaging them. The measurement estimate covariance is 
+\begin{equation}
+P_{zz} = \sum_{i=0}^{2n}W_i^{(c)}[\Z_i-z^-_k][\Z_i-z^-_k]^\top
+\end{equation}
+and innovation covariance 
+\begin{equation}
+P_{vv} = P_{zz} + R
+\end{equation}
+The cross correlation matrix is 
+\begin{equation}
+P_{xz} =  \sum_{i=0}^{2n}W_i^{(c)}[\W_i'][\Z_i-z^-_k]^\top
+\end{equation}
+With these covariance matices, we can finally calculate the Kalman gain and do the Kalman update.
+\begin{equation}
+K_k = P_{xz}P_{vv}^{-1}
+\end{equation}
+\begin{equation}
+\hat{x}_k = \hat{x}_k^- + K_k \nu_k
+\end{equation}
+Thus, we've finished one iteration of our Unscented Kalman filter for orientation estimation.
+
+\subsection{Stitching}
+As for the image stitching part, I worked together with Tarik Tosun. We use a cylindrical coordinate system to project images on to a cylinder and unwrap the cylinder to get a panorama image. The idea is that you first find a vector that points from the optical center to a pixel in the image plane, you then rotate that vector into the world frame, using the rotation matrix you found either from your estimation or from vicon. Then you project the rotated vector onto a unit cylinder, and convert $(X,Y,Z)$ to cylindrical coordinate $(\cos\theta, \sin\theta, h)$. Finally, you one that cylinder with some scaling to get the final image. We assume a unit cylinder that has $z$ pointing along the cylinder. The equations we use are
+\begin{align}
+^BP &= \begin{Bmatrix}X_B \\ Y_B\\ F\end{Bmatrix} \\
+^WP &= ^WR_B * \begin{Bmatrix}X_B \\ Y_B\\ F\end{Bmatrix} = \begin{Bmatrix}X_W \\ Y_W\\ Z_W\end{Bmatrix}
+\end{align}
+\begin{align}
+\theta &= \arctan(\frac{Y_W}{X_W})\\
+h &= \frac{Z_B}{\sqrt{X_W^2+Y_W^2}}
+\end{align}
+\begin{equation}
+(\hat{x}, \hat{y}) = -(f\theta, fh) + (\hat{x}_c, \hat{y}_c)
+\end{equation}
 
 %----------------------------------------------------------------------------------------
 %	RESULTS
 %----------------------------------------------------------------------------------------
 
+\section{Results}
+Here are some results from the dataset provided for training.
+\begin{figure}[H]
+\centering
+\includegraphics[width=\columnwidth]{fig/data3.pdf} 
+\caption{Result for dataset 3, blue is estimation}
+\label{fig:estimation}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\columnwidth]{fig/data8.pdf} 
+\caption{Result for dataset8, blue is estimation}
+\label{fig:estimation}
+\end{figure}
+
+and here's some stitching images.
+\begin{figure}[H]
+\centering
+\includegraphics[width=\columnwidth]{fig/stitching8.png} \;
+\includegraphics[width=\columnwidth]{fig/stitching9.png} 
+\caption{Stitching for dataset 8 and 9}
+\label{fig:stitch}
+\end{figure}
+
+%----------------------------------------------------------------------------------------
+%	DISCUSSION
+%----------------------------------------------------------------------------------------
+
 \section{Discussion}
+I also implemented a filter with different process and measurement model. The process model sees the gyro readings as input, and the measurement would just be acceleration. The state vector is also 7-dimensional, with 4 quaternion and 3 angular rate bias. This model seems to be perform better than the previous one.
 
 %----------------------------------------------------------------------------------------
 %	REFERENCE LIST

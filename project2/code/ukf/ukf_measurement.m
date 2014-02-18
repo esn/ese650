@@ -2,15 +2,11 @@ function [ Z ] = ukf_measurement( X )
 %UKF_MEASUREMENT measurement model for ukf
 %[ Z ] = ukf_measurement( X )
 
-q = X(1:4);
-omg = X(5:7);
+q   = X(1:4);
 
-Z_omg = omg;
+g   = [0; 0; 0; 1];
+g_q = quatmultiply(quatmultiply(quatconj(q'), g'), q');
 
-g = [0; 0; 0; 1];
-g_prime = quatmultiply(quatmultiply(quatconj(q'), g'), q');
-
-Z_acc = g_prime(2:4)';
-Z = [Z_acc; Z_omg];
+Z   = g_q(2:4)';
 
 end
