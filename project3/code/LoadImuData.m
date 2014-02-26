@@ -3,42 +3,55 @@ function [ imu ] = LoadImuData( gesture, data_num, path )
 %   gesture  - circle  figure8  fish  hammer  pend  wave
 %   data_num - number of data
 
-% Validate gesture type
-gesture_list = {'circle', 'figure8', 'fish', 'hammer', 'pend', 'wave'};
-if ~any(strcmp(gesture, gesture_list)),
-    disp('Wrong gesture specified, please use one of the following.')
-    disp(gesture_list)
-    return
-end
-
 % Get path for the training data
 current_path = fileparts(mfilename('fullpath'));
 train_path = fullfile(current_path, '../train');
+
+% Get all gesture
+gesture_listing = dir(train_path);
+gesture_list = {};
+for i = 1:length(gesture_listing)
+    if ~strcmp(gesture_listing(i).name, '.') && ...
+       ~strcmp(gesture_listing(i).name, '..') && ...
+       gesture_listing(i).isdir
+        gesture_list{end+1} = gesture_listing(i).name;
+    end
+end
+
+% Validate gesture input
+if ~any(strcmp(gesture, gesture_list)),
+    fprintf('Wrong gesture %s, please use the following:\n', gesture);
+    disp(gesture_list)
+    imu = [];
+    return
+end
 gesture_path = fullfile(train_path, gesture);
 
 % Get all data name
-file_listing = dir(gesture_path);
-for i = 1:length(file_listing)
-    if ~file_lisitng(i).isdir
-        data_list{i} = file_lisitng{i}.name;
+data_listing = dir(gesture_path);
+data_list = {};
+for i = 1:length(data_listing)
+    if ~data_listing(i).isdir
+        data_list{end+1} = data_listing(i).name;
     end
 end
-data_name = sprintf('imu%02d', data_num);
+if isnumeric(data_num)
+    data_name = data_list{data_num};
+else
+    data_name = sprintf('imu0%s', data_num);
+end
 
-% Validate data name
-if ~any(strcmp(data, data_list))
-    disp('Wrong specified, please use one of the following.')
+% Validate data name input
+if ~any(strcmp(data_name, data_list))
+    fprintf('Error loading %s, please use the following:\n', data_name);
     disp(data_list)
+    imu = [];
+    return
 end
 data_path = fullfile(gesture_path, data_name);
 
 % Load data
-try
-    imu = load(data_path);
-    fprintf('Load %s %s\n', gesture, data_name);
-catch
-    imu = [];
-    disp('Wrong data number, please use the following');
-end
+imu = load(data_path);
+fprintf('Load %s %s\n', gesture, data_name);
 
 end
