@@ -1,0 +1,152 @@
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+
+\documentclass[twoside]{article}
+
+\usepackage{lipsum} % Package to generate dummy text throughout this template
+
+\usepackage[sc]{mathpazo} % Use the Palatino font
+\usepackage[T1]{fontenc} % Use 8-bit encoding that has 256 glyphs
+\linespread{1.05} % Line spacing - Palatino needs more space between lines
+\usepackage{microtype} % Slightly tweak font spacing for aesthetics
+
+\usepackage[hmarginratio=1:1,top=32mm,columnsep=20pt]{geometry} % Document margins
+\usepackage{multicol} % Used for the two-column layout of the document
+\usepackage[hang, small,labelfont=bf,up,textfont=it,up]{caption} % Custom captions under/above floats in tables or figures
+\usepackage{booktabs} % Horizontal rules in tables
+\usepackage{float} % Required for tables and figures in the multi-column environment - they need to be placed in specific locations with the [H] (e.g. \begin{table}[H])
+\usepackage{hyperref} % For hyperlinks in the PDF
+
+\usepackage{lettrine} % The lettrine is the first enlarged letter at the beginning of the text
+\usepackage{paralist} % Used for the compactitem environment which makes bullet points with less space between them
+
+\usepackage{abstract} % Allows abstract customization
+\renewcommand{\abstractnamefont}{\normalfont\bfseries} % Set the "Abstract" text to bold
+\renewcommand{\abstracttextfont}{\normalfont\small\itshape} % Set the abstract itself to small italic text
+
+\usepackage{titlesec} % Allows customization of titles
+\renewcommand\thesection{\Roman{section}} % Roman numerals for the sections
+\renewcommand\thesubsection{\Roman{subsection}} % Roman numerals for subsections
+\titleformat{\section}[block]{\large\scshape\centering}{\thesection.}{1em}{} % Change the look of the section titles
+\titleformat{\subsection}[block]{\large}{\thesubsection.}{1em}{} % Change the look of the section titles
+
+\usepackage{fancyhdr} % Headers and footers
+\pagestyle{fancy} % All pages have headers and footers
+\fancyhead{} % Blank out the default header
+\fancyfoot{} % Blank out the default footer
+\fancyhead[C]{ESE650 Learning in Robotics $\bullet$ March 2014 $\bullet$ Project 3} % Custom header text
+\fancyfoot[RO,LE]{\thepage} % Custom footer text
+
+\usepackage[pdftex]{graphicx}
+\usepackage{subfigure}
+\usepackage{amsmath,amssymb,amsopn,amstext,amsfonts}
+\usepackage{url}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{siunitx}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+
+\graphicspath{{fig/}}
+\newcommand{\W}{\mathcal{W}}
+\newcommand{\X}{\mathcal{X}}
+\newcommand{\Y}{\mathcal{Y}}
+\newcommand{\Z}{\mathcal{Z}}
+\newcommand{\red}[1]{\textcolor{red}{#1}}
+\newcommand{\brown}[1]{\textcolor{brown}{#1}}
+%----------------------------------------------------------------------------------------
+%	TITLE SECTION
+%----------------------------------------------------------------------------------------
+
+\title{\vspace{-15mm}\fontsize{24pt}{10pt}\selectfont\textbf{Gesture Recognition}} % Article title
+
+\author{
+\large
+\textsc{Chao Qu}\thanks{A thank you or further information}\\[2mm] % Your name
+\normalsize University of Pennsylvania \\ % Your institution
+\normalsize \href{mailto:quchao@seas.upenn.edu}{quchao@seas.upenn.edu} % Your email address
+\vspace{-5mm}
+}
+\date{}
+
+%----------------------------------------------------------------------------------------
+
+\begin{document}
+
+
+\maketitle % Insert title
+
+\thispagestyle{fancy} % All pages have headers and footers
+
+%----------------------------------------------------------------------------------------
+%	ABSTRACT
+%----------------------------------------------------------------------------------------
+
+%\begin{abstract}
+%
+%\noindent Hey, I'm just an abstract. % Dummy abstract text
+%
+%\end{abstract}
+
+%----------------------------------------------------------------------------------------
+%	ARTICLE CONTENTS
+%----------------------------------------------------------------------------------------
+
+%----------------------------------------------------------------------------------------
+%	INTRODUCTION
+%----------------------------------------------------------------------------------------
+
+\begin{multicols}{2} % Two-column layout throughout the main article text
+
+\section{Introduction}
+\lettrine[nindent=0em,lines=2]{G}esture recognition.
+
+%----------------------------------------------------------------------------------------
+%	PRE-PROCESSING
+%----------------------------------------------------------------------------------------
+
+\section{Pre-processing}
+
+%----------------------------------------------------------------------------------------
+%	METHODS
+%----------------------------------------------------------------------------------------
+
+\section{Methods}
+
+%----------------------------------------------------------------------------------------
+%	RESULTS
+%----------------------------------------------------------------------------------------
+
+\section{Results}
+
+
+%----------------------------------------------------------------------------------------
+%	DISCUSSION
+%----------------------------------------------------------------------------------------
+
+\section{Discussion}
+
+
+%----------------------------------------------------------------------------------------
+%	REFERENCE LIST
+%----------------------------------------------------------------------------------------
+
+%\begin{thebibliography}{2} % Bibliography - this is intentionally simple in this template
+%
+%\bibitem{Kraft03}
+%Edgar Kraft, \emph{A quaternion-based unscented kalman filter for orientation tracking}. Information Fusion, 2003. Proceedings of the Sixth International Conference on Information Fusion, Vol. 1 (2003), pp. 47-54.
+%
+%\bibitem{Cheon07}
+%Y.-J. Cheon and J.-H. Kim, \emph{Unscented filtering in a unit quaternion space for spacecraft attitude estimation}. IEEE International Symposium on Industrial Electronics (ISIE 2007) (2007), pp. 66-71.
+%
+%\bibitem{Julier97}
+%S.J. Julier, and J.K. Uhlmann, \emph{A new extension of the Kalman filter to nonlinear systems}. Proc. of AeroSense: The 11th Int. Symp. on Aerospace/Defense Sensing, Simulations and Controls, (1997).
+%
+%\end{thebibliography}
+
+%----------------------------------------------------------------------------------------
+
+\end{multicols}
+
+\end{document}
