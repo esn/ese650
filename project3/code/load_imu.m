@@ -1,5 +1,6 @@
-function [ imu ] = LoadImuData( gesture, data_num, path )
-% LOAD_DATA load imu data of a gesture
+function [ imu, t ] = load_imu( gesture, data_num )
+% LOAD_IMU load imu data of a gesture into t and imu = [acc; omg]
+% [ imu, t ] = load_imu( gesture, data_num )
 %   gesture  - circle  figure8  fish  hammer  pend  wave
 %   data_num - number of data
 
@@ -23,6 +24,7 @@ if ~any(strcmp(gesture, gesture_list)),
     fprintf('Wrong gesture %s, please use the following:\n', gesture);
     disp(gesture_list)
     imu = [];
+    t = [];
     return
 end
 gesture_path = fullfile(train_path, gesture);
@@ -46,12 +48,15 @@ if ~any(strcmp(data_name, data_list))
     fprintf('Error loading %s, please use the following:\n', data_name);
     disp(data_list)
     imu = [];
+    t = [];
     return
 end
 data_path = fullfile(gesture_path, data_name);
 
 % Load data
-imu = load(data_path);
+data = load(data_path);
+t    = data(:,1);
+imu  = data(:,2:7);
 fprintf('Load %s %s\n', gesture, data_name);
 
 end
