@@ -1,11 +1,7 @@
-function [train, valid, gesture_list] = split_data( num_train )
+function [train, valid, gesture_list] = split_data( num_train, num_valid )
 gesture_list = {'circle', 'figure8', 'fish', 'hammer', 'pend', 'wave'};
 if nargin < 1, num_train = 3; end
-num_valid = 5 - num_train;
-
-% Filter parameters
-n = 3;
-Wc = 4;
+if nargin < 2, num_valid = 2; end
 
 train = struct;
 valid = struct;

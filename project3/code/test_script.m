@@ -1,12 +1,18 @@
 gesture = 'circle';
-[imu, t] = LoadImuData(gesture, 1);
-line_color = lines(3);
-h_fig = figure();
-PlotImuData(h_fig, imu, t, 'acc', line_color(1,:));
-
-sample_rate = 100;
-cutoff_freq = 4;
-Wn = cutoff_freq/(sample_rate/2);
-n = 4;
-[b, a] = butter(n, Wn);
-imu_filtered = filtfilt(b, a, imu);
+imu1 = cat_data(train, {gesture});
+imu2 = cat_data(valid, {gesture});
+imu = [imu1; imu2];
+acc = filter_imu(imu(:,1:3), 4, [0.5, 4]);
+%%
+% Get all acceleration
+acc_all = [];
+for i = 1:length(gesture_list)
+    % Concatenate all training data for current gesture
+    imu = cat_data(train, gesture_list(i));
+    acc = imu(:,1:3);
+    % filter with 4th oder butterworth and cutoff frequency of 4hz
+    acc = filter_imu(acc);
+    % down sample by 5
+    acc = down_sample(acc);
+    acc_all = [acc_all; acc];
+end
