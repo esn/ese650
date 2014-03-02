@@ -24,13 +24,15 @@ for i = 1:num_plot
         subplot(3, num_plot, num_plot*(j-1)+i)
         hold on
         if plot_time
-            plot(t - t(1), data(:,j), 'Color', color, 'LineWidth', 1)
+            plot(t - t(1), data(:,j), 'Color', color, 'LineWidth', 2)
         else
-            plot(data(:,j), 'Color', color, 'LineWidth', 1)
+            plot(data(:,j), 'Color', color, 'LineWidth', 2)
         end
         hold off
         title(labels{j})
         axis tight
+        grid on
+        set(gca, 'Box', 'On')
     end
 end
 

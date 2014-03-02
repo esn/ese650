@@ -1,4 +1,6 @@
 function [train, valid, gesture_list] = split_data( num_train, num_valid )
+%SPLIT_DATA split train data into train and valid
+% [train, valid, gesture_list] = split_data( num_train, num_valid )
 gesture_list = {'circle', 'figure8', 'fish', 'hammer', 'pend', 'wave'};
 if nargin < 1, num_train = 3; end
 if nargin < 2, num_valid = 2; end

@@ -1,7 +1,7 @@
 function [ A, B ] = init_model( n_state, n_cluster, T )
-%init_model Initialize model parameters
+%INIT_MODEL Initialize HMM parameters
+% [ A, B ] = init_model( n_state, n_cluster, T )
 
-T = T/3;
 d = T/n_state;
 a_ii = 1 - 1/d;
 A = eye(n_state) * a_ii;
@@ -14,5 +14,5 @@ for m = 1:n_state
 end
 A(n_state,1) = 1 - a_ii;
 B = ones(n_state, n_cluster)/n_cluster;
-end
 
+end

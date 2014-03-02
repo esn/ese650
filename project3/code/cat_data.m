@@ -1,6 +1,7 @@
-function [ imu_all ] = cat_data( data, gesture, num_data )
+function [ imu_all ] = cat_data( data, gesture, data_ind )
 %CAT_ALL_DATA concatenate all imu data given gesture_list
 % [ imu_all ] = cat_data( data, gesture, data_ind )
+
 gesture_list = {'circle', 'figure8', 'fish', 'hammer', 'pend', 'wave'}; 
 
 if nargin < 2, gesture = gesture_list; end
