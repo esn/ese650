@@ -6,7 +6,7 @@ clc
 %% Parameters
 n_train = 3;
 n_valid = 2;
-n_state = 4;
+n_state = 2;
 n_cluster = 7;
 use_gyro = false;
 

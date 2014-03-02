@@ -110,7 +110,7 @@
 
 \section{Pre-processing}
 
-For this project we get 9-DOF imu readings (acceleration, gyroscope and magnetometer) from a mobile phone at a sample rate of 100Hz. Although this data has been processed by the phone and has the common units, we still need to work on the data in order to use them for training and testing. The following steps are performed according to \cite{Vesa00}:
+For this project we get 9-DOF imu readings (acceleration, gyroscope and magnetometer) from a mobile phone at a sample rate of 100Hz. Although this data has been processed by the phone and has the common units, we still need to work on the data in order to use them for training and testing. The following steps are performed according to \cite{Vesa00} with some modification:
 
 \begin{enumerate}
 	\item Filter each acceleration component with fourth-order lowpass Butterworth filter with a cutoff frequency at 4Hz, see Fig.\ref{fig:imu_filt}
@@ -127,11 +127,10 @@ For this project we get 9-DOF imu readings (acceleration, gyroscope and magnetom
 \label{fig:imu_filt}
 \end{figure}
 
-
 \begin{figure}[H]
 \centering
 \includegraphics[width=\columnwidth]{fig/cluster.pdf} 
-\caption{All training imu data after normalization and clustered}
+\caption{All training imu data after normalization and clustered to 7 clusters}
 \label{fig:imu_cluster}
 \end{figure}
 

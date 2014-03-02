@@ -13,6 +13,7 @@ for m = 1:n_state
   end
 end
 A(n_state,1) = 1 - a_ii;
+% A(end) = 1;
 B = ones(n_state, n_cluster)/n_cluster;
 
 end
