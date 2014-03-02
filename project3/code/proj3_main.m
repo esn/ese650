@@ -4,8 +4,8 @@ close all
 clc
 
 %% Parameters
-n_train = 3;
-n_valid = 2;
+n_train = 2;
+n_valid = 3;
 n_state = 2;
 n_cluster = 6;
 use_gyro = false;
@@ -59,8 +59,11 @@ end
 axis equal; grid on; hold off; drawnow
 
 %% Train hmm
+A = cell(1,length(gesture_list));
+B = cell(1,length(gesture_list));
 for i = 1:length(gesture_list)
   T = 0;
+  seqs = cell(1,n_train);
   for j = 1:n_train
     imu = train(i).data(j).imu_proc;
     imu = scale_imu(imu, mean_imu, std_imu);

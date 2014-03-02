@@ -113,24 +113,27 @@
 For this project we get 9-DOF imu readings (acceleration, gyroscope and magnetometer) from a mobile phone at a sample rate of 100Hz. Although this data has been processed by the phone and has the common units, we still need to work on the data in order to use them for training and testing. The following steps are performed according to \cite{Vesa00} with some modification:
 
 \begin{enumerate}
-	\item Filter each acceleration component with fourth-order lowpass Butterworth filter with a cutoff frequency at 4Hz, see Fig.\ref{fig:imu_filt}
+	\item Filter each acceleration component with fourth-order low-pass Butterworth filter with a cutoff frequency at 4Hz, see Fig.\ref{fig:imu_filt}
 	\item Subsample the filtered signal at 1/5 times the original sample rate
 	\item Split all the data in each gesture to a training set of 3 and valid set of 2
 	\item For all the training set signal, normalize to have zero mean and unit variance and store the mean and standard deviation
-	\item Cluster all training data into number number of clusters and store the centroids
+	\item Cluster all training data into some number of clusters and store the centroids as our codebook, see Fig.\ref{fig:imu_cluster}
+	\item Convert acceleration to sequences of observation symbols using the codebook indices
 \end{enumerate}
+
+Any new data we receive will undergo the process mentioned above and the output would be a series of observation symbols that has the same length as the data.
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=\columnwidth]{fig/filter.pdf} 
-\caption{Circle IMU data after lowpass filtering}
+\caption{Circle IMU data after low-pass filtering}
 \label{fig:imu_filt}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=\columnwidth]{fig/cluster.pdf} 
-\caption{All training imu data after normalization and clustered to 7 clusters}
+\caption{All training acceleration data after normalization and clustered to 7 clusters}
 \label{fig:imu_cluster}
 \end{figure}
 
@@ -139,7 +142,15 @@ For this project we get 9-DOF imu readings (acceleration, gyroscope and magnetom
 %----------------------------------------------------------------------------------------
 
 \section{Methods}
-
+Hidden Markov model is a type of Markov process that assumes the system being modeled has unobserved hidden states. The observations are generated from the hidden states according to certain probabilities\cite{Elmez07}. A Hidden Markov model is a triple of $\lambda=(A, B, \Pi)$. 
+\begin{enumerate}
+	\item A set of states $Q = \{q_1, q_2, \ldots, q_N\}$ where $N$ is the number of states.
+	\item An initial probability for each state $\Pi_i =\{\pi_1, \pi_2, \ldots, \pi_N\}$.
+	\item An $N$-by-$N$ transition matrix $A=\{a_{ij}\}$ where $a_{ij}$ is the probability of a transition from state $q_i$ to state $q_j$, where $1 \leq i,j \leq N$. Each row of matrix $A$ must sum to $1$ for this to a probability distribution.
+	\item A set of possible emission (or observation) $O=\{o_1, o_2, \ldots, o_T\}$ where $T$ is the length of the path.
+	\item A set of discrete symbols $V = \{v_1, v_2, \ldots, v_M \}$ where $M$ is the number of discrete symbols.
+	\item An $N$-by-$M$ observation matrix $B=\{b_{im}\}$ where $b_{im}$ gives the probability of emitting symbol $v_m$ from state $q_i$. Each of of matrix $B$ also sum to $1$ to make it a probability distribution
+\end{enumerate}
 %----------------------------------------------------------------------------------------
 %	RESULTS
 %----------------------------------------------------------------------------------------
@@ -163,9 +174,9 @@ For this project we get 9-DOF imu readings (acceleration, gyroscope and magnetom
 \bibitem{Vesa00}
 Vesa-Matti Mantyla, \emph{Hand gesture recognition of a mobile device user}. Multimedia and Expo, 2000. ICME 2000. 
 
-%\bibitem{Cheon07}
-%Y.-J. Cheon and J.-H. Kim, \emph{Unscented filtering in a unit quaternion space for spacecraft attitude estimation}. IEEE International Symposium on Industrial Electronics (ISIE 2007) (2007), pp. 66-71.
-%
+\bibitem{Elmez07}
+Elmezain M. and Al-Hamadi A., \emph{A Hidden Markov Model-based continuous gesture recognition system for hand motion trajectory}. 19th International Conference on Pattern Recognition, ICPR 2008.
+
 %\bibitem{Julier97}
 %S.J. Julier, and J.K. Uhlmann, \emph{A new extension of the Kalman filter to nonlinear systems}. Proc. of AeroSense: The 11th Int. Symp. on Aerospace/Defense Sensing, Simulations and Controls, (1997).
 %

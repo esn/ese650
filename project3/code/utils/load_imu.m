@@ -6,7 +6,7 @@ function [ imu, t ] = load_imu( gesture, data_num )
 
 % Get path for the training data
 current_path = fileparts(mfilename('fullpath'));
-train_path = fullfile(current_path, '../train');
+train_path = fullfile(current_path, '../../train');
 
 % Get all gesture
 gesture_listing = dir(train_path);
