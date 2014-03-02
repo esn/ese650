@@ -7,7 +7,7 @@ clc
 n_train = 3;
 n_valid = 2;
 n_state = 2;
-n_cluster = 7;
+n_cluster = 6;
 use_gyro = false;
 
 %% Split entire dataset
