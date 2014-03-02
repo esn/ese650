@@ -47,8 +47,9 @@ drawnow
 
 %% Convert observation to observation symbols
 n_state = 6;
-T = 0;
+
 for i = 1:length(gesture_list)
+  T = 0;
   for j = 1:3
     acc = train(i).data(j).imu(:,1:3);
     T = T + length(acc);
@@ -85,5 +86,4 @@ for i = 1:length(gesture_list)
     end
     fprintf('\n')
   end
-
 end
