@@ -1,4 +1,4 @@
-function [ imu_all ] = cat_data( data, gesture, data_ind )
+function [ imu_all ] = cat_data( data, gesture, num_data )
 %CAT_ALL_DATA concatenate all imu data given gesture_list
 % [ imu_all ] = cat_data( data, gesture, data_ind )
 gesture_list = {'circle', 'figure8', 'fish', 'hammer', 'pend', 'wave'}; 
