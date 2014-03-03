@@ -82,7 +82,8 @@ for i = 1:length(gesture_list)
     seqs{j} = ind;
   end
   [A_guess, B_guess] = init_model(n_state, n_cluster, T/n_train);
-  [A{i}, B{i}] = hmmtrain(seqs, A_guess, B_guess, 'Verbose', true);
+%   [A{i}, B{i}] = hmmtrain(seqs, A_guess, B_guess, 'Verbose', true);
+  [A{i}, B{i}] = hmm_train(seqs, A_guess, B_guess, true);
   fprintf('Finish training model %s\n', gesture_list{i});
 end
 save('model.mat', 'A', 'B', 'C', 'mean_imu', 'std_imu')
