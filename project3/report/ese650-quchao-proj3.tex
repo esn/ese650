@@ -148,9 +148,16 @@ Hidden Markov model is a type of Markov process that assumes the system being mo
 	\item An initial probability for each state $\Pi_i =\{\pi_1, \pi_2, \ldots, \pi_N\}$.
 	\item An $N$-by-$N$ transition matrix $A=\{a_{ij}\}$ where $a_{ij}$ is the probability of a transition from state $q_i$ to state $q_j$, where $1 \leq i,j \leq N$. Each row of matrix $A$ must sum to $1$ for this to a probability distribution.
 	\item A set of possible emission (or observation) $O=\{o_1, o_2, \ldots, o_T\}$ where $T$ is the length of the path.
-	\item A set of discrete symbols $V = \{v_1, v_2, \ldots, v_M \}$ where $M$ is the number of discrete symbols.
-	\item An $N$-by-$M$ observation matrix $B=\{b_{im}\}$ where $b_{im}$ gives the probability of emitting symbol $v_m$ from state $q_i$. Each of of matrix $B$ also sum to $1$ to make it a probability distribution
+	\item A set of discrete codebook symbols $V = \{v_1, v_2, \ldots, v_M\}$ where $M$ is the number of discrete symbols.
+	\item An $N$-by-$M$ observation matrix $B=\{b_{im}\}$ where $b_{im}$ gives the probability of emitting symbol $v_m$ from state $q_i$. Each of of matrix $B$ also sum to $1$ to make it a probability distribution.
 \end{enumerate}
+
+The first problem we are going to solve is problem 3 in \cite{Rabiner89}, which is:
+
+"Given an observation sequence $O$ and the dimensions $N$ and $M$, find the model parameters $\lambda=(A,B,\Pi)$ that maximizes $P(O\mid \lambda)$."
+
+This problem can be solved using the Baum-Welch algorithm, which makes use of the forward-backward algorithm. Details of this algorithm will not be discussed here.
+
 %----------------------------------------------------------------------------------------
 %	RESULTS
 %----------------------------------------------------------------------------------------
@@ -177,9 +184,9 @@ Vesa-Matti Mantyla, \emph{Hand gesture recognition of a mobile device user}. Mul
 \bibitem{Elmez07}
 Elmezain M. and Al-Hamadi A., \emph{A Hidden Markov Model-based continuous gesture recognition system for hand motion trajectory}. 19th International Conference on Pattern Recognition, ICPR 2008.
 
-%\bibitem{Julier97}
-%S.J. Julier, and J.K. Uhlmann, \emph{A new extension of the Kalman filter to nonlinear systems}. Proc. of AeroSense: The 11th Int. Symp. on Aerospace/Defense Sensing, Simulations and Controls, (1997).
-%
+\bibitem{Rabiner89}
+Lawrence R. Rabiner, \emph{A Tutorial on Hidden Markov Models and Selected Applications in Speech Recognition}. Proceedings of the IEEE, 1989.
+
 \end{thebibliography}
 
 %----------------------------------------------------------------------------------------

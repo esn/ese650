@@ -1,15 +1,16 @@
-function [ imu, t ] = load_imu( gesture, data_num )
+function [ imu, t ] = load_imu( rel_path, gesture, data_num )
 % LOAD_IMU load imu data of a gesture into t and imu = [acc; omg]
 % [ imu, t ] = load_imu( gesture, data_num )
+%   rel_path - relative path to data
 %   gesture  - circle  figure8  fish  hammer  pend  wave
 %   data_num - number of data
 
 % Get path for the training data
-current_path = fileparts(mfilename('fullpath'));
-train_path = fullfile(current_path, '../../train');
+func_path = fileparts(mfilename('fullpath'));
+data_path = fullfile(func_path, rel_path);
 
 % Get all gesture
-gesture_listing = dir(train_path);
+gesture_listing = dir(data_path);
 gesture_list = {};
 for i = 1:length(gesture_listing)
     if ~strcmp(gesture_listing(i).name, '.') && ...
@@ -27,7 +28,7 @@ if ~any(strcmp(gesture, gesture_list)),
     t = [];
     return
 end
-gesture_path = fullfile(train_path, gesture);
+gesture_path = fullfile(data_path, gesture);
 
 % Get all data name
 data_listing = dir(gesture_path);
@@ -37,26 +38,23 @@ for i = 1:length(data_listing)
         data_list{end+1} = data_listing(i).name;
     end
 end
-if isnumeric(data_num)
-    data_name = data_list{data_num};
-else
-    data_name = sprintf('imu0%s', data_num);
-end
+
+imu_name = data_list{data_num};
 
 % Validate data name input
-if ~any(strcmp(data_name, data_list))
-    fprintf('Error loading %s, please use the following:\n', data_name);
+if ~any(strcmp(imu_name, data_list))
+    fprintf('Error loading %s, please use the following:\n', imu_name);
     disp(data_list)
     imu = [];
     t = [];
     return
 end
-data_path = fullfile(gesture_path, data_name);
+imu_path = fullfile(gesture_path, imu_name);
 
 % Load data
-data = load(data_path);
+data = load(imu_path);
 t    = data(:,1);
 imu  = data(:,2:7);
-fprintf('Load %s %s\n', gesture, data_name);
+fprintf('Load %s %s\n', gesture, imu_name);
 
 end

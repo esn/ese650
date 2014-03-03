@@ -7,19 +7,19 @@ if nargin < 2, num_valid = 2; end
 
 train = struct;
 valid = struct;
-
+path  = '../../train';
 % Load imu data into a struct
 for i = 1:length(gesture_list)
     % Gather train data
     for j = 1:num_train
-        [imu, t] = load_imu(gesture_list{i}, j);
+        [imu, t] = load_imu(path, gesture_list{i}, j);
         train(i).data(j).gesture = gesture_list{i};
         train(i).data(j).imu     = imu;
         train(i).data(j).t       = t;
     end
     % Gather valid data
     for j = 1:num_valid
-        [imu, t] = load_imu(gesture_list{i}, j+num_train);
+        [imu, t] = load_imu(path, gesture_list{i}, j+num_train);
         valid(i).data(j).gesture = gesture_list{i};
         valid(i).data(j).imu     = imu;
         valid(i).data(j).t       = t;

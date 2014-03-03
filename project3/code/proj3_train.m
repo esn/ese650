@@ -4,14 +4,19 @@ close all
 clc
 
 %% Parameters
-n_train = 2;
-n_valid = 3;
+n_train = 3;
+n_valid = 2;
 n_state = 2;
 n_cluster = 6;
 use_gyro = false;
 
 %% Split entire dataset
-[train, valid, gesture_list] = split_data(n_train, n_valid);
+gesture_list = {'circle', 'figure8', 'fish', 'hammer', 'pend', 'wave'};
+train_path   = '../../train';
+% [train, valid, gesture_list] = split_data(n_train, n_valid);
+perm = randperm(5);
+train = get_data(train_path, 'all', perm(1:3));
+valid = get_data(train_path, 'all', perm(4:5));
 train = process_imu(train);
 valid = process_imu(valid);
 
@@ -26,10 +31,10 @@ imu_all = scale_imu(imu_all, mean_imu, std_imu);
 %% Kmeans
 x_idx = 1:length(imu_all);
 if use_gyro
-  [idx, centroids] = kmeans(imu_all, n_cluster, ...
+  [idx, C] = kmeans(imu_all, n_cluster, ...
                             'emptyaction', 'singleton', 'Replicates', 5);
 else
-  [idx, centroids] = kmeans(imu_all(:,1:3), n_cluster, ...
+  [idx, C] = kmeans(imu_all(:,1:3), n_cluster, ...
                             'emptyaction', 'singleton', 'Replicates', 5);
 end
 cluster_color = lines(n_cluster);
@@ -73,13 +78,14 @@ for i = 1:length(gesture_list)
       X = imu(:,1:3);
     end
     T = T + length(X);
-    ind = clustering(X, centroids);
+    ind = clustering(X, C);
     seqs{j} = ind;
   end
   [A_guess, B_guess] = init_model(n_state, n_cluster, T/n_train);
   [A{i}, B{i}] = hmmtrain(seqs, A_guess, B_guess, 'Verbose', true);
   fprintf('Finish training model %s\n', gesture_list{i});
 end
+save('model.mat', 'A', 'B', 'C', 'mean_imu', 'std_imu')
 
 %% Test hmm
 for i = 1:length(gesture_list)
@@ -96,10 +102,10 @@ for i = 1:length(gesture_list)
     else
       X = imu(:,1:3);
     end
-    ind = clustering(X, centroids);
+    ind = clustering(X, C);
     logpseq = zeros(1, length(gesture_list));
     for k = 1:length(gesture_list)
-      [~, logpseq(k)] = hmmdecode(ind, A{k}, B{k});
+      [~, logpseq(k)] = hmm_decode(ind, A{k}, B{k});
       fprintf('%8.2f  ', logpseq(k));
     end
     [~, max_ind] = max(logpseq);
