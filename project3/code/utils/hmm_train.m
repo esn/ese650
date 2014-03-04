@@ -1,5 +1,5 @@
 function [ Ag, Bg, logPs ] = hmm_train(Os, Ag, Bg, verbose)
-% HMM_TRAIN a naive training process for hmm
+% HMM_TRAIN a simpler version of matlab hmmtrain
 if nargin < 4, verbose = false; end
 tol = 1e-6;
 A_tol = tol;
@@ -48,6 +48,7 @@ for iter = 1:max_iter
         end
       end
     end
+    
     % Update B
     for j = 1:N
       for k = 1:M
@@ -92,8 +93,10 @@ for iter = 1:max_iter
     end
   end
 end
+
 logPs(logPs == 0) = [];
 if ~converged
   fprintf('Not converged after %d iterations\n', max_iter);
 end
+
 end

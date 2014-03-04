@@ -1,12 +1,11 @@
 function [p_Q, p_O, a, b, s] = hmm_decode(O, A, B)
+% HMM_DECODE is a simpler version of the matlab hmmdecode
 
 % Check input
 N = size(A,1);
+M = size(B,2);
 assert(N == size(A,2), 'Transition matrix should be square');
 assert(N == size(B,1), 'Emission matrix size mismatch');
-M = size(B,2);
-assert(~(any(O(:)<1) || any(O(:)~=round(O(:))) || any(O(:)>M)), ...
-  'Bad observation sequence');
 
 % Add extra symbols to start
 O = [M+1, O];

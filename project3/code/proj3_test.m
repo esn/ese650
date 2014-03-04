@@ -5,7 +5,7 @@ clc;
 
 %% Load data
 test_path = '../../test';
-gesture_list = {'unknown'};
+gesture_list = {'final'};
 train_gesture_list = {'circle', 'figure8', 'fish', 'hammer', 'pend', 'wave'};
 test = get_data(test_path, gesture_list, 0);
 test = process_imu(test);
