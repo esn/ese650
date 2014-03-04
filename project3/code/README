@@ -1,0 +1,3 @@
+1. the train and test data should be put one directory above the code directory
+2. run proj3_train.m to train. Or you can omit this step because the model is saved in a matfile
+3. run proj3_test.m to test
