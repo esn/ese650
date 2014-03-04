@@ -1,3 +1,8 @@
 1. the train and test data should be put one directory above the code directory
 2. run proj3_train.m to train. Or you can omit this step because the model is saved in a matfile
 3. run proj3_test.m to test
+Notes:
+I first used matlab's hmmtrain and hmmdecode to train and test the model.
+After it worked, I tried to implement the forward and backward and Baum-welch myself.
+which is in hmm_train and hmm_decode. I used some of matlab's code in my own version,
+because there are just some parts that I couldn't figure out myself.

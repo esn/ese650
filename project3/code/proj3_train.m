@@ -9,6 +9,7 @@ n_valid = 2;
 n_state = 4;
 n_cluster = 7;
 use_gyro = false;
+save_model = false;
 
 %% Split entire dataset
 gesture_list = {'circle', 'figure8', 'fish', 'hammer', 'pend', 'wave'};
@@ -85,8 +86,9 @@ for i = 1:length(gesture_list)
   [A{i}, B{i}] = hmm_train(seqs, A_guess, B_guess, true);
   fprintf('Finish training model %s\n', gesture_list{i});
 end
-save('model.mat', 'A', 'B', 'C', 'mean_imu', 'std_imu')
-
+if save_model
+  save('model.mat', 'A', 'B', 'C', 'mean_imu', 'std_imu')
+end
 %% Test hmm
 for i = 1:length(gesture_list)
   fprintf('Testing gesture: %s\n', gesture_list{i})
