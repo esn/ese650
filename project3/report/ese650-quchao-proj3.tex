@@ -102,7 +102,7 @@
 \begin{multicols}{2} % Two-column layout throughout the main article text
 
 \section{Introduction}
-\lettrine[nindent=0em,lines=2]{G}esture recognition in an interesting topic in machine learning.
+\lettrine[nindent=0em,lines=2]{G}esture recognition based on inertial sensor is the main topic in this project. Out task is to classify gestures based on imu data collected from a mobile phone.
 
 %----------------------------------------------------------------------------------------
 %	PRE-PROCESSING
@@ -113,36 +113,36 @@
 For this project we get 9-DOF imu readings (acceleration, gyroscope and magnetometer) from a mobile phone at a sample rate of 100Hz. Although this data has been processed by the phone and has the common units, we still need to work on the data in order to use them for training and testing. The following steps are performed according to \cite{Vesa00} with some modification:
 
 \begin{enumerate}
-	\item Filter each acceleration component with fourth-order low-pass Butterworth filter with a cutoff frequency at 4Hz, see Fig.\ref{fig:imu_filt}
+	\item Filter each acceleration component with fourth-order low-pass Butterworth filter with a cutoff frequency at 4Hz, see Fig.
 	\item Subsample the filtered signal at 1/5 times the original sample rate
 	\item Split all the data in each gesture to a training set of 3 and valid set of 2
 	\item For all the training set signal, normalize to have zero mean and unit variance and store the mean and standard deviation
-	\item Cluster all training data into some number of clusters and store the centroids as our codebook, see Fig.\ref{fig:imu_cluster}
+	\item Cluster all training data into some number of clusters and store the centroids as our codebook, see Fig.\ref{fig:imu_cluster}\\
 	\item Convert acceleration to sequences of observation symbols using the codebook indices
-\end{enumerate}
-
-Any new data we receive will undergo the process mentioned above and the output would be a series of observation symbols that has the same length as the data.
-
-\begin{figure}[H]
+	\ref{fig:imu_filt}
+	\begin{figure}[H]
 \centering
-\includegraphics[width=\columnwidth]{fig/filter.pdf} 
+\includegraphics[width=\columnwidth]{fig/filter.pdf}
 \caption{Circle IMU data after low-pass filtering}
 \label{fig:imu_filt}
 \end{figure}
-
 \begin{figure}[H]
 \centering
-\includegraphics[width=\columnwidth]{fig/cluster.pdf} 
+\includegraphics[width=\columnwidth]{fig/cluster.pdf}
 \caption{All training acceleration data after normalization and clustered to 7 clusters}
 \label{fig:imu_cluster}
 \end{figure}
+
+\end{enumerate}
+	Any new data we receive will undergo the process mentioned above and the output would be a series of observation symbols that has the same length as the data.
 
 %----------------------------------------------------------------------------------------
 %	METHODS
 %----------------------------------------------------------------------------------------
 
 \section{Methods}
-Hidden Markov model is a type of Markov process that assumes the system being modeled has unobserved hidden states. The observations are generated from the hidden states according to certain probabilities\cite{Elmez07}. A Hidden Markov model is a triple of $\lambda=(A, B, \Pi)$. 
+\subsection{Hidden Markov Model}
+Hidden Markov model is a type of Markov process that assumes the system being modeled has unobserved hidden states. The observations are generated from the hidden states according to certain probabilities\cite{Elmez07}. A Hidden Markov model is a triple of $\lambda=(A, B, \Pi)$.
 \begin{enumerate}
 	\item A set of states $Q = \{q_1, q_2, \ldots, q_N\}$ where $N$ is the number of states.
 	\item An initial probability for each state $\Pi_i =\{\pi_1, \pi_2, \ldots, \pi_N\}$.
@@ -156,21 +156,134 @@ The first problem we are going to solve is problem 3 in \cite{Rabiner89}, which 
 
 "Given an observation sequence $O$ and the dimensions $N$ and $M$, find the model parameters $\lambda=(A,B,\Pi)$ that maximizes $P(O\mid \lambda)$."
 
-This problem can be solved using the Baum-Welch algorithm, which makes use of the forward-backward algorithm. Details of this algorithm will not be discussed here.
+This problem can be solved using the Baum-Welch algorithm, which makes use of the forward-backward algorithm discussed in the next section.
 
+\subsection{Forward-Backward Algorithm}
+A brute force approach to calculate $P(O\mid \lambda)$ will take to much time, thus we introduce the forward-backward algorithm to efficiently calculate this probability.\\
+The forward variables are defined as
+\begin{equation}
+\alpha_t(i) = P(O_1, O_2, \ldots, O_t, q_t = S_i \mid \lambda)
+\end{equation}
+which is the probability of the partial observation sequence, $O_1, O_2, \ldots, O_t$ and state $S_i$ at time $t$, given model $\lambda$. $\alpha_t(i)$ can be obtained inductively as follows:
+\begin{enumerate}
+\item Initialization
+\begin{equation}
+\alpha_1(i) = \pi_i b_i(O_1) \quad 1 \leq i \leq N
+\end{equation}
+\item Induction
+\begin{multline}
+\alpha_t(i)=\left[\sum_{j=1}^N\alpha_{t-1}(j)a_{ji} \right]b_i(O_t) \\ 2 \leq t \leq T, 1 \leq j \leq N
+\end{multline}
+\end{enumerate}
+Backward variables are defined as
+\begin{equation}
+\beta_t = P(O_{t+1}, O_{t+2}, \ldots, O_{T}\mid q_t = S_i, \lambda)
+\end{equation}
+which is the probability of the partial observation sequence from $t+1$ to the end, given state $S_i$ at time $t$ and the model $\lambda$. $\beta_t(i)$ can also be calculated inductively as follows
+\begin{enumerate}
+\item Initialization
+\begin{equation}
+\beta_T(i) = 1, 1 \leq i \leq N
+\end{equation}
+\item Induction
+\begin{multline}
+\beta_t(i) = \sum_{j=1}^N a_{ij}b_j(O_{t+1})\beta_{t+1}(j) \\1 \leq t \leq T-1, 1 \leq j \leq N
+\end{multline}
+\end{enumerate}
+Unfortunately, if we have a very long observation sequence, then the forward and backward variables go to zero exponentially. Thus, scaling is essential in the implementation of Forward-Backward algorithm as well as Baum-Welch. After introducing a scaling factor $c_t$, the above algorithms were changed to:\\
+\textbf{Forward Algorithm with scaling}
+\begin{enumerate}
+\item Initialization
+\begin{equation}
+\begin{aligned}
+&\ddot{\alpha}_1(i) = \alpha_1(i) \\
+&c_1 = \frac{1}{\sum_{i=1}^N\ddot{\alpha_1}(i)}\\
+&\hat{\alpha}_1(i) = c_1\ddot{\alpha}_1(i)
+\end{aligned}
+\end{equation}
+\item Induction
+\begin{equation}
+\begin{aligned}
+&\ddot{\alpha}_t(i) = \sum_{j=1}^N\hat{\alpha}_{t-1}(j)a_{ji}b_i(O_t)\\
+&c_t = \frac{1}{\sum_{i=1}^N \ddot{\alpha}_t(i)}\\
+&\hat{\alpha}_t(i) = c_t \ddot{\alpha}_t(i)
+\end{aligned}
+\end{equation}
+\end{enumerate}
+\textbf{Backward Algorithm with scaling}
+\begin{enumerate}
+\item Initialization
+\begin{equation}
+\begin{aligned}
+&\ddot{\beta}_T(i) = 1\\
+&\hat{\beta}_T(i) = c_T \ddot{\beta}_T(i)
+\end{aligned}
+\end{equation}
+\item Induction
+\begin{equation}
+\begin{aligned}
+& \ddot{\beta}_t(i) = \sum_{j=1}^N a_{ij}b_j(O_{t+1})\hat{\beta}_{t+1}(j)\\
+&\hat{\beta}_t(i) = c_t\ddot{\beta}_t(i)
+\end{aligned}
+\end{equation}
+\end{enumerate}
+
+\subsection{Baum-Welch Algorithm}
+Baum-Welch utilizes forward and backward variables to update model parameters. The algorithm calculates two other variables
+\begin{equation}
+\gamma_t(i) = P(q_t = S_i\mid O, \lambda) = \frac{\alpha_t(i)\beta_t(i)}{P(O\mid\lambda)}
+\end{equation}
+\begin{multline}
+\xi_t(i,j) = P(q_t = S_i, q_{t+1} = S_j\mid O, \lambda) \\
+= \frac{\alpha_t(i)a_{ij}b_j(O_{t+1})\beta_{t+1}(j)}{P(O\mid\lambda}
+\end{multline}
+and the re-estimation process with scaling is
+\begin{equation}
+\bar{a}_{ij} = \frac{\sum_{t=1}^{T-1}\hat{\alpha}_t(i)a_{ij}b_j(O_{t+1})
+\hat{\beta}_{t+1}(j)}{\sum_{t=1}^{T-1}\hat{\alpha}_t(j)\hat{\beta}_t(i)/c_t}
+\end{equation}
+\begin{equation}
+\hat{b}_j(k) = \frac{\sum_{t=1, O_t=v_k}^T \hat{\alpha}_t(j)\hat{\beta}_t(j)/c_t}{\sum_{t=1}^T\hat{\alpha}_t(j)\hat{\beta}_t(j)/c_t}
+\end{equation}
+
+\subsection{Model Selection and Initialization}
+For gesture recognition, we pick the Left-Right Banded Model as described in \cite{Elmez07}. One modification we made is that we allow the state to transit back from the last to the first. This is because most of the gestures data we get are repeated gestures. Thus by using a cyclic LRB model we can model the hidden process more closely. \\
+The transition matrix with 4 states are determined as follow
+\begin{equation}
+\begin{pmatrix}
+a_{ii} & 1-a_{ii} & 0 & 0 \\
+0 & a_{ii} & 1-a_{ii} & 0 \\
+0 & 0 & a_{ii} & 1-a_{ii} \\
+1-a_{ii} & 0 & 0 & a_{ii}
+\end{pmatrix}
+\end{equation}
+where
+\begin{equation}
+a_ii = 1 - \frac{N}{T}
+\end{equation}
+$T$ is the length of the observation sequence and $N$ represents the number of hidden states.\\
+For the emission matrix, we use the following
+\begin{equation}
+B = \{b_{im}\}, \quad b_{im} = \frac{1}{M}
+\end{equation}
+In our case we use $M=7$. And since we are using a LRB model, the initial vector $\Pi$ is just
+\begin{equation}
+\Pi = \begin{pmatrix}
+1 & 0 & 0 & 0
+\end{pmatrix}^\top
+\end{equation}
 %----------------------------------------------------------------------------------------
 %	RESULTS
 %----------------------------------------------------------------------------------------
 
 \section{Results}
-
+We trained each gesture on 3 data and test on 2. The results are shown in table \ref{table:result}.
 
 %----------------------------------------------------------------------------------------
 %	DISCUSSION
 %----------------------------------------------------------------------------------------
 
 \section{Discussion}
-
 
 %----------------------------------------------------------------------------------------
 %	REFERENCE LIST
@@ -179,7 +292,7 @@ This problem can be solved using the Baum-Welch algorithm, which makes use of th
 \begin{thebibliography}{2} % Bibliography - this is intentionally simple in this template
 
 \bibitem{Vesa00}
-Vesa-Matti Mantyla, \emph{Hand gesture recognition of a mobile device user}. Multimedia and Expo, 2000. ICME 2000. 
+Vesa-Matti Mantyla, \emph{Hand gesture recognition of a mobile device user}. Multimedia and Expo, 2000. ICME 2000.
 
 \bibitem{Elmez07}
 Elmezain M. and Al-Hamadi A., \emph{A Hidden Markov Model-based continuous gesture recognition system for hand motion trajectory}. 19th International Conference on Pattern Recognition, ICPR 2008.
@@ -192,5 +305,43 @@ Lawrence R. Rabiner, \emph{A Tutorial on Hidden Markov Models and Selected Appli
 %----------------------------------------------------------------------------------------
 
 \end{multicols}
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|c|c|c|c|c|}\hline
+Data & circle & figure8 & fish & hammer & pend & wave & Result \\ \hline\hline
+circle 1 & -11.18 & -72.04 & -29.73 & -37.82 & -19.55 & NaN    & circle \\
+circle 2 & -0.53  & -57.85 & -21.51 & -30.59 & -11.87 & -19.13 & circle \\
+circle 3 & -0.53  & -58.13 & -21.61 & -30.74 & -11.93 & -19.22 & circle \\
+circle 4 & -20.21 & -83.98 & -40.41 & -43.26 & -26.17 & NaN    & circle \\
+circle 5 & -0.58  & -62.16 & -23.11 & -32.87 & -12.75 & -20.55 & circle \\ \hline \hline
+figure8 1 & NaN & -215.96 & NaN & NaN & NaN & NaN & figure8 \\
+figure8 2 & NaN & -492.84 & NaN & NaN & NaN & NaN & figure8 \\
+figure8 3 & NaN & -223.82 & NaN & NaN & NaN & NaN & figure8 \\
+figure8 4 & NaN & -235.13 & NaN & NaN & NaN & NaN & figure8 \\
+figure8 5 & NaN & -282.01 & NaN & NaN & NaN & NaN & figure8 \\ \hline\hline
+fish 1 & NaN & -402.64 &  -71.99 & -661.56 & NaN & -300.02 & fish \\
+fish 2 & NaN & -355.60 & -100.07 & -555.12 & NaN & -279.19 & fish \\
+fish 3 & NaN & -294.87 & -160.96 &     NaN & NaN &     NaN & fish \\
+fish 4 & NaN & -413.77 &  -65.99 & -695.41 & NaN & -327.80 & fish \\
+fish 5 & NaN & -363.73 &  -40.79 & -612.45 & NaN & -274.36 & fish \\ \hline\hline
+hammer 1 & NaN & -247.01 & NaN & -170.56 & NaN & NaN & hammer\\
+hammer 2 & NaN & -251.22 & NaN & -193.95 & NaN & NaN & hammer\\
+hammer 3 & NaN & -238.77 & NaN & -160.98 & NaN & NaN & hammer\\
+hammer 4 & NaN & -237.53 & NaN & -168.17 & NaN & NaN & hammer\\
+hammer 5 & NaN & -267.45 & NaN & -174.82 & NaN & NaN & hammer\\ \hline\hline
+pend 1 & -1086.39 & -1028.01 & -1135.85 & -452.05 & -3.16 & NaN & pend\\
+pend 2 &  -950.61 &  -899.42 &  -993.27 & -395.63 & -3.16 & NaN & pend\\
+pend 3 &  -730.17 &  -712.95 &  -772.32 & -315.53 & -7.11 & NaN & pend\\
+pend 4 &  -846.52 &  -800.83 &  -883.97 & -352.37 & -3.16 & NaN & pend\\
+pend 5 & -1222.16 & -1156.61 & -1278.42 & -508.47 & -3.16 & NaN & pend\\\hline\hline
+wave 1 & NaN & -245.71 & -386.53 & NaN & NaN & -175.85 & wave\\
+wave 2 & NaN & -296.00 & -536.27 & NaN & NaN & -236.02 & wave\\
+wave 3 & NaN & -179.59 & -280.66 & NaN & NaN & -122.30 & wave\\
+wave 4 & NaN & -222.42 & -463.23 & NaN & NaN & -171.95 & wave\\
+wave 5 & NaN & -310.66 & -572.36 & NaN & NaN & -246.30 & wave\\\hline
+\end{tabular}
+\caption{Training and validation results}
+\label{table:result}
+\end{table}
 
 \end{document}
