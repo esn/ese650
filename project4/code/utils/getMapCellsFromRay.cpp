@@ -17,7 +17,6 @@ void mexExit(void) {
 void mexFunction(int nlhs, mxArray *plhs[],
                  int nrhs, const mxArray *prhs[]) {
 
-
   if (!xio) {
     xio = new double[MAX_NUM_CELLS];
     yio = new double[MAX_NUM_CELLS];
