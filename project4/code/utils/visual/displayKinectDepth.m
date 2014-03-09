@@ -45,5 +45,4 @@ indGood = xs > 0;
 set(hFig,'xdata',xs2(indGood),'ydata', ...
          ys2(indGood),'zdata',zs2(indGood));
 
-
-
+end
