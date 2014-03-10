@@ -52,7 +52,7 @@ end
 
 dcm = quat2dcm(q);
 
-if ( size(q,1) == 1 )
+if (size(q,1) == 1)
     % Q is 1-by-4
     qout = (dcm*r')';
 elseif (size(r,1) == 1)
@@ -65,4 +65,6 @@ else
     for i = size(q,1):-1:1
         qout(i,:) = (dcm(:,:,i)*r(i,:)')';
     end
+end
+
 end

@@ -28,3 +28,5 @@ for index = size(q,1):-1:1
 end
 
 qout = qnorm.*qnorm;
+
+end

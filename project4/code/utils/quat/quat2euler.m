@@ -38,3 +38,5 @@ psi = atan2(2.*(qin(:,2).*qin(:,3) + qin(:,1).*qin(:,4)), ...
                  qin(:,1).^2 + qin(:,2).^2 - qin(:,3).^2 - qin(:,4).^2);
 
 angles = [phi theta psi];
+
+end

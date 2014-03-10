@@ -26,3 +26,5 @@ end
 for index = size(q,1):-1:1
     mod(index,:) = norm(q(index,:),2);
 end
+
+end

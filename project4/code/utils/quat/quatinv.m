@@ -16,3 +16,5 @@ function qinv = quatinv( q )
 %   Copyright 2000-2005 The MathWorks, Inc.
 
 qinv  = quatconj( q )./(quatnorm( q )*ones(1,4));
+
+end

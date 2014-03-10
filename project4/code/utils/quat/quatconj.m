@@ -24,3 +24,4 @@ if (size(qin,2) ~= 4)
 end
 
 qout = [ qin(:,1)  -qin(:,2:4) ];
+end

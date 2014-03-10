@@ -35,11 +35,11 @@ function qout = quatmultiply( q, varargin )
 % if any(~isreal(q(:)))
 %     error(message('aero:quatnorm:isNotReal1'));
 % end
-% 
+%
 % if (size(q,2) ~= 4)
 %     error(message('aero:quatnorm:wrongDimension1'));
 % end
-% 
+%
 if nargin == 1
     r = q;
 else

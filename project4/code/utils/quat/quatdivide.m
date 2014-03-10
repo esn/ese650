@@ -25,3 +25,5 @@ function qout = quatdivide( q, r )
 %   Copyright 2000-2006 The MathWorks, Inc.
 
 qout = quatmultiply(quatinv( r ), q);
+
+end

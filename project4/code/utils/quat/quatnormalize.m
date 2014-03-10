@@ -17,3 +17,5 @@ function qout = quatnormalize( q )
 %   Copyright 2000-2005 The MathWorks, Inc.
 
 qout = q./(quatmod( q )* ones(1,4));
+
+end
