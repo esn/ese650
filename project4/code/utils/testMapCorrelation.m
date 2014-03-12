@@ -1,6 +1,6 @@
 global MAP
 
-hokuyoFile = 'Hokuyo20.mat';
+hokuyoFile = '../data/Hokuyo20.mat';
 
 load(hokuyoFile);
 
