@@ -1,21 +1,27 @@
 MEX = mex
 CXX ?= g++
 CC ?= gcc
-CFLAGS = -Wall -Wconversion -O3 -Wl,--as-needed -fPIC
-CXXFLAGS = -Wall -Wconversion -O3 -Wl,--as-needed -fPIC
+CFLAGS = -Wl,--as-needed -fPIC
+CXXFLAGS = -Wl,--as-needed -fPIC
 MEX_OPTION = CC\#$(CC) CFLAGS\#"$(CFLAGS)" \
 						 CXX\#$(CXX) CXXFLAGS\#"$(CXXFLAGS)"
 MEX_EXT = $(shell mexext)
 
 all: binary
 
-binary: map_correlation.$(MEX_EXT) getMapCellsFromRay.$(MEX_EXT)
+binary: map_correlation getMapCellsFromRay GetUnixTime djpeg
 
-map_correlation.$(MEX_EXT): map_correlation.cpp
+map_correlation: map_correlation.cpp
 	$(MEX) $(MEX_OPTION) $^
 
-getMapCellsFromRay.$(MEX_EXT): getMapCellsFromRay.cpp
+getMapCellsFromRay: getMapCellsFromRay.cpp
 	$(MEX) $(MEX_OPTION) $^
+
+GetUnixTime: GetUnixTime.cc
+	$(MEX) $(MEX_OPTION) $^
+
+djpeg: djpeg.cpp
+	$(MEX) $(MEX_OPTION) $^ -ljpeg
 
 clean:
 	rm -f *.$(MEX_EXT)
