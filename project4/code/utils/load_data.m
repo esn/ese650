@@ -1,4 +1,4 @@
-function [ data ] = load_data( data_id, data_path )
+function [data] = load_data(data_id, data_path)
 %LOAD_DATA load sensor data according to data_id
 % [ data ] = load_data( data_id, data_path )
 
@@ -9,7 +9,7 @@ data.imu = load(fullfile(data_path, sprintf('imuRaw%d.mat', data_id)));
 
 % Hokuyo0
 lidar = load(fullfile(data_path, sprintf('Hokuyo%d.mat', data_id)));
-data.lidar = lidar.Hokuyo0;
+data.ldr = lidar.Hokuyo0;
 
 % Encoders
 enc = load(fullfile(data_path, sprintf('Encoders%d.mat', data_id)));

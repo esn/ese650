@@ -1,16 +1,22 @@
-NAME=ese650-quchao-proj1
+SRC=ese650-quchao-proj1
+TEX=pdflatex
 
-all: $(NAME).tex
-	rubber -d $<
+all: pdf
+
+pdf: $(SRC).tex
+	$(TEX) $<
 
 % : %.tex
-	rubber -d $<
+	$(TEX) $<
 
 edit:
-	texmaker $(NAME).tex &
+	vim $(SRC).tex
 
-test:
-	evince $(NAME).pdf &
+texm:
+	texmaker $(SRC).tex &
+
+test: pdf
+	evince $(SRC).pdf &
 
 clean:
-	rm -f *.aux *.log *.out *.pdf *.pdfsync *.synctex.gz *.blg *.bbl *.tex.bak
+	rm -f $(SRC).pdf *.aux *.log *.out *.pdfsync *.synctex.gz *.blg *.bbl *.tex.bak

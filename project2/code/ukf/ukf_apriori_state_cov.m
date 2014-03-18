@@ -1,4 +1,4 @@
-function [ Pk_bar, W ] = ukf_apriori_state_cov( Ys, Y, Wc )
+function [Pk_bar, W] = ukf_apriori_state_cov(Ys, Y, Wc)
 %UKF_APRIORI_STATE_COV calculates a priori state covariance
 
 q_mean = Y(1:4);
