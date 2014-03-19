@@ -6,9 +6,9 @@ if nargin < 4, correction = true; end
 persistent X Z P Q R pt Wm Wc C
 if isempty(P)
     X = [[1;0;0;0]; [0;0;0]];
-    P = diag([ones(3,1)*0.0001; ones(3,1)*0.0001]);
+    P = diag([ones(3,1)*0.0001; ones(3,1)*0.00001]);
     Q = diag([ones(3,1)*0.0001; ones(3,1)*0.00001]);
-    R = diag(ones(3,1)*0.115);
+    R = diag([0.0265, 0.0144 0.0046]*50);
     n = 6;
     a = 2; % alpha
     b = 2; % beta
@@ -42,7 +42,7 @@ if correction
     Pxz = Wy * diag(Wc) * Wz';
     Pvv = Pzz + R;
     % Calculate Kalman gain
-    K   = Pxz * inv(Pvv);
+    K   = Pxz / Pvv;
     % Calculate innovation
     V   = M - Z;
     % Update state and covariance

@@ -3,7 +3,7 @@ addpath(genpath('./'))
 addpath(genpath('../'))
 
 %% Select dataset
-data_id = 6;
+data_id = 8;
 % Load corresponding dataset
 load(sprintf('../imu/imuRaw%d.mat', data_id));
 % load(sprintf('../Project2_Test/imu/imuRaw%d.mat', data_id));
@@ -28,7 +28,7 @@ for i = 1:n_data
     t = t_imu(i);
     acc = acc_real(:,i);
     omg = omg_real(:,i);
-    [X, Z] = ukf(acc, omg, t);
+    [X, Z] = ukf(acc, omg, t, true);
     % Save state
     X_hist(:,i) = X;
     Z_hist(:,i) = Z;
