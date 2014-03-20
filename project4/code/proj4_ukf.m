@@ -1,7 +1,7 @@
 clear all; close all; clc;
 addpath(genpath('.'))
 % Load data
-data_id = 22;
+data_id = 20;
 data = load_data(data_id);
 
 % Convert raw imu readings to real values
