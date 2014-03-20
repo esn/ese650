@@ -16,7 +16,7 @@ end
 
 end
 
-function acc_real = acc2real( acc_raw )
+function acc_real = acc2real(acc_raw)
 acc_scale = 0.01051*[-1; -1; 1]; % [sax, say, saz]
 % -1 to flip ax and ay as stated in the imu reference
 % acc_bias  = 1023/2;
