@@ -3,7 +3,7 @@ addpath(genpath('./'))
 addpath(genpath('../'))
 
 %% Select dataset
-data_id = 8;
+data_id = 3;
 % Load corresponding dataset
 load(sprintf('../imu/imuRaw%d.mat', data_id));
 % load(sprintf('../Project2_Test/imu/imuRaw%d.mat', data_id));
@@ -37,9 +37,9 @@ end
 
 %% Compare results
 rot_est = quat2dcm(quatconj(X_hist(1:4,:)'));
-eul_est = vicon2rpy(rot_est);
+eul_est = rots2rpy(rot_est);
 eul_est = fix_eul(eul_est);
-eul_vic = vicon2rpy(rot_vic);
+eul_vic = rots2rpy(rot_vic);
 eul_vic = fix_eul(eul_vic);
 h_eul = figure();
 plot_state(h_eul, t_vic - min(t_imu(1), t_vic(1)), eul_vic, 'eul', 'vic');

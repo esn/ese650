@@ -36,7 +36,7 @@ end
 
 %% Visualize
 rot_est = quat2dcm(quatconj(X_hist(1:4,:)'));
-eul_est = vicon2rpy(rot_est);
+eul_est = rots2rpy(rot_est);
 eul_est = fix_eul(eul_est);
 h_eul = figure();
 plot_state(h_eul, data.imu.ts, eul_est, 'eul', 'est');
