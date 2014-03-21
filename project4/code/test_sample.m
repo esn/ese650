@@ -1,7 +1,7 @@
 clear all
 close all
 clc
-data_id = 20;
+data_id = 21;
 data = load_data(data_id);
 
 s = zeros(3,1);
@@ -9,7 +9,7 @@ m = 50;
 num_enc = length(data.enc.ts);
 s_hist = zeros(3, num_enc);
 
-a = [0.2 0.25];
+a = [0.1 0.1];
 figure()
 h_cart = plot_cart([], s);
 s_particle = zeros(3,m);
