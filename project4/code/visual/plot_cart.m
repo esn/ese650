@@ -1,30 +1,31 @@
-function [ hout ] = plot_cart( s, step )
+function [ hout ] = plot_cart( hin, s, step )
 
-w = 0.3937;
-l = 0.5842;
+if nargin < 3, step = 1; end
 x = s(1,1:step:end);
 y = s(2,1:step:end);
 theta = s(3,1:step:end);
+% w = 0.3937;
+l = 0.5842;
 % vert = [l w; -l w; -l -w; l -w]/2;
 % vert_rot_x = bsxfun(@times, vert(:,1), cos(theta)) - bsxfun(@times, vert(:,2), sin(theta));
 % vert_rot_y = bsxfun(@times, vert(:,1), sin(theta)) + bsxfun(@times, vert(:,2), cos(theta));
 % x_vert = bsxfun(@plus, x, vert_rot_x);
 % y_vert = bsxfun(@plus, y, vert_rot_y);
 
-persistent h
-if isempty(h)
-%     h(1) = patch(x_vert, y_vert, 'k', 'FaceAlpha', 0);
-    h(1) = plot(x, y, 'o')
+if isempty(hin)
+    %     h(1) = patch(x_vert, y_vert, 'k', 'FaceAlpha', 0);
     hold on
-    h(2) = quiver(x, y, l.*cos(theta), l.*sin(theta), 0);
+    hin(1) = plot(x, y, 'o');
+    hin(2) = quiver(x, y, l.*cos(theta), l.*sin(theta));
     hold off
     axis equal
 else
-    set(h(1), 'XData', x_patch, 'YData', y_patch);
-    set(h(2), 'XData', x, 'YData', y, ...
+    set(hin(1), 'XData', x, 'YData', y);
+    set(hin(2), 'XData', x, 'YData', y, ...
         'UData', l.*cos(theta), 'VData', l.*sin(theta))
+end
 
-hout = h;
+hout = hin;
 
-end 
+end
 

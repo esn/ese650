@@ -1,31 +1,27 @@
-clear all; close all; clc;
-addpath(genpath('.'))
-% Load data
-data_id = 23;
-data = load_data(data_id);
+function [ s ] = motion_model( s, u, a )
+%MOTION_MODEL update motion model
+trans = u(1);
+alpha = u(2);
+x     = s(1);
+y     = s(2);
+theta = s(3);
 
-s = zeros(3,1);
-wheel_radius = 254/2000;
-axle_width = (311.15 + 476.25)/2000*1.85;
-num_enc = length(data.enc.ts);
-s_hist = zeros(3, num_enc);
-
-for i = 1:num_enc
-    enc = data.enc.counts(:,i);
-    dR = (enc(1) + enc(3))/2/360*2*pi*wheel_radius;
-    dL = (enc(2) + enc(4))/2/360*2*pi*wheel_radius;
-    alpha = (dR - dL) / axle_width;
-    R = (dR + dL)/2;
-    s(3) = s(3) + alpha;
-    s(1) = s(1) + R*cos(s(3));
-    s(2) = s(2) + R*sin(s(3));
-    s_hist(:,i) = s;
+if nargin < 3
+    noise_alpha1 = 0;
+    noise_alpha2 = 0;
+    noise_trans  = 0;
+else
+    noise_trans  = normrnd(0, a(1)*abs(trans));
+    noise_alpha1 = normrnd(0, a(2)*abs(alpha/2));
+    noise_alpha2 = normrnd(0, a(2)*abs(alpha/2));
 end
 
-plot_cart(s_hist, 20);
-axis equal
-figure()
-plot(data.enc.ts, s_hist(3,:), 'b')
-hold on
-load(sprintf('eul%d.mat', data_id));
-plot(data.imu.ts, eul_est(3,:), 'r')
+theta = theta + alpha/2 + noise_alpha1;
+x = x + (trans + noise_trans) * cos(theta);
+y = y + (trans + noise_trans) * sin(theta);
+theta = theta + alpha/2 + noise_alpha2;
+
+s(1) = x;
+s(2) = y;
+s(3) = theta;
+end

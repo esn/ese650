@@ -1,7 +1,7 @@
 clear all; close all; clc;
 addpath(genpath('.'))
 % Load data
-data_id = 22;
+data_id = 23;
 data = load_data(data_id);
 
 % Convert raw imu readings to real values
@@ -46,7 +46,7 @@ plot_state(h_mea, data.imu.ts, Z_hist, 'acc', 'est');
 
 
 rot_est1 = quat2dcm(quatconj(X_hist1(1:4,:)'));
-eul_est1 = vicon2rpy(rot_est1);
+eul_est1 = rots2rpy(rot_est1);
 eul_est1 = fix_eul(eul_est1);
 plot_state(h_eul, data.imu.ts, eul_est1, 'eul', 'vic');
 plot_state(h_mea, data.imu.ts, Z_hist1, 'acc', 'vic');

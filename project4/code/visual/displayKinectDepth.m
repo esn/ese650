@@ -2,12 +2,12 @@ function displayKinectDepth(disparity)
 persistent hFig yis zis
 
 if isempty(hFig)
-
+  
   %generate and store arrays of indices
   [zis yis] = meshgrid((1:480),(1:640));
   yis = yis(:)';
   zis = zis(:)';
-
+  
   %create figure
   figure(3), clf(gcf);
   hFig = plot3(0,0,0,'b.');
@@ -45,4 +45,5 @@ indGood = xs > 0;
 set(hFig,'xdata',xs2(indGood),'ydata', ...
          ys2(indGood),'zdata',zs2(indGood));
 
-end
+
+

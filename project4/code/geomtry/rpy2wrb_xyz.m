@@ -1,5 +1,5 @@
-function [ bRw ] = rpy2brw_xyz( varargin )
-%RPY2WRB_ZYX Converts varargin angles to a rotation matrix from body to world
+function [ wRb ] = rpy2wrb_xyz( varargin )
+%RPY2WRB_XYZ Converts varargin angles to a rotation matrix from body to world
 if nargin == 1
     phi   = varargin{1}(1);
     theta = varargin{1}(2);
@@ -20,9 +20,9 @@ Rx = [1, 0, 0;
       0, cos(phi), -sin(phi);
       0, sin(phi), cos(phi)];
 
-bRw = Rz * Ry * Rx;
+wRb = Rz * Ry * Rx;
 
-% bRw = [cos(psi)*cos(theta), ...
+% wRb = [cos(psi)*cos(theta), ...
 %        cos(psi)*sin(phi)*sin(theta) - cos(phi)*sin(psi), ...
 %        sin(phi)*sin(psi) + cos(phi)*cos(psi)*sin(theta);
 %        cos(theta)*sin(psi), ...

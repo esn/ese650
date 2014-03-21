@@ -25,7 +25,8 @@ acc_real = bsxfun(@times, bsxfun(@minus, acc_raw, acc_bias), acc_scale);
 end
 
 function omg_real = omg2real(omg_raw)
-omg_scale = 0.0172;
+omg_scale = 0.0171;
+% omg_scale = 0.0131;
 omg_bias = [373.86; 375.67; 369.75]; % [bwx, bwy, bwz]
 omg_real = bsxfun(@minus, omg_raw, omg_bias) * omg_scale;
 end

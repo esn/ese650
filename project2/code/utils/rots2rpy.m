@@ -4,7 +4,7 @@ function euler = rots2rpy(rots)
 n_rots = size(rots,3);
 euler = zeros(3,n_rots);
 for i = 1:n_rots
-    euler(:,i) = brw2rpy_xyz(rots(:,:,i));
+    euler(:,i) = wrb2rpy_xyz(rots(:,:,i));
 end
 
 end

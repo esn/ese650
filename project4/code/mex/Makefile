@@ -1,10 +1,10 @@
 MEX = mex
 CXX ?= g++
 CC ?= gcc
-CFLAGS = -Wl,--as-needed -fPIC
-CXXFLAGS = -Wl,--as-needed -fPIC
-MEX_OPTION = CC\#$(CC) CFLAGS\#"$(CFLAGS)" \
-						 CXX\#$(CXX) CXXFLAGS\#"$(CXXFLAGS)"
+CFLAGS =  -fPIC
+CXXFLAGS =  -fPIC
+MEX_OPTION = CC="$(CC)" CFLAGS="$(CFLAGS)" \
+ 						 CXX="$(CXX)" CXXFLAGS="$(CXXFLAGS)" -Wl,--as-needed
 MEX_EXT = $(shell mexext)
 
 all: binary
