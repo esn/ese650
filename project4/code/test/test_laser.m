@@ -1,14 +1,14 @@
-data_id = 20;
+data_id = 22;
 data = load_data(data_id);
-% yaw = 0.8436;
-yaw = 0;
+yaw = 0.8436;
+% yaw = 0;
 s = [0; 0; yaw];
 plot_cart([],s);
 % 
-% i = 1037;
-i = 1;
-% rpy = [-0.1273 0.2486 yaw];
-rpy = [0 0 yaw];
+i = 1037;
+% i = 1;
+rpy = [-0.1273 0.2486 yaw];
+% rpy = [0 0 yaw];
 wRb = rpy2wrb_xyz(rpy);
 % range = 1;
 % angle = 0;
