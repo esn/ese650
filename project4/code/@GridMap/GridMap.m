@@ -8,8 +8,8 @@ classdef GridMap < handle
         z_bound   % [zmin zmax]
         res
         dim       % [xdim ydim]
+        
         h_map
-        h_car
     end
     
     methods
