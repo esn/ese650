@@ -1,15 +1,26 @@
 data_id = 20;
 data = load_data(data_id);
-s = [2; 5; pi/4];
+% yaw = 0.8436;
+yaw = 0;
+s = [0; 0; yaw];
 plot_cart([],s);
-
+% 
+% i = 1037;
 i = 1;
+% rpy = [-0.1273 0.2486 yaw];
+rpy = [0 0 yaw];
+wRb = rpy2wrb_xyz(rpy);
+% range = 1;
+% angle = 0;
 range = data.ldr.ranges(:,i);
 angle = data.ldr.angles;
-x_range_in_body = range.*cos(angle);
-y_range_in_body = range.*sin(angle);
-xy_range_in_world = [cos(s(3)) -sin(s(3)); sin(s(3)) cos(s(3))] * [x_range_in_body'; y_range_in_body'];
-x_range_in_world = xy_range_in_world(1,:) + s(1);
-y_range_in_world = xy_range_in_world(2,:) + s(2);
+
+bTs = [133.23 0 514.35]/1000;
+% bTs = [0 0 0];
+p_range_world = transform_range(s, wRb, bTs, range, angle);
 hold on
-plot(x_range_in_world, y_range_in_world, '.-')
+plot3(p_range_world(1,:), p_range_world(2,:), p_range_world(3,:), '.-')
+grid on
+
+view(3)
+axis equal

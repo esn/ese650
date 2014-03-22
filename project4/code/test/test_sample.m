@@ -1,7 +1,7 @@
 clear all
 close all
 clc
-data_id = 21;
+data_id = 20;
 data = load_data(data_id);
 
 s = zeros(3,1);

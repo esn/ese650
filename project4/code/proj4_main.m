@@ -43,6 +43,8 @@ while(1)
     % Motion model
     if t > t_enc(t_enc_ind)  
         fprintf('enc\t%d\n', t_enc_ind);
+        
+        
         t_enc_ind = t_enc_ind + 1;
         mcl_motion = true;
     end
@@ -50,6 +52,8 @@ while(1)
     % Map correlation
     if  t > t_ldr(t_ldr_ind) 
         fprintf('ldr\t%d\n', t_ldr_ind);
+        
+        
         t_ldr_ind = t_ldr_ind + 1;
         mcl_measure = true;
     end
@@ -59,11 +63,12 @@ while(1)
         fprintf('imu\t%d\n', t_imu_ind);
         imu = data.imu.real_vals(:,t_imu_ind);
         X = ukf(imu(1:3), imu(4:6), t_imu(t_imu_ind), true);
+        
         t_imu_ind = t_imu_ind + 1;
-
+        
         cnt_ukf_hist = cnt_ukf_hist + 1;
-        rot_est = quat2dcm(quatconj(X(1:4)'));
-        eul_est = wrb2rpy_xyz(rot_est);
+        wrb_est = quat2dcm(quatconj(X(1:4)'));
+        eul_est = wrb2rpy_xyz(wrb_est);
         eul_ukf_hist(:,cnt_ukf_hist) = eul_est;
     end
     

@@ -1,7 +1,7 @@
 clear all; close all; clc;
 addpath(genpath('.'))
 % Load data
-data_id = 24;
+data_id = 23;
 data = load_data(data_id);
 
 s = zeros(3,1);
@@ -16,7 +16,8 @@ for i = 1:num_enc
     s_hist(:,i) = s;
 end
 
-plot_cart([], s_hist, 20);
+% plot_cart([], s_hist, 20);
+plot(s_hist(1,:), s_hist(2,:), '-')
 
 axis equal
 figure()

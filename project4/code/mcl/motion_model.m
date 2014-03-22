@@ -16,7 +16,7 @@ else
     noise_alpha2 = normrnd(0, a(2)*abs(alpha/2));
 end
 
-theta = theta + alpha/2 + noise_alpha1;
+theta = theta  + alpha/2 + noise_alpha1;
 x = x + (trans + noise_trans) * cos(theta);
 y = y + (trans + noise_trans) * sin(theta);
 theta = theta + alpha/2 + noise_alpha2;
