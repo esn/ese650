@@ -6,8 +6,9 @@ classdef MagicRobot < handle
     
     properties
         c = 1.85  % width coefficient
-        w = (311.15 + 476.25)/2000 % axle width
-        r = 254/2000% wheel radius
+        w = (311.15 + 476.25)/2000  % axle width
+        r = 254/2000  % wheel radius
+        
         s  % robot state
         a  % parameter in noise
         u  % odometry
@@ -52,7 +53,7 @@ classdef MagicRobot < handle
             p = MR.motion(p, MR.u, MR.a);
         end
         
-        % Loggin methos
+        % Logging methods
         function append_hist(MR)
             MR.k = MR.k + 1;
             MR.s_hist(:,MR.k) = MR.s;
@@ -94,30 +95,30 @@ classdef MagicRobot < handle
     
     methods (Static)
         function s = motion(s, u, a)
-        trans = u(1);
-        alpha = u(2);
-        x     = s(1);
-        y     = s(2);
-        theta = s(3);
-        
-        if nargin < 3
-            noise_alpha1 = 0;
-            noise_alpha2 = 0;
-            noise_trans  = 0;
-        else
-            noise_trans  = normrnd(0, a(1)*abs(trans));
-            noise_alpha1 = normrnd(0, a(2)*abs(alpha/2));
-            noise_alpha2 = normrnd(0, a(2)*abs(alpha/2));
-        end
-        
-        theta = theta  + alpha/2 + noise_alpha1;
-        x = x + (trans + noise_trans) * cos(theta);
-        y = y + (trans + noise_trans) * sin(theta);
-        theta = theta + alpha/2 + noise_alpha2;
-        
-        s(1) = x;
-        s(2) = y;
-        s(3) = theta;
+            trans = u(1);
+            alpha = u(2);
+            x     = s(1);
+            y     = s(2);
+            theta = s(3);
+            
+            if nargin < 3
+                noise_alpha1 = 0;
+                noise_alpha2 = 0;
+                noise_trans  = 0;
+            else
+                noise_trans  = normrnd(0, a(1)*abs(trans));
+                noise_alpha1 = normrnd(0, a(2)*abs(alpha/2));
+                noise_alpha2 = normrnd(0, a(2)*abs(alpha/2));
+            end
+            
+            theta = theta  + alpha/2 + noise_alpha1;
+            x = x + (trans + noise_trans) * cos(theta);
+            y = y + (trans + noise_trans) * sin(theta);
+            theta = theta + alpha/2 + noise_alpha2;
+            
+            s(1) = x;
+            s(2) = y;
+            s(3) = theta;
         end
     end
 end

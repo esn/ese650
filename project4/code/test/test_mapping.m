@@ -13,6 +13,7 @@ res = 0.1;
 z_bound = 10;
 map = GridMap(xy_bound, res, z_bound);
 map.plot;
+lidar = Hokuyo(data.ldr.angles);
 % map.
 for i = 1:num_enc
     enc = data.enc.counts(:,i);

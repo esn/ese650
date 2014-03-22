@@ -1,3 +1,5 @@
+clear all
+close all
 data_id = 22;
 data = load_data(data_id);
 yaw = 0.8436;
@@ -15,9 +17,11 @@ wRb = rpy2wrb_xyz(rpy);
 range = data.ldr.ranges(:,i);
 angle = data.ldr.angles;
 
-bTs = [133.23 0 514.35]/1000;
+% bTs = [133.23 0 514.35]/1000;
+lidar = Hokuyo(data.ldr.angles);
+
 % bTs = [0 0 0];
-p_range_world = transform_range(s, wRb, bTs, range, angle);
+p_range_world = lidar.transform_range(s, wRb, range);
 hold on
 plot3(p_range_world(1,:), p_range_world(2,:), p_range_world(3,:), '.-')
 grid on
