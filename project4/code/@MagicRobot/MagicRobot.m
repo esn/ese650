@@ -8,7 +8,7 @@ classdef MagicRobot < handle
         c = 1.85  % width coefficient
         w = (311.15 + 476.25)/2000  % axle width
         r = 254/2000  % wheel radius
-        
+        l = 0.3  % robot length
         s  % robot state
         a  % parameter in noise
         u  % odometry
@@ -49,6 +49,7 @@ classdef MagicRobot < handle
             MR.s = MR.motion(MR.s, MR.u);
         end
         
+        % Should this be here?
         function p = sample_motion_model(MR, p)
             p = MR.motion(p, MR.u, MR.a);
         end
@@ -80,14 +81,15 @@ classdef MagicRobot < handle
             if isempty(MR.h_car)
                 hold on
                 MR.h_car(1) = plot(MR.s(1), MR.s(2), varargin{:});
-                MR.h_car(2) = quiver(MR.s(1), MR.s(2), ...
-                    0.3 * cos(MR.s(3)), 0.3 * sin(MR.s(3)), 0);
+                MR.h_car(2) = plot([MR.s(1), MR.s(1) + MR.l * cos(MR.s(3))], ...
+                    [MR.s(2), MR.s(2) + MR.l * sin(MR.s(3))], '-');
                 hold off
                 axis equal
             else
                 set(MR.h_car(1), 'XData', MR.s(1), 'YData', MR.s(2));
-                set(MR.h_car(2), 'XData', MR.s(1), 'YData', MR.s(2), ...
-                    'UData', 0.3 * cos(MR.s(3)), 'VData', 0.3 * sin(MR.s(3)));
+                set(MR.h_car(2), ...
+                    'XData', [MR.s(1), MR.s(1) + MR.l * cos(MR.s(3))], ...
+                    'YData', [MR.s(2), MR.s(2) + MR.l * sin(MR.s(3))]);
             end
             drawnow
         end

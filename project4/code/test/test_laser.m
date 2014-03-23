@@ -21,10 +21,10 @@ angle = data.ldr.angles;
 lidar = Hokuyo(data.ldr.angles);
 
 % bTs = [0 0 0];
-p_range_world = lidar.transform_range(s, wRb, range);
+p_range_all = lidar.transform_range(s, wRb, range);
 hold on
-plot3(p_range_world(1,:), p_range_world(2,:), p_range_world(3,:), '.-')
+lidar.plot_range('.-')
 grid on
-
+% [p_range, ind] = lidar
 view(3)
 axis equal

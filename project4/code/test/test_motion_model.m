@@ -15,7 +15,7 @@ for i = 1:num_enc
     car.motion_model();
     car.append_hist();
     car.plot_car('bo');
-    car.plot_traj();
+    car.plot_traj('g');
 end
 
 % plot_cart([], s_hist, 20);

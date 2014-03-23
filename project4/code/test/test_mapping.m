@@ -12,7 +12,7 @@ xy_bound = [-40 40 -40 40];
 res = 0.1;
 z_bound = 10;
 map = GridMap(xy_bound, res, z_bound);
-map.plot;
+map.plot_map;
 lidar = Hokuyo(data.ldr.angles);
 % map.
 for i = 1:num_enc
@@ -24,16 +24,10 @@ for i = 1:num_enc
     bTs = [0 0 0];
     rpy = [0 0 s(3)];
     wRb = rpy2wrb_xyz(rpy);
-    p_range_world = transform_range(s, wRb, bTs, range, angle);
-    map.update_map(s, p_range_world(1:2,:));
-    map.plot;
-    s_hist(:,i) = s;
-    if i == 1
-        hold on
-        h_cart = plot((s(1)+xy_bound(2))./res, (s(2)+xy_bound(1))./res, 'r');
-        hold off
-    else
-        set(h_cart, 'XData', (s_hist(1,1:i)+xy_bound(2))./res, 'YData', (s_hist(2,1:i)+xy_bound(4))./res);
-    end
+    p_range_world = lidar.transform_range(s, wRb, range);
+    map.update_map(s, p_range_world);
+    map.plot_map;
+    map.plot_car('bo');
+    map.plot_traj('g');
     drawnow
 end
