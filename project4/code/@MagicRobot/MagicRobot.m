@@ -51,9 +51,9 @@ classdef MagicRobot < handle
             MR.append_hist();
         end
         
-        % Should this be here?
-        function p = sample_motion_model(MR, p)
-            p = MR.motion(p, MR.u, MR.a);
+        function update_state(MR, s)
+            MR.s = s;
+            MR.append_hist();
         end
         
         % Logging methods

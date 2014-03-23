@@ -5,7 +5,7 @@ data = load_data(data_id);
 yaw = 0.8436;
 % yaw = 0;
 s = [0; 0; yaw];
-plot_cart([],s);
+% plot_cart([],s);
 % 
 i = 1037;
 % i = 1;
@@ -16,7 +16,8 @@ wRb = rpy2wrb_xyz(rpy);
 % angle = 0;
 range = data.ldr.ranges(:,i);
 angle = data.ldr.angles;
-
+car = MagicRobot(s);
+car.plot_car('bo');
 % bTs = [133.23 0 514.35]/1000;
 lidar = Hokuyo(data.ldr.angles);
 

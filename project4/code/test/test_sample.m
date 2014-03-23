@@ -7,25 +7,19 @@ data = load_data(data_id);
 car = MagicRobot();
 m = 50;
 num_enc = length(data.enc.ts);
-s_hist = zeros(3, num_enc);
 
 a = [0.1 0.1];
 
-s_particle = zeros(3,m);
+mcl = MonteCarlo(50);
 figure()
 for i = 1:num_enc
     enc = data.enc.counts(:,i);
     car.enc2odom(enc);
     car.motion_model();
     
-    s_particle = car.sample_motion_model(s_particle);
+    mcl.sample_motion_model(car.u, car.a);
     
-    hold on
-    if mod(i, 40) == 0
-        plot(s_particle(1,:), s_particle(2,:), 'r.')
-    end
-    hold off
-
+    mcl.plot_particle('r.')
     car.plot_car('bo');
     car.plot_traj('m')
     drawnow

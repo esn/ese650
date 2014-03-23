@@ -7,13 +7,11 @@ data = load_data(data_id);
 num_enc = length(data.enc.ts);
 
 map = GridMap(40, 0.1, 0.9999);
-
 car = MagicRobot();
-
 lidar = Hokuyo(data.ldr.angles);
 
 map.plot_map();
-% map.
+
 for i = 1:num_enc
     enc = data.enc.counts(:,i);
     range = data.ldr.ranges(:,i);

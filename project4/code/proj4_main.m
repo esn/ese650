@@ -15,21 +15,18 @@ num_enc = length(t_enc);
 num_ldr = length(t_ldr);
 
 t_start = t_enc(1);
-t_enc_ind = 1;
-t_imu_ind = find(t_imu > t_start, 1, 'first');
-t_ldr_ind = find(t_ldr > t_start ,1, 'first');
+enc_ind = 1;
+imu_ind = find(t_imu > t_start, 1, 'first');
+ldr_ind = find(t_ldr > t_start ,1, 'first');
 t_end = min(t_enc(end), t_ldr(end));
 
 % Initialize variables for saving ukf estimate
 X = [1; 0; 0; 0; 0; 0; 0];
 cnt_ukf_hist = 0;
 eul_ukf_hist = zeros(3,num_imu);
-
-% Initialize variables for saving mcl estiamte
-S = [0; 0; 0];
 cnt_mcl_hist = 0;
-max_cnt = max(num_enc, num_ldr);
-S_mcl_hist = zeros(3,max_cnt);
+% Initialize all classes
+car = MagicRobot();
 
 % Initialize map
 
@@ -39,32 +36,33 @@ t = t_start;
 t_step = 0.01;
 mcl_motion = false;
 mcl_measure = false;
+
 while(1)
-    % Motion model
-    if t > t_enc(t_enc_ind)  
-        fprintf('enc\t%d\n', t_enc_ind);
+    % sample model
+    if t > t_enc(enc_ind)  
+        fprintf('enc\t%d\n', enc_ind);
         
         
-        t_enc_ind = t_enc_ind + 1;
+        enc_ind = enc_ind + 1;
         mcl_motion = true;
     end
     
     % Map correlation
-    if  t > t_ldr(t_ldr_ind) 
-        fprintf('ldr\t%d\n', t_ldr_ind);
+    if  t > t_ldr(ldr_ind) 
+        fprintf('ldr\t%d\n', ldr_ind);
         
         
-        t_ldr_ind = t_ldr_ind + 1;
+        ldr_ind = ldr_ind + 1;
         mcl_measure = true;
     end
     
     % Ukf orientation estimation
-    if t > t_imu(t_imu_ind)  
-        fprintf('imu\t%d\n', t_imu_ind);
-        imu = data.imu.real_vals(:,t_imu_ind);
-        X = ukf(imu(1:3), imu(4:6), t_imu(t_imu_ind), true);
+    if t > t_imu(imu_ind)  
+        fprintf('imu\t%d\n', imu_ind);
+        imu = data.imu.real_vals(:,imu_ind);
+        X = ukf(imu(1:3), imu(4:6), t_imu(imu_ind), true);
         
-        t_imu_ind = t_imu_ind + 1;
+        imu_ind = imu_ind + 1;
         
         cnt_ukf_hist = cnt_ukf_hist + 1;
         wrb_est = quat2dcm(quatconj(X(1:4)'));
@@ -78,11 +76,10 @@ while(1)
         mcl_motion = false;
         mcl_measure = false;
         cnt_mcl_hist = cnt_mcl_hist + 1;
-        S_mcl_hist(:,cnt_mcl_hist) = S;
     end
     
-    if (t > t_end) || (t_imu_ind > num_imu) || ...
-       (t_enc_ind > num_enc) || (t_ldr_ind > num_ldr)
+    if (t > t_end) || (imu_ind > num_imu) || ...
+       (enc_ind > num_enc) || (ldr_ind > num_ldr)
         disp('Finished.')
         break
     end
