@@ -15,6 +15,10 @@ classdef Hokuyo < handle
         p_range
         ind
         
+        p00 = 0.85
+        p11 = 0.8
+        dz
+        
         h_range
     end
     
@@ -27,6 +31,8 @@ classdef Hokuyo < handle
             H.r_bound = r_bound;
             H.h_bound = h_bound;
             H.angle = angle(1:H.step:end); % subsample
+            H.dz(1) = log(H.p11/(1 - H.p00));  % occupy
+            H.dz(2) = log((1 - H.p11)/H.p00);  % clear
         end
         
         % Lidar methods

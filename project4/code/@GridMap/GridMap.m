@@ -25,7 +25,15 @@ classdef GridMap < handle
         % Constructor
         function GM = GridMap(xy_bound, res, z_bound)
             GM.res = res;
+            
+            if numel(xy_bound) == 1
+                xy_bound = [-1; 1; -1; 1] * xy_bound;
+            end
             GM.xy_bound = xy_bound(:);
+            
+            if z_bound < 1,
+                z_bound = log(z_bound/(1-z_bound));
+            end
             GM.z_bound = z_bound;
             GM.dim = ceil((GM.xy_bound([2 4]) - GM.xy_bound([1 3])) ./ GM.res);
             GM.map = zeros(GM.dim(2), GM.dim(1), 'uint8') + 128;
@@ -58,14 +66,14 @@ classdef GridMap < handle
             GM.map(ind) = GM.map(ind) + dz * GM.z_coeff;
         end
         
-        function update_map(GM, s, pos)
+        function update_map(GM, s, pos, dz)
             sub_robot = GM.pos2sub(s);
             sub_occupy = GM.pos2sub(pos);
             [sub_clear_row, sub_clear_col] = ...
                 getMapCellsFromRay(sub_robot(1), sub_robot(2), ...
                 sub_occupy(1,:), sub_occupy(2,:));
-            GM.update_map_sub([sub_clear_row'; sub_clear_col'], -0.5);
-            GM.update_map_sub(sub_occupy, 1);
+            GM.update_map_sub([sub_clear_row'; sub_clear_col'], dz(2));
+            GM.update_map_sub(sub_occupy, dz(1));
             GM.k = GM.k + 1;
             GM.s = GM.world2map(s);
             GM.s_hist(:,GM.k) = GM.s;
@@ -98,7 +106,7 @@ classdef GridMap < handle
                     'XData', [GM.s(1), GM.s(1) + GM.l * cos(GM.s(3))], ...
                     'YData', [GM.s(2), GM.s(2) + GM.l * sin(GM.s(3))]);
             end
-            drawnow
+            
         end
         
         function plot_traj(GM, varargin)
@@ -112,7 +120,7 @@ classdef GridMap < handle
                     'XData', GM.s_hist(1,1:GM.k), ...
                     'YData', GM.s_hist(2,1:GM.k));
             end
-            drawnow
+            
         end
         
         function plot_lidar(GM, p_range, varargin)
@@ -127,7 +135,7 @@ classdef GridMap < handle
                     'XData', p_range(1,:), ...
                     'YData', p_range(2,:));
             end
-            drawnow
+            
         end
     end
     

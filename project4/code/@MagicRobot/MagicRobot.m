@@ -5,8 +5,9 @@ classdef MagicRobot < handle
     end
     
     properties
-        c = 1.85  % width coefficient
+        c = 1.8  % width coefficient
         w = (311.15 + 476.25)/2000  % axle width
+        weff
         r = 254/2000  % wheel radius
         l = 0.3  % robot length
         s  % robot state
@@ -27,9 +28,9 @@ classdef MagicRobot < handle
             if nargin < 2, a = [0.2, 0.2]; end
             if nargin < 1, s = zeros(3,1); end
             
-            MR.w = MR.w * MR.c;
+            MR.weff = MR.w * MR.c;
             MR.a = a;
-            MR.s = s;
+            MR.s = s(:);
             MR.s_hist = zeros(3, max_len);
             MR.s_hist(:,1) = MR.s;
         end
@@ -37,7 +38,7 @@ classdef MagicRobot < handle
         function u = enc2odom(MR, enc)
             dR = (enc(1) + enc(3)) / 2 * MR.enc_coeff * MR.r;
             dL = (enc(2) + enc(4)) / 2 * MR.enc_coeff * MR.r;
-            alpha = (dR - dL) / MR.w;
+            alpha = (dR - dL) / MR.weff;
             dC = (dR + dL) / 2;
             u(1) = dC;
             u(2) = alpha;
@@ -47,6 +48,7 @@ classdef MagicRobot < handle
         % Motion methods
         function motion_model(MR)
             MR.s = MR.motion(MR.s, MR.u);
+            MR.append_hist();
         end
         
         % Should this be here?
@@ -74,7 +76,7 @@ classdef MagicRobot < handle
                 set(MR.h_traj, 'XData', MR.s_hist(1,1:MR.k), ...
                     'YData', MR.s_hist(2,1:MR.k));
             end
-            drawnow
+            
         end
         
         function plot_car(MR, varargin)
@@ -91,7 +93,6 @@ classdef MagicRobot < handle
                     'XData', [MR.s(1), MR.s(1) + MR.l * cos(MR.s(3))], ...
                     'YData', [MR.s(2), MR.s(2) + MR.l * sin(MR.s(3))]);
             end
-            drawnow
         end
     end
     
@@ -99,28 +100,30 @@ classdef MagicRobot < handle
         function s = motion(s, u, a)
             trans = u(1);
             alpha = u(2);
-            x     = s(1);
-            y     = s(2);
-            theta = s(3);
+            x     = s(1,:);
+            y     = s(2,:);
+            theta = s(3,:);
+            
+            num_s = size(x,2);
             
             if nargin < 3
-                noise_alpha1 = 0;
-                noise_alpha2 = 0;
-                noise_trans  = 0;
+                noise_alpha1 = zeros(1, num_s);
+                noise_alpha2 = zeros(1, num_s);
+                noise_trans  = zeros(1, num_s);
             else
-                noise_trans  = normrnd(0, a(1)*abs(trans));
-                noise_alpha1 = normrnd(0, a(2)*abs(alpha/2));
-                noise_alpha2 = normrnd(0, a(2)*abs(alpha/2));
+                noise_trans  = normrnd(0, a(1)*abs(trans), 1, num_s);
+                noise_alpha1 = normrnd(0, a(2)*abs(alpha/2), 1, num_s);
+                noise_alpha2 = normrnd(0, a(2)*abs(alpha/2), 1, num_s);
             end
             
-            theta = theta  + alpha/2 + noise_alpha1;
-            x = x + (trans + noise_trans) * cos(theta);
-            y = y + (trans + noise_trans) * sin(theta);
+            theta = theta + alpha/2 + noise_alpha1;
+            x = x + (trans + noise_trans) .* cos(theta);
+            y = y + (trans + noise_trans) .* sin(theta);
             theta = theta + alpha/2 + noise_alpha2;
             
-            s(1) = x;
-            s(2) = y;
-            s(3) = theta;
+            s(1,:) = x;
+            s(2,:) = y;
+            s(3,:) = theta;
         end
     end
 end

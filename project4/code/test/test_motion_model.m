@@ -1,7 +1,7 @@
 clear all; close all; clc;
 addpath(genpath('.'))
 % Load data
-data_id = 23;
+data_id = 22;
 data = load_data(data_id);
 
 s = zeros(3,1);
@@ -13,9 +13,9 @@ for i = 1:num_enc
     enc = data.enc.counts(:,i);
     car.enc2odom(enc);
     car.motion_model();
-    car.append_hist();
-    car.plot_car('bo');
-    car.plot_traj('g');
+%     car.plot_car('bo');
+%     car.plot_traj('m');
+%     drawnow
 end
 
 % plot_cart([], s_hist, 20);
