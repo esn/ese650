@@ -9,48 +9,69 @@ classdef Hokuyo < handle
         r_bound  % range bound
         h_bound  % height bound
         
+        step = 4;
         range
         angle
         p_range
+        ind
         
         h_range
     end
     
     methods
         function H = Hokuyo(angle, a_bound, r_bound, h_bound)
-            if nargin < 4, h_bound = [-0.5, 3]; end
+            if nargin < 4, h_bound = [-0.2, 3]; end
             if nargin < 3, r_bound = [0.2, 10]; end
-            if nargin < 2, a_bound = [-2, 2]; end
+            if nargin < 2, a_bound = [-2.3, 2.3]; end
             H.a_bound = a_bound;
             H.r_bound = r_bound;
             H.h_bound = h_bound;
-            H.angle = angle;
+            H.angle = angle(1:H.step:end); % subsample
         end
         
         % Lidar methods
+        % transfomr_range transform range readings into world
+        % coordinates xyz based on imu orientation
         function  p_range = transform_range(H, s, wRb, range)
-            % Prune laser     
+            range = range(1:H.step:end); % subsample
+            % transform range to world frame
             bHs = trans(H.bTs);
             wHb = trans([s(1) s(2) 0]) * ...
                 [wRb zeros(3,1); zeros(1,3) 1];
             x_range = (range .* cos(H.angle))';
             y_range = (range .* sin(H.angle))';
             p_range = wHb * bHs * ...
-                [x_range; y_range; zeros(size(x_range)); ...
+                [x_range; ...
+                 y_range; ...
+                 zeros(size(x_range)); ...
                  ones(size(x_range))];
             H.range = range;
             H.p_range = p_range;
         end
 
-        
-        function [p_range, ind] = prune_range(H)
-            
+        % prune_range does the following thing
+        % 1. keep all readings within r_bound
+        % 2. keep all readings within a_bound
+        % 3. keep all readings within z_bound
+        function prune_range(H)
+            good_ind = (H.range > H.r_bound(1)) & ...
+                (H.range < H.r_bound(2));
+            good_ind = good_ind & ...
+                ((H.angle > H.a_bound(1)) & ...
+                (H.angle < H.a_bound(2)));
+            good_ind = good_ind & ...
+                ((H.p_range(3,:)' > H.h_bound(1)) & ...
+                (H.p_range(3,:)' < H.h_bound(2)));
+            H.p_range = H.p_range(:,good_ind);
+            H.ind = good_ind;
         end
         
         % Visualization methods
         function plot_range(H, varargin)
             if isempty(H.h_range)
-                H.h_range = plot3(H.p_range(1,:), H.p_range(2,:), ...
+                H.h_range = plot3(...
+                    H.p_range(1,:), ...
+                    H.p_range(2,:), ...
                     H.p_range(3,:), varargin{:});
             else
                 set(H.h_range, ...
