@@ -23,7 +23,8 @@ for i = 1:num_enc
     
     % Lidar
     wRb = rpy2wrb_xyz([0 0 car.s(3)]);
-    lidar.transform_range(car.s, wRb, range);
+    lidar.store_range(range);
+    lidar.transform_range(car.s, wRb);
     lidar.prune_range();
     
     % Update map

@@ -1,7 +1,11 @@
 classdef Hokuyo < handle
-
-    properties
+    
+    properties (Constant)
         bTs = [133.23 0 514.35]/1000;
+    end
+    
+    properties
+        
         
         h_ldr
         a_bound  % angle bound
@@ -35,25 +39,27 @@ classdef Hokuyo < handle
         end
         
         % Lidar methods
+        function store_range(H, range)
+            H.range = range(1:H.step:end);
+        end
+        
         % transfomr_range transform range readings into world
         % coordinates xyz based on imu orientation
-        function  p_range = transform_range(H, s, wRb, range)
-            range = range(1:H.step:end); % subsample
+        function  p_range = transform_range(H, s, wRb)
             % transform range to world frame
             bHs = trans(H.bTs);
             wHb = trans([s(1) s(2) 0]) * ...
                 [wRb zeros(3,1); zeros(1,3) 1];
-            x_range = (range .* cos(H.angle))';
-            y_range = (range .* sin(H.angle))';
+            x_range = (H.range .* cos(H.angle))';
+            y_range = (H.range .* sin(H.angle))';
             p_range = wHb * bHs * ...
                 [x_range; ...
-                 y_range; ...
-                 zeros(size(x_range)); ...
-                 ones(size(x_range))];
-            H.range = range;
-            H.p_range = p_range;
+                y_range; ...
+                zeros(size(x_range)); ...
+                ones(size(x_range))];
+            H.p_range = p_range(1:3,:);
         end
-
+        
         % prune_range does the following thing
         % 1. keep all readings within r_bound
         % 2. keep all readings within a_bound
@@ -83,7 +89,8 @@ classdef Hokuyo < handle
                     'XData', H.p_range(1,:), ...
                     'YData', H.p_range(2,:), ...
                     'ZData', H.p_range(3,:));
-            end 
+            end
         end
     end
+    
 end

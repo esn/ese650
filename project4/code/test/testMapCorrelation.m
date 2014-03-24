@@ -1,6 +1,6 @@
 global MAP
 
-hokuyoFile = '../data/Hokuyo20.mat';
+hokuyoFile = '../data/Hokuyo21.mat';
 
 load(hokuyoFile);
 
@@ -50,11 +50,11 @@ ys1 = Y(2,:);
 
 %convert from meters to cells
 xis = ceil((xs1 - MAP.xmin) ./ MAP.res)+5;
-yis = ceil((ys1 - MAP.ymin) ./ MAP.res)+5;
+yis = ceil((ys1 - MAP.ymin) ./ MAP.res)+10;
 
 %check the indices and populate the map
 indGood = (xis > 1) & (yis > 1) & (xis < MAP.sizex) & (yis < MAP.sizey);
-inds = sub2ind(size(MAP.map),xis(indGood),yis(indGood));
+inds = sub2ind(size(MAP.map),yis(indGood),xis(indGood));
 MAP.map(inds) = 100;
 
 %compute correlation
@@ -64,7 +64,7 @@ y_im = MAP.ymin:MAP.res:MAP.ymax; %y-positions of each pixel of the map
 x_range = -1:0.05:1;
 y_range = -1:0.05:1;
 
-c = map_correlation(MAP.map,x_im,y_im,Y(1:3,:),x_range,y_range);
+c = map_correlation(MAP.map,x_im,y_im,Y([2 1 3],:),x_range,y_range);
 
 %plot original lidar points
 figure(1);

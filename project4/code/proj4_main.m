@@ -30,8 +30,8 @@ t_ukf_hist = zeros(1,num_imu);
 
 % Initialize all classes
 car = MagicRobot();
-map = GridMap(40, 0.1, 0.9999);
-mcl = MonteCarlo(50);
+map = GridMap(30, 0.1, 0.9999);
+mcl = MonteCarlo(20);
 ldr = Hokuyo(data.ldr.angles);
 % Initialize map
 
@@ -39,8 +39,6 @@ ldr = Hokuyo(data.ldr.angles);
 %% Main loop
 t = t_start;
 t_step = 0.005;
-mcl_motion = false;
-mcl_measure = false;
 
 while(1)
     % sample model
@@ -51,11 +49,9 @@ while(1)
         % Calculate odometry
         car.enc2odom(enc);
         % Sample motion model
-        car.motion_model();
         mcl.sample_motion_model(car.u, car.a);
 
         enc_ind = enc_ind + 1;
-        mcl_motion = true;
     end
 
     % Map correlation
@@ -63,13 +59,17 @@ while(1)
         %fprintf('ldr\t%d\n', ldr_ind);
         range = data.ldr.ranges(:,ldr_ind);
 
+        % store range
+        ldr.store_range(range);
+        % Measurement model
+        mcl.measurement_model(map.map, map.xy_bound, map.res, ldr, eul_est);
         % Transform laser into world frame
-        ldr.transform_range(car.s, rpy2wrb_xyz([0 0 car.s(3)]), range);
-        % Prune scans
+        car.update_state(mcl.best_p);
+        car.append_hist();
+        ldr.transform_range(car.s, wrb_est);
         ldr.prune_range();
-
+        
         ldr_ind = ldr_ind + 1;
-        mcl_measure = true;
     end
 
     % Ukf orientation estimation
@@ -87,20 +87,21 @@ while(1)
     end
 
     % MCL
-    if mcl_motion && mcl_measure
+    if mcl.motion && mcl.measure
         %fprintf('mcl\n');
-        mcl_motion = false;
-        mcl_measure = false;
-
+        % Resample to get new particles and new weights
+        mcl.resample();
         % Update map, car.s will be replaced by mcl.best_p
         map.update_map(car.s, ldr.p_range, ldr.dz, t);
 
         % Visualization
         map.plot_map();
-        map.plot_car('bo');
+        map.plot_car('bo', 'MarkerSize', 8);
         map.plot_traj('m');
         map.plot_lidar(ldr.p_range, 'g.');
         map.plot_particle(mcl.p, 'r.');
+        
+        % Reset flags
     end
 
     if (t > t_end) || (imu_ind > num_imu) || ...

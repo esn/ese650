@@ -36,11 +36,11 @@ classdef GridMap < handle
             
             if z_bound < 1, z_bound = log(z_bound/(1-z_bound)); end
             GM.z_bound = z_bound;
-            GM.dim = ceil((GM.xy_bound([2 4]) - GM.xy_bound([1 3])) ./ GM.res);
-            GM.map = zeros(GM.dim(2), GM.dim(1), 'uint8') + 128;
-            GM.rgb = zeros(GM.dim(2), GM.dim(1), 3, 'uint8');
+            GM.dim = ceil((GM.xy_bound([2 4]) - GM.xy_bound([1 3])) ./ GM.res + 1);
+            GM.map = zeros(GM.dim(2), GM.dim(1), 'int8');
+            GM.rgb = zeros(GM.dim(2), GM.dim(1), 3, 'int8');
             
-            GM.z_coeff = -255/2/GM.z_bound;
+            GM.z_coeff = 255/2/GM.z_bound;
             
             GM.l = GM.l / GM.res;
             GM.s_hist = zeros(3,max_len);
@@ -97,14 +97,14 @@ classdef GridMap < handle
         % Visualization methods
         function plot_map(GM)
             if isempty(GM.h_map)
-                GM.h_map = imshow(GM.map, 'InitialMagnification', 'fit');
+                GM.h_map = imshow(-GM.map, 'InitialMagnification', 'fit');
                 GM.h_title = title(sprintf('t=%.4f', GM.t - GM.t_hist(1)));
                 set(gca, 'Visible', 'On');
                 axis equal;
                 axis tight;
                 axis xy;
             else
-                set(GM.h_map, 'CData', GM.map);
+                set(GM.h_map, 'CData', -GM.map);
                 set(GM.h_title, 'String', ...
                     sprintf('t=%.4f', GM.t - GM.t_hist(1)));
             end
