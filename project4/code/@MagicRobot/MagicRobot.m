@@ -5,15 +5,17 @@ classdef MagicRobot < handle
     end
     
     properties
-        c = 1.8  % width coefficient
+        c = 1.85  % width coefficient
         w = (311.15 + 476.25)/2000  % axle width
         weff
         r = 254/2000  % wheel radius
         l = 0.3  % robot length
-        s  % robot state
+        
         a  % parameter in noise
         u  % odometry
+        s  % robot state
         s_hist
+        
         k = 0
         
         h_traj
@@ -48,12 +50,10 @@ classdef MagicRobot < handle
         % Motion methods
         function motion_model(MR)
             MR.s = MR.motion(MR.s, MR.u);
-            MR.append_hist();
         end
         
         function update_state(MR, s)
             MR.s = s;
-            MR.append_hist();
         end
         
         % Logging methods

@@ -1,7 +1,7 @@
 clear all
 close all
 clc
-data_id = 20;
+data_id = 22;
 data = load_data(data_id);
 
 num_enc = length(data.enc.ts);
@@ -27,7 +27,7 @@ for i = 1:num_enc
     lidar.prune_range();
     
     % Update map
-    map.update_map(car.s, lidar.p_range, lidar.dz);
+    map.update_map(car.s, lidar.p_range, lidar.dz, 0);
     
     % Visualization
     map.plot_map();

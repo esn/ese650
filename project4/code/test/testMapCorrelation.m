@@ -30,7 +30,6 @@ Tsensor = trans([0.1 0 0])*rotz(0)*roty(0)*rotx(0);
 
 %transform for the imu reading (assuming zero for this example)
 Timu = rotz(0)*roty(0)*rotx(0);
-
 %body to world transform (initially, one can assume it's zero)
 Tpose   = trans([0 0 0]);
 
@@ -50,8 +49,8 @@ xs1 = Y(1,:);
 ys1 = Y(2,:);
 
 %convert from meters to cells
-xis = ceil((xs1 - MAP.xmin) ./ MAP.res);
-yis = ceil((ys1 - MAP.ymin) ./ MAP.res);
+xis = ceil((xs1 - MAP.xmin) ./ MAP.res)+5;
+yis = ceil((ys1 - MAP.ymin) ./ MAP.res)+5;
 
 %check the indices and populate the map
 indGood = (xis > 1) & (yis > 1) & (xis < MAP.sizex) & (yis < MAP.sizey);

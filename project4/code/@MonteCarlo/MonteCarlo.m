@@ -3,6 +3,7 @@ classdef MonteCarlo < handle
     
     properties
         p  % particles
+        w
         motion = false
         measure = false
         best_p
@@ -13,10 +14,10 @@ classdef MonteCarlo < handle
         % Constructor
         function MC = MonteCarlo(n_p)
             MC.p = zeros(3,n_p);
+            MC.w = ones(1,n_p) ./n_p;
         end
         
         % Sampling method
-                % Should this be here?
         function sample_motion_model(MC, u, a)
             MC.p = MagicRobot.motion(MC.p, u, a);
         end

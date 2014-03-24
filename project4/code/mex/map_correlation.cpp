@@ -73,7 +73,3 @@ void mexFunction(int nlhs, mxArray *plhs[],
     }
   }
 }
-
-
-
-

@@ -1,6 +1,5 @@
 classdef Hokuyo < handle
-    
-    
+
     properties
         bTs = [133.23 0 514.35]/1000;
         
