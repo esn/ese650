@@ -5,9 +5,9 @@ classdef MagicRobot < handle
     end
     
     properties
-        c = 1.85  % width coefficient
+        c = 1.8  % width coefficient
         w = (311.15 + 476.25)/2000  % axle width
-        weff
+        w_eff
         r = 254/2000  % wheel radius
         l = 0.3  % robot length
         
@@ -27,10 +27,10 @@ classdef MagicRobot < handle
         % Constructor
         function MR = MagicRobot(s, a, max_len)
             if nargin < 3, max_len = 5000; end
-            if nargin < 2, a = [0.2, 0.2]; end
+            if nargin < 2, a = [0.2, 5]; end
             if nargin < 1, s = zeros(3,1); end
             
-            MR.weff = MR.w * MR.c;
+            MR.w_eff = MR.w * MR.c;
             MR.a = a;
             MR.s = s(:);
             MR.s_hist = zeros(3, max_len);
@@ -40,7 +40,7 @@ classdef MagicRobot < handle
         function u = enc2odom(MR, enc)
             dR = (enc(1) + enc(3)) / 2 * MR.enc_coeff * MR.r;
             dL = (enc(2) + enc(4)) / 2 * MR.enc_coeff * MR.r;
-            alpha = (dR - dL) / MR.weff;
+            alpha = (dR - dL) / MR.w_eff;
             dC = (dR + dL) / 2;
             u(1) = dC;
             u(2) = alpha;
@@ -108,18 +108,16 @@ classdef MagicRobot < handle
             
             if nargin < 3
                 noise_alpha1 = zeros(1, num_s);
-                noise_alpha2 = zeros(1, num_s);
                 noise_trans  = zeros(1, num_s);
             else
                 noise_trans  = normrnd(0, a(1)*abs(trans), 1, num_s);
                 noise_alpha1 = normrnd(0, a(2)*abs(alpha/2), 1, num_s);
-                noise_alpha2 = normrnd(0, a(2)*abs(alpha/2), 1, num_s);
             end
             
-            theta = theta + alpha/2 + noise_alpha1;
+            theta = theta + alpha/2 + noise_alpha1/2;
             x = x + (trans + noise_trans) .* cos(theta);
             y = y + (trans + noise_trans) .* sin(theta);
-            theta = theta + alpha/2 + noise_alpha2;
+            theta = theta + alpha/2 + noise_alpha1/2;
             
             s(1,:) = x;
             s(2,:) = y;

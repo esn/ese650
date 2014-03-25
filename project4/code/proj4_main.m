@@ -1,7 +1,7 @@
 %% Project4 main
 clear all; close all; clc;
 addpath(genpath('.'));
-data_id = 21;
+data_id = 20;
 data = load_data(data_id);
 data.imu.real_vals = raw2real(data.imu.vals);
 
@@ -30,11 +30,11 @@ t_ukf_hist = zeros(1,num_imu);
 
 % Initialize all classes
 car = MagicRobot();
-map = GridMap(30, 0.1, 0.9999);
-mcl = MonteCarlo(20);
+map = GridMap(35, 0.1, 0.9995);
+mcl = MonteCarlo(36);
 ldr = Hokuyo(data.ldr.angles);
 % Initialize map
-
+map.plot_map();
 
 %% Main loop
 t = t_start;
@@ -58,15 +58,20 @@ while(1)
     if  t > t_ldr(ldr_ind)
         %fprintf('ldr\t%d\n', ldr_ind);
         range = data.ldr.ranges(:,ldr_ind);
-
+        
         % store range
         ldr.store_range(range);
+        ldr.transform_range(car.s, eul_est);
+        ldr.prune_range();
+        map.plot_lidar_orig(ldr.p_range, 'b.');
+        
         % Measurement model
         mcl.measurement_model(map.map, map.xy_bound, map.res, ldr, eul_est);
+        
         % Transform laser into world frame
         car.update_state(mcl.best_p);
         car.append_hist();
-        ldr.transform_range(car.s, wrb_est);
+        ldr.transform_range(car.s, eul_est);
         ldr.prune_range();
         
         ldr_ind = ldr_ind + 1;
@@ -90,16 +95,16 @@ while(1)
     if mcl.motion && mcl.measure
         %fprintf('mcl\n');
         % Resample to get new particles and new weights
+        map.plot_particle(mcl.p, 'ro');
         mcl.resample();
         % Update map, car.s will be replaced by mcl.best_p
-        map.update_map(car.s, ldr.p_range, ldr.dz, t);
+        map.update_map(mcl.best_p, ldr.p_range, ldr.dz, t);
 
         % Visualization
         map.plot_map();
         map.plot_car('bo', 'MarkerSize', 8);
         map.plot_traj('m');
-        map.plot_lidar(ldr.p_range, 'g.');
-        map.plot_particle(mcl.p, 'r.');
+        map.plot_lidar_corr(ldr.p_range, 'g.');
         
         % Reset flags
     end

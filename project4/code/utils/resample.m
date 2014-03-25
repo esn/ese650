@@ -13,7 +13,7 @@ wsum = wsum./wsum(end);
 
 % Random samples with cumsum:
 r = rand(1, n);
-[ignore, isort] = sort([wsum r]);
+[~, isort] = sort([wsum r]);
 
 % Use sum of 1's to get indices:
 s = [ones(1,nw) zeros(1,n)];
@@ -22,3 +22,5 @@ ssum = cumsum(s);
 
 % Return indices:
 index = ssum(s == 0) + 1;
+
+end

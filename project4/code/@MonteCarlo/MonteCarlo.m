@@ -5,6 +5,7 @@ classdef MonteCarlo < handle
         p  % particles
         w
         n_p
+        w_eff_thresh
         motion = false
         measure = false
         best_p
@@ -15,6 +16,7 @@ classdef MonteCarlo < handle
         % Constructor
         function MC = MonteCarlo(n_p)
             MC.n_p = n_p;
+            MC.w_eff_thresh = sqrt(MC.n_p);
             MC.p = zeros(3,MC.n_p);
             MC.w = ones(1,MC.n_p) ./ MC.n_p;
         end
@@ -27,40 +29,46 @@ classdef MonteCarlo < handle
         
         % Measurement methods
         function measurement_model(MC, map, xy_bound, res, ldr, eul)
+            map(map < 0) = 0;
             x_im = xy_bound(1):res:xy_bound(2);
             y_im = xy_bound(3):res:xy_bound(4);
-            x_win = -0.5:res:0.5;
-            y_win = -0.5:res:0.5;
+            x_win = [-4:4] * res;
+            y_win = [-4:4] * res;
             cs = zeros(1,MC.n_p);
-            c_ind = zeros(1,MC.n_p);
+            
             for i = 1:MC.n_p
                 eul(3) = MC.p(3,i);
-                ldr.transform_range(MC.p(:,i), rpy2wrb_xyz(eul));
+                ldr.transform_range(MC.p(:,i), eul);
                 ldr.prune_range();
-                p_range = [ldr.p_range([2 1],:); zeros(1, length(ldr.p_range))];
+                p_range = [ldr.p_range([2 1],:); ...
+                    zeros(1, length(ldr.p_range))];
                 c = map_correlation(map, x_im, y_im, p_range, x_win, y_win);
-                [cs(i), c_ind(i)] = max(c(:));
+                cs(i) = max(c(:));
             end
-            [max_c, max_ind] = max(cs);
-            ind = c_ind(max_ind);  % Find the ind of the highest c
-            [row, col] = ind2sub(size(c), ind);  % find row and col
-            x = ((size(c,2)/2) - col) * res;  % convert row and col to x and y
-            y = ((size(c,2)/2) - row) * res;
+            
+            if sum(cs) > 0
+                MC.w = MC.w .* cs;
+            end
+            [~, max_ind] = max(MC.w);
             MC.best_p = MC.p(:,max_ind);
-            MC.w = MC.w .* cs;
-            MC.renormailze();
+            MC.renormailze_w();
             MC.measure = true;
         end
         
         function resample(MC)
-            MC.p = repmat(MC.best_p, 1, MC.n_p);
-            MC.w = ones(1,MC.n_p) ./ MC.n_p;
+            w_eff = sum(MC.w)^2 / sum(MC.w.^2);
+            % resample
+            if w_eff < MC.n_p*0.75
+                new_ind = resample(MC.w, MC.n_p);
+                MC.p = MC.p(:,new_ind);
+                MC.w = ones(1,MC.n_p) ./ MC.n_p;
+            end
             MC.measure = false;
             MC.motion = false;
         end
         
-        function renormailze(MC)
-            MC.w = MC.w / norm(MC.w, 2);
+        function renormailze_w(MC)
+            MC.w = MC.w / sum(MC.w);
         end
         
         % Visualization methods
