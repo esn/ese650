@@ -28,14 +28,14 @@ classdef Hokuyo < handle
     methods
         function H = Hokuyo(angle, a_bound, r_bound, h_bound)
             if nargin < 4, h_bound = [-0.2, 3]; end
-            if nargin < 3, r_bound = [0.3, 6]; end
-            if nargin < 2, a_bound = [-2.2, 2.2]; end
+            if nargin < 3, r_bound = [0.3, 7]; end
+            if nargin < 2, a_bound = [-2.25, 2.25]; end
             H.a_bound = a_bound;
             H.r_bound = r_bound;
             H.h_bound = h_bound;
             H.angle = angle(1:H.step:end); % subsample
             H.dz(1) = log(H.p11/(1 - H.p00))/2;  % occupy
-            H.dz(2) = log((1 - H.p11)/H.p00)/2;  % clear
+            H.dz(2) = log((1 - H.p11)/H.p00)/3;  % clear
         end
         
         % Lidar methods

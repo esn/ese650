@@ -5,7 +5,7 @@ classdef MagicRobot < handle
     end
     
     properties
-        c = 1.8  % width coefficient
+        c = 1.85  % width coefficient
         w = (311.15 + 476.25)/2000  % axle width
         w_eff
         r = 254/2000  % wheel radius
@@ -27,7 +27,7 @@ classdef MagicRobot < handle
         % Constructor
         function MR = MagicRobot(s, a, max_len)
             if nargin < 3, max_len = 5000; end
-            if nargin < 2, a = [0.2, 5]; end
+            if nargin < 2, a = [0.25, 5]; end
             if nargin < 1, s = zeros(3,1); end
             
             MR.w_eff = MR.w * MR.c;
@@ -107,17 +107,17 @@ classdef MagicRobot < handle
             num_s = size(x,2);
             
             if nargin < 3
-                noise_alpha1 = zeros(1, num_s);
+                noise_alpha = zeros(1, num_s);
                 noise_trans  = zeros(1, num_s);
             else
                 noise_trans  = normrnd(0, a(1)*abs(trans), 1, num_s);
-                noise_alpha1 = normrnd(0, a(2)*abs(alpha/2), 1, num_s);
+                noise_alpha = normrnd(0, a(2)*abs(alpha/2), 1, num_s);
             end
             
-            theta = theta + alpha/2 + noise_alpha1/2;
+            theta = theta + alpha/2 + noise_alpha/2;
             x = x + (trans + noise_trans) .* cos(theta);
             y = y + (trans + noise_trans) .* sin(theta);
-            theta = theta + alpha/2 + noise_alpha1/2;
+            theta = theta + alpha/2 + noise_alpha/2;
             
             s(1,:) = x;
             s(2,:) = y;

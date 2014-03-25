@@ -5,7 +5,7 @@ data = load_data(data_id);
 
 car = MagicRobot();
 map = GridMap(40, 0.1, 0.999);
-mcl = MonteCarlo(50);
+mcl = MonteCarlo(36);
 ldr = Hokuyo(data.ldr.angles);
 map.plot_map();
 % Get first map
@@ -29,7 +29,7 @@ for i = 1:3000
     car.s = mcl.best_p;
     ldr.transform_range(car.s, [0 0 car.s(3)]);
     ldr.prune_range();
-    map.update_map(mcl.best_p, ldr.p_range, ldr.dz, 0);
+    map.update_map(car.s, ldr.p_range, ldr.dz, 0);
     
     map.plot_map()
     map.plot_car('bo')

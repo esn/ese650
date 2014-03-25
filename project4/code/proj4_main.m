@@ -1,7 +1,7 @@
 %% Project4 main
 clear all; close all; clc;
 addpath(genpath('.'));
-data_id = 20;
+data_id = 23;
 data = load_data(data_id);
 data.imu.real_vals = raw2real(data.imu.vals);
 
@@ -31,7 +31,7 @@ t_ukf_hist = zeros(1,num_imu);
 % Initialize all classes
 car = MagicRobot();
 map = GridMap(35, 0.1, 0.9995);
-mcl = MonteCarlo(36);
+mcl = MonteCarlo(30);
 ldr = Hokuyo(data.ldr.angles);
 % Initialize map
 map.plot_map();
@@ -118,8 +118,10 @@ while(1)
     drawnow
 end
 
+% Truncate history
 map.truncate_hist();
-
+t_ukf_hist = t_ukf_hist(1:k_ukf_hist);
+eul_ukf_hist = eul_ukf_hist(:,1:k_ukf_hist);
 %% Final visualization
 h_eul = figure('Name', 'Euler Angles');
 eul_ukf_hist = fix_eul(eul_ukf_hist);

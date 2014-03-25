@@ -32,8 +32,8 @@ classdef MonteCarlo < handle
             map(map < 0) = 0;
             x_im = xy_bound(1):res:xy_bound(2);
             y_im = xy_bound(3):res:xy_bound(4);
-            x_win = [-4:4] * res;
-            y_win = [-4:4] * res;
+            x_win = [-3:3] * res;
+            y_win = [-3:3] * res;
             cs = zeros(1,MC.n_p);
             
             for i = 1:MC.n_p
@@ -51,6 +51,7 @@ classdef MonteCarlo < handle
             end
             [~, max_ind] = max(MC.w);
             MC.best_p = MC.p(:,max_ind);
+%             if sum(cs) > 0, MC.best_p(3) = MC.best_p(3) + 0.016; end
             MC.renormailze_w();
             MC.measure = true;
         end
