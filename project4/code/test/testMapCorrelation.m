@@ -51,8 +51,8 @@ xs1 = Y(1,:);
 ys1 = Y(2,:);
 
 %convert from meters to cells
-xis = ceil((xs1 - MAP.xmin) ./ MAP.res);
-yis = ceil((ys1 - MAP.ymin) ./ MAP.res);
+xis = round((xs1 - MAP.xmin) ./ MAP.res);
+yis = round((ys1 - MAP.ymin) ./ MAP.res);
 
 %check the indices and populate the map
 indGood = (xis > 1) & (yis > 1) & (xis < MAP.sizex) & (yis < MAP.sizey);
@@ -61,7 +61,7 @@ inds = sub2ind(size(MAP.map),yis(indGood),xis(indGood));
     xis(indGood), yis(indGood));
 inds_cl = sub2ind(size(MAP.map), y_cl, x_cl);
 MAP.map(inds) = 120;
-MAP.map(inds_cl) = -100;
+% MAP.map(inds_cl) = 0;
 
 
 %compute correlation
@@ -84,6 +84,7 @@ figure(2);
 imshow(-MAP.map);
 axis xy
 hold on
+plot((Y(1,:) + MAP.xmax)/MAP.res, (Y(2,:) + MAP.ymax)/MAP.res, 'r.')
 plot((Y_rot(1,:) + MAP.xmax)/MAP.res, (Y_rot(2,:) + MAP.ymax)/MAP.res, 'g.')
 
 %plot correlation

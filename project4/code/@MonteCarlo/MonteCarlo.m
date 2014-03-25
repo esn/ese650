@@ -32,8 +32,8 @@ classdef MonteCarlo < handle
             map(map < 0) = 0;
             x_im = xy_bound(1):res:xy_bound(2);
             y_im = xy_bound(3):res:xy_bound(4);
-            x_win = [-3:3] * res;
-            y_win = [-3:3] * res;
+            x_win = [-2:2] * res;
+            y_win = [-2:2] * res;
             cs = zeros(1,MC.n_p);
             
             for i = 1:MC.n_p
@@ -45,13 +45,12 @@ classdef MonteCarlo < handle
                 c = map_correlation(map, x_im, y_im, p_range, x_win, y_win);
                 cs(i) = max(c(:));
             end
-            
+
             if sum(cs) > 0
                 MC.w = MC.w .* cs;
             end
             [~, max_ind] = max(MC.w);
             MC.best_p = MC.p(:,max_ind);
-%             if sum(cs) > 0, MC.best_p(3) = MC.best_p(3) + 0.016; end
             MC.renormailze_w();
             MC.measure = true;
         end
@@ -59,7 +58,7 @@ classdef MonteCarlo < handle
         function resample(MC)
             w_eff = sum(MC.w)^2 / sum(MC.w.^2);
             % resample
-            if w_eff < MC.n_p*0.75
+            if w_eff < MC.n_p*0.25
                 new_ind = resample(MC.w, MC.n_p);
                 MC.p = MC.p(:,new_ind);
                 MC.w = ones(1,MC.n_p) ./ MC.n_p;

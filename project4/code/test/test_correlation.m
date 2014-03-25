@@ -5,7 +5,7 @@ data = load_data(data_id);
 
 car = MagicRobot();
 map = GridMap(40, 0.1, 0.999);
-mcl = MonteCarlo(36);
+mcl = MonteCarlo(49);
 ldr = Hokuyo(data.ldr.angles);
 map.plot_map();
 % Get first map

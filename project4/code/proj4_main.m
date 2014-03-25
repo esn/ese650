@@ -1,8 +1,9 @@
 %% Project4 main
 clear all; close all; clc;
 addpath(genpath('.'));
-data_id = 23;
-data = load_data(data_id);
+data_id = 3;
+data = load_data(data_id, '../Project4_Test', true);
+% data = load_data(data_id);
 data.imu.real_vals = raw2real(data.imu.vals);
 
 %% Initialization
@@ -30,8 +31,8 @@ t_ukf_hist = zeros(1,num_imu);
 
 % Initialize all classes
 car = MagicRobot();
-map = GridMap(35, 0.1, 0.9995);
-mcl = MonteCarlo(30);
+map = GridMap(40, 0.1, 0.999);
+mcl = MonteCarlo(50);
 ldr = Hokuyo(data.ldr.angles);
 % Initialize map
 map.plot_map();
@@ -61,35 +62,35 @@ while(1)
         
         % store range
         ldr.store_range(range);
-        ldr.transform_range(car.s, eul_est);
+        ldr.transform_range(car.s, [0 0 car.s(3)]);
         ldr.prune_range();
         map.plot_lidar_orig(ldr.p_range, 'b.');
         
         % Measurement model
-        mcl.measurement_model(map.map, map.xy_bound, map.res, ldr, eul_est);
+        mcl.measurement_model(map.map, map.xy_bound, map.res, ldr, [0 0 0]);
         
         % Transform laser into world frame
         car.update_state(mcl.best_p);
         car.append_hist();
-        ldr.transform_range(car.s, eul_est);
+        ldr.transform_range(car.s, [0 0 car.s(3)]);
         ldr.prune_range();
         
         ldr_ind = ldr_ind + 1;
     end
 
     % Ukf orientation estimation
-    if t > t_imu(imu_ind)
-        %fprintf('imu\t%d\n', imu_ind);
-        imu = data.imu.real_vals(:,imu_ind);
-        X = ukf(imu(1:3), imu(4:6), t_imu(imu_ind), true);
-        imu_ind = imu_ind + 1;
-
-        k_ukf_hist = k_ukf_hist + 1;
-        wrb_est = quat2dcm(quatconj(X(1:4)'));
-        eul_est = wrb2rpy_xyz(wrb_est);
-        eul_ukf_hist(:,k_ukf_hist) = eul_est;
-        t_ukf_hist(:,k_ukf_hist) = t;
-    end
+%     if t > t_imu(imu_ind)
+%         %fprintf('imu\t%d\n', imu_ind);
+%         imu = data.imu.real_vals(:,imu_ind);
+%         X = ukf(imu(1:3), imu(4:6), t_imu(imu_ind), true);
+%         imu_ind = imu_ind + 1;
+% 
+%         k_ukf_hist = k_ukf_hist + 1;
+%         wrb_est = quat2dcm(quatconj(X(1:4)'));
+%         eul_est = wrb2rpy_xyz(wrb_est);
+%         eul_ukf_hist(:,k_ukf_hist) = eul_est;
+%         t_ukf_hist(:,k_ukf_hist) = t;
+%     end
 
     % MCL
     if mcl.motion && mcl.measure
@@ -119,19 +120,19 @@ while(1)
 end
 
 % Truncate history
-map.truncate_hist();
-t_ukf_hist = t_ukf_hist(1:k_ukf_hist);
-eul_ukf_hist = eul_ukf_hist(:,1:k_ukf_hist);
+% map.truncate_hist();
+% t_ukf_hist = t_ukf_hist(1:k_ukf_hist);
+% eul_ukf_hist = eul_ukf_hist(:,1:k_ukf_hist);
 %% Final visualization
-h_eul = figure('Name', 'Euler Angles');
-eul_ukf_hist = fix_eul(eul_ukf_hist);
-plot_state(h_eul, data.imu.ts(1:k_ukf_hist), ...
-    eul_ukf_hist(:,1:k_ukf_hist), 'eul', 'est');
-figure('Name', 'Yaw')
-hold on
-plot(t_ukf_hist, eul_ukf_hist(3,:), 'r');
-plot(map.t_hist, map.s_hist(3,:), 'b');
-hold off
-axis tight
-grid on
-set(gca, 'Box', 'On')
+% h_eul = figure('Name', 'Euler Angles');
+% eul_ukf_hist = fix_eul(eul_ukf_hist);
+% plot_state(h_eul, data.imu.ts(1:k_ukf_hist), ...
+%     eul_ukf_hist(:,1:k_ukf_hist), 'eul', 'est');
+% figure('Name', 'Yaw')
+% hold on
+% plot(t_ukf_hist, eul_ukf_hist(3,:), 'r');
+% plot(map.t_hist, map.s_hist(3,:), 'b');
+% hold off
+% axis tight
+% grid on
+% set(gca, 'Box', 'On')

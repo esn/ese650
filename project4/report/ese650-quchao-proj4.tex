@@ -102,34 +102,108 @@
 \begin{multicols}{2} % Two-column layout throughout the main article text
 
 \section{Introduction}
-\lettrine[nindent=0em,lines=2]{S}im
+\lettrine[nindent=0em,lines=2]{D}ue to lack of time, this report will be relatively short
+and concise compared to my previous reports.
 
 %----------------------------------------------------------------------------------------
 %	PRE-PROCESSING
 %----------------------------------------------------------------------------------------
 
 \section{Pre-processing}
-
+The pre-processing step is basically the same as that of project 2. Mainly converting raw
+imu reading to physical unit. For laser data, I select range readings subject to distance
+and angle restriction.
 
 %----------------------------------------------------------------------------------------
 %	METHODS
 %----------------------------------------------------------------------------------------
 
 \section{Methods}
+\subsection{Motion Model}
+For motion model, I refer to the one in Thrun's \textit{Probabilistic Robotics} with a few
+modifications. The model is shown as follows:
+\begin{align*}
+dR &= \mbox{average encoder right} \\
+dL &= \mbox{average encoder left} \\
+dC &= \frac{dR + dL}{2} \\
+\alpha &= \frac{dR-dL}{w_{eff}} \\
+x_{t+1} &= x_{t} + \cos(\theta + \alpha/2) \\
+y_{t+1} &= y_{t} + \sin(\theta + \alpha/2) \\
+\theta_{t+1} &= \theta_t + \alpha
+\end{align*}
 
+For localization and mapping, I use the MCL algorithm, which is also from Thrun's work.
+A brief description of the algorithm is shown as follows:
+\begin{enumerate}
+\item initialize number of particles $m$
+\item sample $m$ particles from motion model
+\item use measurement model to weight each particle
+\item re-sample based on number of effective particles
+\item assign new particles and iterate again
+\end{enumerate}
 %----------------------------------------------------------------------------------------
 %	RESULTS
 %----------------------------------------------------------------------------------------
 
 \section{Results}
+Here are some of the results on training set
+\begin{figure}[H]
+\centering
+\includegraphics[width=\columnwidth]{fig/map20.pdf}
+\caption{Map 20}
+\label{fig:map20}
+\end{figure}
 
+\begin{figure}[H]
+\centering
+\includegraphics[width=\columnwidth]{fig/map21.pdf}
+\caption{Map 21}
+\label{fig:map21}
+\end{figure}
 
+\begin{figure}[H]
+\centering
+\includegraphics[width=\columnwidth]{fig/map22.pdf}
+\caption{Map 22}
+\label{fig:map22}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\columnwidth]{fig/map23.pdf}
+\caption{Map 23}
+\label{fig:map23}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\columnwidth]{fig/map24.pdf}
+\caption{Map 24}
+\label{fig:map24}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\columnwidth]{fig/test1.pdf}
+\caption{Test 1}
+\label{fig:test1}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\columnwidth]{fig/test2.pdf}
+\caption{Test 2}
+\label{fig:test2}
+\end{figure}
 %----------------------------------------------------------------------------------------
 %	DISCUSSION
 %----------------------------------------------------------------------------------------
 
 \section{Discussion}
-
+I wasted most of my time on debugging my code until I found out that in testMapCorrelation,
+the example uses ceil for getting cell indices, while in map\_correlation, it uses round.
+This type of inconsistency caused my correction to have a constant rotation in it. I found this
+out 2 hours before the class, and now it seems to work reasonably.
 %----------------------------------------------------------------------------------------
 %	REFERENCE LIST
 %----------------------------------------------------------------------------------------
