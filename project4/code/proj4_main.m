@@ -1,7 +1,7 @@
 %% Project4 main
 clear all; close all; clc;
 addpath(genpath('.'));
-data_id = 24;
+data_id = 20;
 data = load_data(data_id);
 data.imu.real_vals = raw2real(data.imu.vals);
 
