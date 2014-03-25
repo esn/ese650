@@ -27,7 +27,7 @@ classdef MagicRobot < handle
         % Constructor
         function MR = MagicRobot(s, a, max_len)
             if nargin < 3, max_len = 5000; end
-            if nargin < 2, a = [0.3, 8]; end
+            if nargin < 2, a = [0.3, 4]; end
             if nargin < 1, s = zeros(3,1); end
             
             MR.w_eff = MR.w * MR.c;

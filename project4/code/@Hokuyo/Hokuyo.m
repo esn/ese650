@@ -12,7 +12,7 @@ classdef Hokuyo < handle
         r_bound  % range bound
         h_bound  % height bound
         
-        step = 3;
+        step = 2;
         range
         angle
         p_range
