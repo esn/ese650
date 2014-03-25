@@ -1,7 +1,7 @@
 %% Project4 main
 clear all; close all; clc;
 addpath(genpath('.'));
-data_id = 2;
+data_id = 3;
 data = load_data(data_id, '../Project4_Test', true);
 % data = load_data(data_id);
 data.imu.real_vals = raw2real(data.imu.vals);
@@ -41,7 +41,7 @@ map.plot_map();
 t = t_start;
 t_step = 0.005;
 
-while(1)
+while(1)0
     % sample model
     if t > t_enc(enc_ind)
         %fprintf('enc\t%d\n', enc_ind);

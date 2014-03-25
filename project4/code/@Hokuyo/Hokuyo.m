@@ -4,9 +4,7 @@ classdef Hokuyo < handle
         bTs = [133.23 0 514.35]/1000;
     end
     
-    properties
-        
-        
+    properties        
         h_ldr
         a_bound  % angle bound
         r_bound  % range bound
@@ -34,8 +32,8 @@ classdef Hokuyo < handle
             H.r_bound = r_bound;
             H.h_bound = h_bound;
             H.angle = angle(1:H.step:end); % subsample
-            H.dz(1) = log(H.p11/(1 - H.p00))/2;  % occupy
-            H.dz(2) = log((1 - H.p11)/H.p00)/4;  % clear
+            H.dz(1) = log(H.p11/(1 - H.p00))/3;  % occupy
+            H.dz(2) = log((1 - H.p11)/H.p00)/6;  % clear
         end
         
         % Lidar methods
