@@ -25,15 +25,15 @@ classdef Hokuyo < handle
     
     methods
         function H = Hokuyo(angle, a_bound, r_bound, h_bound)
-            if nargin < 4, h_bound = [-0.2, 3]; end
-            if nargin < 3, r_bound = [0.4, 7.5]; end
+            if nargin < 4, h_bound = [-0.2, 2.2]; end
+            if nargin < 3, r_bound = [0.4, 25]; end
             if nargin < 2, a_bound = [-2.25, 2.25]; end
             H.a_bound = a_bound;
             H.r_bound = r_bound;
             H.h_bound = h_bound;
             H.angle = angle(1:H.step:end); % subsample
-            H.dz(1) = log(H.p11/(1 - H.p00))/3;  % occupy
-            H.dz(2) = log((1 - H.p11)/H.p00)/6;  % clear
+            H.dz(1) = log(H.p11/(1 - H.p00))/4;  % occupy
+            H.dz(2) = log((1 - H.p11)/H.p00)/12;  % clear
         end
         
         % Lidar methods
@@ -69,9 +69,9 @@ classdef Hokuyo < handle
 %             good_ind = good_ind & ...
 %                 ((H.angle > H.a_bound(1)) & ...
 %                 (H.angle < H.a_bound(2)));
-%             good_ind = good_ind & ...
-%                 ((H.p_range(3,:)' > H.h_bound(1)) & ...
-%                 (H.p_range(3,:)' < H.h_bound(2)));
+            good_ind = good_ind & ...
+                ((H.p_range(3,:)' > H.h_bound(1)) & ...
+                (H.p_range(3,:)' < H.h_bound(2)));
             H.p_range = H.p_range(:,good_ind);
             H.ind = good_ind;
         end

@@ -28,7 +28,7 @@ function omg_real = omg2real(omg_raw)
 omg_scale = 0.0171;
 % omg_scale = 0.0125;
 % omg_bias  = [374; 375; 370]; % [bwx, bwy, bwz]
-% omg_bias = [373.86; 375.67; 369.75]; % train
-omg_bias = [373.60; 379.10; 372.40];
+omg_bias = [373.86; 375.67; 369.75]; % train
+% omg_bias = [373.60; 379.10; 372.40];
 omg_real = bsxfun(@minus, omg_raw, omg_bias) * omg_scale;
 end

@@ -29,13 +29,13 @@ classdef MonteCarlo < handle
         
         % Measurement methods
         function measurement_model(MC, map, xy_bound, res, ldr, eul)
-            map(map < 0) = 0;
+            map(map < -25) = -25;
             x_im = xy_bound(1):res:xy_bound(2);
             y_im = xy_bound(3):res:xy_bound(4);
-            x_win = [-2:2] * res;
-            y_win = [-2:2] * res;
+            x_win = [-1:1] * res;
+            y_win = [-1:1] * res;
             cs = zeros(1,MC.n_p);
-            
+            cind = zeros(1,MC.n_p);
             for i = 1:MC.n_p
                 eul(3) = MC.p(3,i);
                 ldr.transform_range(MC.p(:,i), eul);
@@ -43,13 +43,16 @@ classdef MonteCarlo < handle
                 p_range = [ldr.p_range([2 1],:); ...
                     zeros(1, length(ldr.p_range))];
                 c = map_correlation(map, x_im, y_im, p_range, x_win, y_win);
-                cs(i) = max(c(:));
+                [cs(i), cind(i)] = max(c(:));
             end
-
+            
             if sum(cs) > 0
                 MC.w = MC.w .* cs;
             end
-            [~, max_ind] = max(MC.w);
+            [~, max_ind] = max(cs);
+            %             [row, col] = ind2sub([1 1]*length(x_win), cind(max_ind));
+            %             x = x_win(col);
+            %             y = y_win(row);
             MC.best_p = MC.p(:,max_ind);
             MC.renormailze_w();
             MC.measure = true;
@@ -58,7 +61,7 @@ classdef MonteCarlo < handle
         function resample(MC)
             w_eff = sum(MC.w)^2 / sum(MC.w.^2);
             % resample
-            if w_eff < MC.n_p*0.25
+            if w_eff < MC.n_p * 0.2
                 new_ind = resample(MC.w, MC.n_p);
                 MC.p = MC.p(:,new_ind);
                 MC.w = ones(1,MC.n_p) ./ MC.n_p;
@@ -86,4 +89,3 @@ classdef MonteCarlo < handle
     end
     
 end
-
