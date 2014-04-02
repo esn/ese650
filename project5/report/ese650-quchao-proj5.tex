@@ -13,13 +13,14 @@
 
 \usepackage[hmarginratio=1:1,top=32mm,columnsep=20pt]{geometry} % Document margins
 \usepackage{multicol} % Used for the two-column layout of the document
-\usepackage[hang, small,labelfont=bf,up,textfont=it,up]{caption} % Custom captions under/above floats in tables or figures
+% Custom captions under/above floats in tables or figures
+\usepackage[hang, small,labelfont=bf,up,textfont=it,up]{caption}
 \usepackage{booktabs} % Horizontal rules in tables
-\usepackage{float} % Required for tables and figures in the multi-column environment - they need to be placed in specific locations with the [H] (e.g. \begin{table}[H])
+\usepackage{float}
 \usepackage{hyperref} % For hyperlinks in the PDF
 
-\usepackage{lettrine} % The lettrine is the first enlarged letter at the beginning of the text
-\usepackage{paralist} % Used for the compactitem environment which makes bullet points with less space between them
+\usepackage{lettrine}
+\usepackage{paralist}
 
 \usepackage{abstract} % Allows abstract customization
 \renewcommand{\abstractnamefont}{\normalfont\bfseries} % Set the "Abstract" text to bold
@@ -28,14 +29,14 @@
 \usepackage{titlesec} % Allows customization of titles
 \renewcommand\thesection{\Roman{section}} % Roman numerals for the sections
 \renewcommand\thesubsection{\Roman{subsection}} % Roman numerals for subsections
-\titleformat{\section}[block]{\large\scshape\centering}{\thesection.}{1em}{} % Change the look of the section titles
-\titleformat{\subsection}[block]{\large}{\thesubsection.}{1em}{} % Change the look of the section titles
+\titleformat{\section}[block]{\large\scshape\centering}{\thesection.}{1em}{}
+\titleformat{\subsection}[block]{\large}{\thesubsection.}{1em}{}
 
 \usepackage{fancyhdr} % Headers and footers
 \pagestyle{fancy} % All pages have headers and footers
 \fancyhead{} % Blank out the default header
 \fancyfoot{} % Blank out the default footer
-\fancyhead[C]{ESE650 Learning in Robotics $\bullet$ April 2014 $\bullet$ Project 5} % Custom header text
+\fancyhead[C]{ESE650 Learning in Robotics $\bullet$ April 2014 $\bullet$ Project 5}
 \fancyfoot[RO,LE]{\thepage} % Custom footer text
 
 \usepackage[pdftex]{graphicx}
@@ -56,9 +57,10 @@
 \newcommand{\Z}{\mathcal{Z}}
 \newcommand{\red}[1]{\textcolor{red}{#1}}
 \newcommand{\brown}[1]{\textcolor{brown}{#1}}
-%----------------------------------------------------------------------------------------
+
+%-------------------------------------------------------------------------------
 %	TITLE SECTION
-%----------------------------------------------------------------------------------------
+%-------------------------------------------------------------------------------
 
 \title{\vspace{-15mm}\fontsize{24pt}{10pt}\selectfont\textbf{Cost Learning and Path Planning}} % Article title
 
@@ -71,7 +73,7 @@
 }
 \date{}
 
-%----------------------------------------------------------------------------------------
+%-------------------------------------------------------------------------------
 
 \usepackage{graphicx}
 \begin{document}
@@ -81,9 +83,9 @@
 
 \thispagestyle{fancy} % All pages have headers and footers
 
-%----------------------------------------------------------------------------------------
+%-------------------------------------------------------------------------------
 %	ABSTRACT
-%----------------------------------------------------------------------------------------
+%-------------------------------------------------------------------------------
 
 %\begin{abstract}
 %
@@ -91,44 +93,44 @@
 %
 %\end{abstract}
 
-%----------------------------------------------------------------------------------------
+%-------------------------------------------------------------------------------
 %	ARTICLE CONTENTS
-%----------------------------------------------------------------------------------------
+%-------------------------------------------------------------------------------
 
-%----------------------------------------------------------------------------------------
+%-------------------------------------------------------------------------------
 %	INTRODUCTION
-%----------------------------------------------------------------------------------------
+%-------------------------------------------------------------------------------
 
 \begin{multicols}{2} % Two-column layout throughout the main article text
 
 \section{Introduction}
-\lettrine[nindent=0em,lines=2]{G}esture recognition based on inertial sensor is the main topic in this project. Out task is to classify gestures based on imu data collected from a mobile phone.
+\lettrine[nindent=0em,lines=2]{P}lanning.
 
-%----------------------------------------------------------------------------------------
+%-------------------------------------------------------------------------------
 %	PRE-PROCESSING
-%----------------------------------------------------------------------------------------
+%-------------------------------------------------------------------------------
 
 \section{Pre-processing}
-%----------------------------------------------------------------------------------------
+%-------------------------------------------------------------------------------
 %	METHODS
-%----------------------------------------------------------------------------------------
+%-------------------------------------------------------------------------------
 
 \section{Methods}
 
-%----------------------------------------------------------------------------------------
+%-------------------------------------------------------------------------------
 %	RESULTS
-%----------------------------------------------------------------------------------------
+%-------------------------------------------------------------------------------
 
 \section{Results}
-%----------------------------------------------------------------------------------------
+%-------------------------------------------------------------------------------
 %	DISCUSSION
-%----------------------------------------------------------------------------------------
+%-------------------------------------------------------------------------------
 
 \section{Discussion}
 
-%----------------------------------------------------------------------------------------
+%-------------------------------------------------------------------------------
 %	REFERENCE LIST
-%----------------------------------------------------------------------------------------
+%-------------------------------------------------------------------------------
 
 \begin{thebibliography}{2} % Bibliography - this is intentionally simple in this template
 
@@ -143,46 +145,8 @@
 
 \end{thebibliography}
 
-%----------------------------------------------------------------------------------------
+%-------------------------------------------------------------------------------
 
 \end{multicols}
-\begin{table}[H]
-\centering
-\begin{tabular}{|c|c|c|c|c|c|c|c|}\hline
-Data & circle & figure8 & fish & hammer & pend & wave & Result \\ \hline\hline
-circle 1 & -11.18 & -72.04 & -29.73 & -37.82 & -19.55 & NaN    & circle \\
-circle 2 & -0.53  & -57.85 & -21.51 & -30.59 & -11.87 & -19.13 & circle \\
-circle 3 & -0.53  & -58.13 & -21.61 & -30.74 & -11.93 & -19.22 & circle \\
-circle 4 & -20.21 & -83.98 & -40.41 & -43.26 & -26.17 & NaN    & circle \\
-circle 5 & -0.58  & -62.16 & -23.11 & -32.87 & -12.75 & -20.55 & circle \\ \hline \hline
-figure8 1 & NaN & -215.96 & NaN & NaN & NaN & NaN & figure8 \\
-figure8 2 & NaN & -492.84 & NaN & NaN & NaN & NaN & figure8 \\
-figure8 3 & NaN & -223.82 & NaN & NaN & NaN & NaN & figure8 \\
-figure8 4 & NaN & -235.13 & NaN & NaN & NaN & NaN & figure8 \\
-figure8 5 & NaN & -282.01 & NaN & NaN & NaN & NaN & figure8 \\ \hline\hline
-fish 1 & NaN & -402.64 &  -71.99 & -661.56 & NaN & -300.02 & fish \\
-fish 2 & NaN & -355.60 & -100.07 & -555.12 & NaN & -279.19 & fish \\
-fish 3 & NaN & -294.87 & -160.96 &     NaN & NaN &     NaN & fish \\
-fish 4 & NaN & -413.77 &  -65.99 & -695.41 & NaN & -327.80 & fish \\
-fish 5 & NaN & -363.73 &  -40.79 & -612.45 & NaN & -274.36 & fish \\ \hline\hline
-hammer 1 & NaN & -247.01 & NaN & -170.56 & NaN & NaN & hammer\\
-hammer 2 & NaN & -251.22 & NaN & -193.95 & NaN & NaN & hammer\\
-hammer 3 & NaN & -238.77 & NaN & -160.98 & NaN & NaN & hammer\\
-hammer 4 & NaN & -237.53 & NaN & -168.17 & NaN & NaN & hammer\\
-hammer 5 & NaN & -267.45 & NaN & -174.82 & NaN & NaN & hammer\\ \hline\hline
-pend 1 & -1086.39 & -1028.01 & -1135.85 & -452.05 & -3.16 & NaN & pend\\
-pend 2 &  -950.61 &  -899.42 &  -993.27 & -395.63 & -3.16 & NaN & pend\\
-pend 3 &  -730.17 &  -712.95 &  -772.32 & -315.53 & -7.11 & NaN & pend\\
-pend 4 &  -846.52 &  -800.83 &  -883.97 & -352.37 & -3.16 & NaN & pend\\
-pend 5 & -1222.16 & -1156.61 & -1278.42 & -508.47 & -3.16 & NaN & pend\\\hline\hline
-wave 1 & NaN & -245.71 & -386.53 & NaN & NaN & -175.85 & wave\\
-wave 2 & NaN & -296.00 & -536.27 & NaN & NaN & -236.02 & wave\\
-wave 3 & NaN & -179.59 & -280.66 & NaN & NaN & -122.30 & wave\\
-wave 4 & NaN & -222.42 & -463.23 & NaN & NaN & -171.95 & wave\\
-wave 5 & NaN & -310.66 & -572.36 & NaN & NaN & -246.30 & wave\\\hline
-\end{tabular}
-\caption{Training and validation results}
-\label{table:result}
-\end{table}
 
 \end{document}
