@@ -9,15 +9,15 @@ toc
 [ip2, jp2] = dijkstra_path2(ctg, costs, 1, 1);
 
 subplot(1,2,1);
-imagesc(costs,[1 10]);
+imagesc(costs);
 colormap(1-gray);
 hold on;
-plot(jp1, ip1, 'b-', jp2, ip2, 'r-');
+plot(jp1, ip1, 'b.-', jp2, ip2, 'r.-');
 hold off;
 
 subplot(1,2,2);
 imagesc(ctg);
 colormap(1-gray);
 hold on;
-plot(jp1, ip1, 'b-', jp2, ip2, 'r-');
+plot(jp1, ip1, 'b.-', jp2, ip2, 'r.-');
 hold off;

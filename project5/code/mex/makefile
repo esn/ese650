@@ -14,7 +14,8 @@ MEX_EXT = $(shell mexext)
 CFLAGS_OPENCV=`pkg-config opencv --cflags --libs`
 
 all: astar_graph astar_nonholonomic16 dijkstra_graph dijkstra_matrix \
-	dijkstra_nonholonomic16 subs_interp subs_interp3_circular
+	dijkstra_nonholonomic16 subs_interp subs_interp3_circular \
+	getMapCellsFromRay
 
 %.$(MEX_EXT): %.cpp
 	$(MEX) $(MEX_OPTION) $< $(CFLAGS_OPENCV)
@@ -38,6 +39,9 @@ subs_interp3_circular: subs_interp3_circular.cc
 	$(MEX) $(MEX_OPTION) $<
 
 subs_interp: subs_interp.cc
+	$(MEX) $(MEX_OPTION) $<
+
+getMapCellsFromRay: getMapCellsFromRay.cpp
 	$(MEX) $(MEX_OPTION) $<
 
 clean:

@@ -1,4 +1,4 @@
-function [ipath, jpath] = dijkstra_path(A, C, istart, jstart);
+function [ipath, jpath] = dijkstra_path(A, C, istart, jstart)
 
 [m,n] = size(A);
 
