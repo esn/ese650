@@ -17,17 +17,18 @@ classdef GMM < handle
         end
         
         % train
-        function train(obj, im, cspace)
+        function train(obj, im)
             % Convert to desired colorspace
-            im_cs = trans_cs(im, cspace);
+            im_cs = trans_cs(im, obj.cspace);
             X = [];
             for i = 1:numel(im)
                 bw = roipoly(im{i});
-                pixels = im_cs{i}(bw, :);
-                pixels = reshape(pixels, size(pixels,1)*size(pixels,2), []);
+                [nr,nc,~] = size(im_cs{i});
+                pixels = reshape(im_cs{i}, nr*nc , []);
+                pixels = pixels(bw,:);
                 X = [X; pixels];
-                keyboard
             end
+            X = X(1:3:end,:);
             X = double(X);
             options = statset('Display', 'final');
             obj.model = gmdistribution.fit(X, obj.n_cluster, ...
@@ -35,7 +36,7 @@ classdef GMM < handle
         end
         
         % test
-        function test(obj, im)
+        function P = test(obj, im)
             im_cs = trans_cs(im, obj.cspace);
             for i = 1:numel(im)
                 [nr,nc,~] = size(im_cs{i});
@@ -52,10 +53,6 @@ classdef GMM < handle
                 axis image;
             end
         end
-    end
-    
-    methods (Static)
-        
     end
     
 end

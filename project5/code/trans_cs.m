@@ -7,7 +7,12 @@ for i = 1:numel(im)
         case 'hsv'
             im_cs{i} = rgb2hsv(im{i});
         case 'ycbcr'
-            im_cs{i} = rgb2ycbcr(im{i});
+            temp = rgb2ycbcr(im{i});
+            im_cs{i} = temp(:,:,2:3);
+        case 'lab'
+            cform = makecform('srgb2lab');
+            temp = applycform(im{i}, cform);
+            im_cs{i} = temp(:,:,2:3);
         otherwise
             im_cs{i} = im{i};
     end

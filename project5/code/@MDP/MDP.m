@@ -131,5 +131,6 @@ classdef MDP < handle
         f = rgb_feature(im)
         f = lab_feature(im)
         f = hsv_feature(im)
+        f = bw_feature(im)
     end
 end
