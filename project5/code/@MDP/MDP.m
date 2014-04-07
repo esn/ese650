@@ -2,8 +2,8 @@ classdef MDP < handle
     %MDP Markov Decision Process     
     properties
         im      % filtered original image
-        f       % features space Fi
-        l       % loss field
+        F       % features space Fi
+        L       % loss field
         policy  % example policy
         start
         goal
@@ -19,7 +19,9 @@ classdef MDP < handle
         % Constructor
         function obj = MDP(im, type)
             obj.im = im;
-            obj.f = MDP.hsv_feature(obj.im);
+            f1 = MDP.bw_feature(obj.im);
+            f2 = MDP.gmm_feautre(obj.im);
+            obj.F = [f1 f2];
             obj.type = type;
         end
         
@@ -113,7 +115,7 @@ classdef MDP < handle
                 sigma = 5*sqrt(2);
                 G = fspecial('gaussian', 8*ceil(sigma), sigma);
                 l = imfilter(l, G);
-                obj.l{i} = 1-imadjust(l, [0 0.85*max(l(:))], []);
+                obj.L{i} = 1-imadjust(l, [0 0.85*max(l(:))], []);
             end
         end
         
@@ -131,6 +133,7 @@ classdef MDP < handle
         f = rgb_feature(im)
         f = lab_feature(im)
         f = hsv_feature(im)
+        f = gmm_feature(im)
         f = bw_feature(im)
     end
 end

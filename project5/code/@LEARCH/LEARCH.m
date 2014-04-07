@@ -42,8 +42,8 @@ classdef LEARCH < handle
                     % Generage positive and negative examples
                     ind_pos = sub2ind([mdp.nr mdp.nc], i_path, j_path);
                     ind_neg = sub2ind([mdp.nr mdp.nc], mdp.policy{k}(:,1), mdp.policy{k}(:,2));
-                    x_pos = mdp.f(ind_pos,:);
-                    x_neg = mdp.f(ind_neg,:);
+                    x_pos = mdp.F(ind_pos,:);
+                    x_neg = mdp.F(ind_neg,:);
                     y_pos = ones(size(x_pos,1),1);
                     y_neg = -ones(size(x_neg,1),1);
                     X = [X; x_pos; x_neg];
@@ -60,7 +60,7 @@ classdef LEARCH < handle
                         title(sprintf('max: %3.3f, min: %3.3f', max(cl(:)), min(cl(:))))
                         axis image
                     end
-%                     pause
+                    pause
                 end
                 % Train a regressor or classifier on the collected data set
                 % D to get h
@@ -97,20 +97,20 @@ classdef LEARCH < handle
         end
         
         function cl = genLossCostMap(obj, mdp, n)
-            l = mdp.l{n};
-            c = exp(mdp.f*obj.w);
+            l = mdp.L{n};
+            c = exp(mdp.F*obj.w);
             c = reshape(c, mdp.nr, mdp.nc, []);
             cl = c - l + 1;
         end
         
         function c = genCostMap(obj, mdp)
-            c = exp(mdp.f*obj.w);
+            c = exp(mdp.F*obj.w);
             c = reshape(c, mdp.nr, mdp.nc, []);
         end
         
         % Get methods
         function d = get.d(obj)
-            d = size(obj.train_data(1).f, 2);
+            d = size(obj.train_data(1).F, 2);
         end
         
         function n_train = get.n_train(obj)

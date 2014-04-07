@@ -6,7 +6,7 @@ mat_name = 'data.mat';
 load(mat_name);
 
 %% transform to different color space
-im_rgb = sub{8};
+im_rgb = sub{5};
 
 cform = makecform('srgb2lab');
 im_lab = applycform(im_rgb, cform);
@@ -33,12 +33,11 @@ title('lab')
 
 %% Detect black and write
 figure()
-bw = rgb2gray(im_rgb) > 230;
-black_im = zeros(size(im_rgb), 'uint8');
-for i = 1:3
-    temp = im_rgb(:,:,i);
-    temp(bw) = 0;
-    black_im(:,:,i) = temp;
-end
-    
-imshow(black_im)
+img = rgb2gray(im_rgb);
+img = im2double(img);
+mu = 0.08;
+sigma = 0.1;
+P_b = normpdf(img(:), mu, sigma);
+imagesc(reshape(P_b, size(img,1), size(img,2)))
+
+
