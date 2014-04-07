@@ -1,6 +1,5 @@
 costs = gen_costs(100, 100, .05);
-
-goal = [60 60];
+goal = [80 50];
 tic;
 ctg = dijkstra_matrix(costs,goal(1),goal(2));
 toc

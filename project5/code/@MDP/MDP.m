@@ -1,15 +1,13 @@
 classdef MDP < handle
-    %MDP Markov Decision Process 
-    properties (Constant)
-        walk_color = 'b';
-        drive_color = 'r';
-    end
-    
+    %MDP Markov Decision Process     
     properties
-        im
-        f
-        walk_policy   % [r c]
-        drive_policy  % [r c]
+        im      % filtered original image
+        f       % features space Fi
+        l       % loss field
+        policy  % example policy
+        start
+        goal
+        type    % drive or walk
     end
     
     properties (Dependent = true, SetAccess = private)
@@ -19,32 +17,27 @@ classdef MDP < handle
     
     methods
         % Constructor
-        function obj = MDP(im)
+        function obj = MDP(im, type)
             obj.im = im;
-            obj.f = MDP.rgb_feature(obj.im);
+            obj.f = MDP.hsv_feature(obj.im);
+            obj.type = type;
         end
         
         % Add policy
-        function addDrivePolicy(obj)
-            new_policy = obj.addPolicy(obj.drive_color);
+        function addPolicy(obj)
+            [new_policy, click] = obj.drawPolicy();
             n = numel(new_policy);
             for i = 1:n
-                obj.drive_policy{end+1} = new_policy{i};
+                obj.policy{end+1} = new_policy{i};
+                obj.start(end+1,:) = click{i}(1,:);
+                obj.goal(end+1,:) = click{i}(end,:);
             end
-            fprintf('%d new drive policy added\n', n);
+            fprintf('%d new %s policy added\n', n, obj.type);
         end
         
-        function addWalkPolicy(obj)
-            new_policy = obj.addPolicy(obj.walk_color);
-            n = numel(new_policy);
-            for i = 1:n
-                obj.walk_policy{end+1} = new_policy{i};
-            end
-            fprintf('%d new walk policy added\n', n);
-        end
-        
-        function p = addPolicy(obj, color)
-            p = [];
+        function [policy, clicks] = drawPolicy(obj)
+            policy = cell(0);
+            clicks = cell(0);
             k = 0;
             pos = zeros(0,2);   % store all the cells
             click = zeros(0,2); % store all the clicks
@@ -57,12 +50,12 @@ classdef MDP < handle
                 [x,y,button] = ginput(1);
                 % add point to pos
                 if button == 1
-                    plot(x, y, 'Color', color, 'Marker', 'o');
+                    plot(x, y, 'bo');
                     x = round(x);
                     y = round(y);
                     if size(click,1) > 0
                         [r,c] = getMapCellsFromRay(click(end,1), click(end,2), y, x);
-                        plot(c, r, [color, '.']);
+                        plot(c, r, 'b.');
                         n = numel(r);
                         pos(end+1:end+n,:) = [r c];
                     end
@@ -76,7 +69,8 @@ classdef MDP < handle
                     % add to p if right click once
                     if size(click,1) > 1
                         k = k + 1;
-                        p{k} = pos;
+                        policy{k} = pos;
+                        clicks{k} = click;
                         pos = zeros(0,2);
                         click = zeros(0,2);
                     end
@@ -88,35 +82,39 @@ classdef MDP < handle
         end
         
         % Visualization methods
-        function plot(obj)
+        function plot(obj, m)
+            if nargin < 2,
+                m = 1:numel(obj.policy);
+            else
+                m(m > numel(obj.policy)) = [];
+            end
+            m = unique(m);
+            n = numel(m);
             imshow(obj.im);
             set(gca, 'Visible', 'On');
-            n_drive = numel(obj.drive_policy);
-            n_walk = numel(obj.walk_policy);
-            title(sprintf('%d drive example, %d walk example', n_drive, n_walk))
+            title(sprintf('%d %s examples', n, obj.type))
             % Plot policies
             hold on
-            for i = 1:numel(obj.drive_policy)
-                plot(obj.drive_policy{i}(:,2), obj.drive_policy{i}(:,1), ...
-                    [obj.drive_color, '.']);
-            end
-            for i = 1:numel(obj.walk_policy)
-                plot(obj.walk_policy{i}(:,2), obj.walk_policy{i}(:,1), ...
-                    [obj.walk_color, '.']);
+            for i = 1:numel(m)
+                plot(obj.policy{m(i)}(:,2), obj.policy{m(i)}(:,1), 'b.');
+                plot(obj.start(m(i),2), obj.start(m(i),1), 'o', 'MarkerFaceColor', 'g')
+                plot(obj.goal(m(i),2), obj.goal(m(i),1), 'o', 'MarkerFaceColor', 'r')
             end
             hold off
         end
         
         % Generate loss field
-        function l = genLossField(obj, p)
-            l = zeros(obj.nr, obj.nc);
-            ind = sub2ind(size(l), p(:,1), p(:,2));
-            l(ind) = 1;
-            
-            sigma = 5*sqrt(2);
-            G = fspecial('gaussian', 8*ceil(sigma), sigma);
-            l = imfilter(l, G);
-            l = 1-imadjust(l, [0 0.85*max(l(:))], []);
+        function l = genLossField(obj)
+            for i = 1:numel(obj.policy)
+                p = obj.policy{i};
+                l = zeros(obj.nr, obj.nc);
+                ind = sub2ind(size(l), p(:,1), p(:,2));
+                l(ind) = 1;
+                sigma = 5*sqrt(2);
+                G = fspecial('gaussian', 8*ceil(sigma), sigma);
+                l = imfilter(l, G);
+                obj.l{i} = 1-imadjust(l, [0 0.85*max(l(:))], []);
+            end
         end
         
         % Get methods
@@ -131,5 +129,7 @@ classdef MDP < handle
     
     methods (Static)
         f = rgb_feature(im)
+        f = lab_feature(im)
+        f = hsv_feature(im)
     end
 end

@@ -15,11 +15,12 @@ joffset = joffset(1:4);
 doffset = doffset(1:4);
 %}
 
+
 while 1,
   i0 = ipath(end);
   j0 = jpath(end);
   
-  if (A(i0,j0) < eps),
+  if (A(i0,j0) < sqrt(eps)),
     break;
   end
   

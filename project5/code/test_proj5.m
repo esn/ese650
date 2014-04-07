@@ -5,13 +5,19 @@ close all;
 mat_name = 'data.mat';
 load(mat_name);
 
-%% Instantiate MDP
-% for i = 1:3
-% mdp(i) = MDP(sub(i).im);
-% mdp(i).addDrivePolicy();
-% % mdp.addWalkPolicy();
-% mdp(i).plot();
-% end
-load('mdp.mat')
+%% Instantiate MDP for diver
+n = 5:12;
+for i = 1:numel(n)
+    mdp(i) = MDP(sub{n(i)}, 'walk');
+    mdp(i).addPolicy();
+    mdp(i).genLossField();
+    mdp(i).plot();
+end
+save('mdp', 'mdp')
+load('mdp')
+
 %% Instantiate LEARCH
-learch = LEARCH(mdp(1:2), mdp(3));
+T = 20;
+learch = LEARCH(mdp(1:4), mdp(5:8), T);
+learch.train(true);
+learch.test();
