@@ -2,22 +2,23 @@ clear all;
 close all;
 
 %% Load data
-mat_name = 'data.mat';
+mat_name = 'mat/data.mat';
 load(mat_name);
 
 %% Instantiate MDP for diver
-n = 2:3:numel(sub);
+n = 2:2:numel(sub);
 for i = 1:numel(n)
     mdp(i) = MDP(sub{n(i)}, 'walk');
     mdp(i).addPolicy();
     mdp(i).genLossField();
     mdp(i).plot();
 end
-save('mdp', 'mdp')
-load('mdp')
+save('mat/mdp', 'mdp')
+load('mat/mdp')
 
 %% Instantiate LEARCH
 T = 20;
-learch = LEARCH(mdp(1:4), mdp(5:7), T);
+m = floor(0.6*numel(n));
+learch = LEARCH(mdp(1:m), mdp(m+1:end), T);
 learch.train(true);
 learch.test();

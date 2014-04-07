@@ -1,5 +1,5 @@
 function [ F ] = gmm_feature( im )
-%GMM_FEATURE 
+%GMM_FEATURE Extract features from GMM
 load('mat/gmm.mat')
 
 F = [];

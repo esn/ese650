@@ -1,5 +1,6 @@
 function [ f ] = lab_feature( im )
-%LAB_FEATURE 
+%LAB_FEATURE
+
 im = im2double(im);
 cform = makecform('srgb2lab');
 lab = applycform(im, cform);

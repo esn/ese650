@@ -21,7 +21,9 @@ classdef MDP < handle
             obj.im = im;
             f1 = MDP.bw_feature(obj.im);
             f2 = MDP.gmm_feature(obj.im);
-            obj.F = [f1 f2];
+            f3 = MDP.edge_feature(obj.im);
+            f4 = MDP.bin_feature(obj.im);
+            obj.F = [f1 f2 f3 f4];
             obj.type = type;
         end
         
@@ -135,5 +137,7 @@ classdef MDP < handle
         f = hsv_feature(im)
         f = gmm_feature(im)
         f = bw_feature(im)
+        f = edge_feature(im)
+        f = bin_feature(im)
     end
 end

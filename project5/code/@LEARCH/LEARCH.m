@@ -6,6 +6,7 @@ classdef LEARCH < handle
         test_data
         w
         T
+        a = 0.2
     end
     
     properties (Dependent = true)
@@ -64,11 +65,10 @@ classdef LEARCH < handle
                 end
                 % Train a regressor or classifier on the collected data set
                 % D to get h
-%                 h = (X'*X)\X'*Y;
                 option  = sprintf('-s %d -q -c %g', 1, 0.1);
                 model = liblinear_train(Y, sparse(X), option);
-                obj.w = obj.w + 0.1*model.w(:);
-                disp(obj.w)
+                r = obj.a/log(t+1)
+                obj.w = obj.w + r*model.w(:);
             end
             w = obj.w;
         end
