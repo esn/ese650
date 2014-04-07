@@ -1,7 +1,7 @@
 clear all
 close all
 
-%% 
+%%
 mat_name = 'data.mat';
 load(mat_name);
 

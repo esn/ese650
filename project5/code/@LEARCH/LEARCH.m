@@ -89,7 +89,6 @@ classdef LEARCH < handle
                 plot(j_p, i_p, 'm.');
                 hold off
                 subplot(1,2,2)
-                c = imadjust(c);
                 imagesc(c); colormap(jet)
                 axis image
                 title(sprintf('max: %3.3f, min: %3.3f', max(c(:)), min(c(:))))

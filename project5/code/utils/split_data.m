@@ -4,10 +4,10 @@ close all
 %% Parameters
 SAVE = true;
 IM_WIDTH = 5000;
-SUB_IM_WIDTH = 640;
+SUB_IM_WIDTH = 720;
 SUB_IM_HEIGHT = 640;
-mat_name = 'data.mat';
-im_name = 'rgb.mat';
+mat_name = 'mat/data.mat';
+im_name = 'mat/rgb.mat';
 
 %% Load image
 im_rgb = imread('../data/aerial_color.jpg');

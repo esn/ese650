@@ -1,12 +1,12 @@
 classdef MDP < handle
-    %MDP Markov Decision Process     
+    %MDP Markov Decision Process
     properties
         im      % filtered original image
         F       % features space Fi
         L       % loss field
         policy  % example policy
-        start
-        goal
+        start   % start of policy
+        goal    % goal of policy
         type    % drive or walk
     end
     
@@ -20,7 +20,7 @@ classdef MDP < handle
         function obj = MDP(im, type)
             obj.im = im;
             f1 = MDP.bw_feature(obj.im);
-            f2 = MDP.gmm_feautre(obj.im);
+            f2 = MDP.gmm_feature(obj.im);
             obj.F = [f1 f2];
             obj.type = type;
         end
