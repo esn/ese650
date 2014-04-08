@@ -19,11 +19,11 @@ classdef MDP < handle
         % Constructor
         function obj = MDP(im, type)
             obj.im = im;
-            f1 = MDP.bw_feature(obj.im);
+%             f1 = MDP.bw_feature(obj.im);
             f2 = MDP.gmm_feature(obj.im);
             f3 = MDP.edge_feature(obj.im);
             f4 = MDP.bin_feature(obj.im);
-            obj.F = [f1 f2 f3 f4];
+            obj.F = [f2 f3 f4];
             obj.type = type;
         end
         

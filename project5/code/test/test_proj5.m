@@ -3,22 +3,28 @@ close all;
 
 %% Load data
 mat_name = 'mat/data.mat';
+rgb_name = 'mat/rgb.mat';
 load(mat_name);
+load(rgb_name);
 
 %% Instantiate MDP for diver
-n = 2:2:numel(sub);
+n = 4:2:numel(sub);
+type = 'walk';
 for i = 1:numel(n)
-    mdp(i) = MDP(sub{n(i)}, 'walk');
+    mdp(i) = MDP(sub{n(i)}, type);
     mdp(i).addPolicy();
     mdp(i).genLossField();
     mdp(i).plot();
 end
-save('mat/mdp', 'mdp')
-load('mat/mdp')
+mdp(i+1) = MDP(im_rgb(1:1500,1:1500,:), type);
+mdp(i+1).addPolicy();
+mdp(i+1).genLossField();
+save(['mat/mdp_' type], 'mdp')
+load(['mat/mdp_' type])
 
 %% Instantiate LEARCH
-T = 20;
-m = floor(0.6*numel(n));
-learch = LEARCH(mdp(1:m), mdp(m+1:end), T);
+T = 25;
+m = floor(0.6*numel(mdp));
+learch = LEARCH(mdp(1:m-1), mdp(m:end-1), T);
 learch.train(true);
-learch.test();
+learch.test(mdp(end));

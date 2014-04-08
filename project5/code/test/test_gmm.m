@@ -4,7 +4,7 @@ close all
 %% Load image
 load('data.mat')
 features   = ...
-    {'green', 'side_red', 'side_white', 'road', 'roof_dark', 'roof_bright', };
+    {'green', 'side_red', 'side_white', 'road', 'roof_dark', 'roof_bright'};
 n_clusters = ...
     [      4,          2,            2,      3,           2,             2];
 cspace = 'hsv';

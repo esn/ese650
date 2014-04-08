@@ -1,18 +1,18 @@
 classdef LEARCH < handle
-    %LEARCH
+    %LEARCH Learning to search framework
     
     properties
-        train_data
-        test_data
-        w
-        T
-        a = 0.2
+        train_data  % train mdp
+        test_data   % test mdp
+        w           % weights
+        T           % iteration
+        a = 0.2     % learning rate
     end
     
     properties (Dependent = true)
-        d
-        n_train
-        n_test
+        d        % feature dimension
+        n_train  % number of train data
+        n_test   % number of test data
     end
     
     methods
@@ -61,22 +61,22 @@ classdef LEARCH < handle
                         title(sprintf('max: %3.3f, min: %3.3f', max(cl(:)), min(cl(:))))
                         axis image
                     end
-                    pause
+                    pause(0.25)
                 end
                 % Train a regressor or classifier on the collected data set
                 % D to get h
-                option  = sprintf('-s %d -q -c %g', 1, 0.1);
+                option  = sprintf('-s %d -q -c %g', 5, 0.1);
                 model = liblinear_train(Y, sparse(X), option);
-                r = obj.a/log(t+1)
-                obj.w = obj.w + r*model.w(:);
+                obj.w = obj.w + obj.a/log(t+1)*model.w(:);
             end
             w = obj.w;
         end
         
-        function test(obj)
-            for i = 1:obj.n_test
+        function test(obj, test_mdp)
+            if nargin < 2, test_mdp = obj.test_data; end
+            for i = 1:numel(test_mdp)
                 k = 1;
-                mdp = obj.test_data(i);
+                mdp = test_mdp(i);
                 % Compute costmap c
                 c = obj.genCostMap(mdp);
                 goal = mdp.goal(k,:);
