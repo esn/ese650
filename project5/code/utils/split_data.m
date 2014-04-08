@@ -4,8 +4,8 @@ close all
 %% Parameters
 SAVE = true;
 IM_WIDTH = 5000;
-SUB_IM_WIDTH = 800;
-SUB_IM_HEIGHT = 640;
+SUB_IM_WIDTH = 720;
+SUB_IM_HEIGHT = 720;
 mat_name = 'mat/data.mat';
 im_name = 'mat/rgb.mat';
 

@@ -19,20 +19,23 @@ classdef MDP < handle
         % Constructor
         function obj = MDP(im, type)
             obj.im = im;
-%             f1 = MDP.bw_feature(obj.im);
+            f1 = MDP.bw_feature(obj.im);
             f2 = MDP.gmm_feature(obj.im);
             f3 = MDP.edge_feature(obj.im);
             f4 = MDP.bin_feature(obj.im);
-            obj.F = [f2 f3 f4];
+            obj.F = [f1 f2 f3 f4];
             obj.type = type;
         end
         
         % Remove policy
         function removePolicy(obj)
-            obj.start(end,:) = [];
-            obj.goal(end,:) = [];
-            obj.policy(end) = [];
-            obj.L(end) = [];
+            if ~isempty(obj.policy)
+                obj.start(end,:) = [];
+                obj.goal(end,:) = [];
+                obj.policy(end) = [];
+                obj.L(end) = [];
+            end
+            fprintf('%d policy left.\n', numel(obj.policy));
         end
         
         % Add policy
@@ -43,8 +46,10 @@ classdef MDP < handle
                 obj.policy{end+1} = new_policy{i};
                 obj.start(end+1,:) = click{i}(1,:);
                 obj.goal(end+1,:) = click{i}(end,:);
+                obj.L{end+1} = obj.genLossField(obj.policy{end});
             end
-            fprintf('%d new %s policy added\n', n, obj.type);
+            fprintf('%d new %s policy added.\n', n, obj.type);
+            fprintf('%d total policy.\n', numel(obj.policy));
         end
         
         function [policy, clicks] = drawPolicy(obj)
@@ -116,17 +121,14 @@ classdef MDP < handle
         end
         
         % Generate loss field
-        function l = genLossField(obj)
-            for i = 1:numel(obj.policy)
-                p = obj.policy{i};
-                l = zeros(obj.nr, obj.nc);
-                ind = sub2ind(size(l), p(:,1), p(:,2));
-                l(ind) = 1;
-                sigma = 5*sqrt(2);
-                G = fspecial('gaussian', 8*ceil(sigma), sigma);
-                l = imfilter(l, G);
-                obj.L{i} = 1-imadjust(l, [0 0.85*max(l(:))], []);
-            end
+        function l = genLossField(obj, p)
+            l = zeros(obj.nr, obj.nc);
+            ind = sub2ind(size(l), p(:,1), p(:,2));
+            l(ind) = 1;
+            sigma = 5*sqrt(2);
+            G = fspecial('gaussian', 8*ceil(sigma), sigma);
+            l = imfilter(l, G);
+            l =  1-imadjust(l, [0 0.85*max(l(:))], []);
         end
         
         % Get methods

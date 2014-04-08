@@ -13,12 +13,10 @@ type = 'drive';
 for i = 1:numel(n)
     mdp(i) = MDP(sub{n(i)}, type);
     mdp(i).addPolicy();
-    mdp(i).genLossField();
     mdp(i).plot();
 end
-mdp(i+1) = MDP(im_rgb(1:1500,1:1500,:), type);
+mdp(i+1) = MDP(im_rgb(1000:2000,1000:2500,:), type);
 mdp(i+1).addPolicy();
-mdp(i+1).genLossField();
 save(['mat/mdp_' type], 'mdp')
 load(['mat/mdp_' type])
 

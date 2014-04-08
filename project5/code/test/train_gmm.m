@@ -6,12 +6,12 @@ load('data.mat')
 features   = ...
     {'green', 'side_red', 'side_white', 'road', 'roof_dark', 'roof_bright'};
 n_clusters = ...
-    [      3,          2,            2,      3,           2,             2];
+    [      3,          3,            3,      3,           3,             3];
 cspace = 'hsv';
 
 for i = 1:numel(features)
     gmm(i) = GMM(n_clusters(i), features{i}, cspace);
-    gmm(i).train(sub(2:2:numel(sub)));
+    gmm(i).train(sub(2:4:numel(sub)));
     p = gmm(i).test(sub(1:2:numel(sub)), true);
 end
 %% Save to mat
