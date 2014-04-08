@@ -5,7 +5,8 @@
 \documentclass[twoside]{article}
 
 \usepackage{lipsum} % Package to generate dummy text throughout this template
-
+\usepackage{algorithm}
+\usepackage{algpseudocode}
 \usepackage[sc]{mathpazo} % Use the Palatino font
 \usepackage[T1]{fontenc} % Use 8-bit encoding that has 256 glyphs
 \linespread{1.05} % Line spacing - Palatino needs more space between lines
@@ -114,7 +115,8 @@
 %-------------------------------------------------------------------------------
 %	METHODS
 %-------------------------------------------------------------------------------
-Since the provide image is very big, we first subsample the image and then smooth it with a median filter to remove noise while preserve edges. After that, we crop the image to a bunch of small tiles for training and testing. We use a class MDP to represent a single training/test data. The MDP class consists of the original image, a feature matrix, loss field and a policy (or path). 
+Since the provide image is very big, we first subsample the image and then smooth it with a median filter to remove noise while preserve edges. After that, we crop the image to a bunch of small tiles for training and testing. We train strictly on training set and test on the test set. 
+We use a class MDP to represent a single training/test data. The MDP class consists of the original image, a feature matrix, loss field and a policy (or path). 
 For the feature matrix, we use the following features (might change in final submission)
 \begin{enumerate}
 \item binary mask of black and white pixels
@@ -122,15 +124,121 @@ For the feature matrix, we use the following features (might change in final sub
 \item probability of the pixel being vegetation, road, roof and sidewalk
 \item edge from matlab canny edge
 \end{enumerate}
-And for loss field, we use something similar to Hamming loss, which has typically 0 along the example and 1 away from the example path. The intuition of such loss field can be found in the LEARCH paper.
+We append all these features together to generate a feature matrix. This feature matrix multiplied by a linear function will give us a cost map.
+As for loss field, we use something similar to Hamming loss, which has typically 0 along the example and 1 away from the example path. The intuition of such loss field can be found in the LEARCH paper. A sample loss field can be seen in Fig.
 
 \section{Methods}
-For the training part, we strictly follow the algorithm from the paper, which will be listed here
+For the training part, we strictly follow the algorithm from the paper, which is algorithm 5 \textbf{Exponentiated functional gradient descent for maximum margin planning}.
+For the regressor, we chose l2-loss l2-regularized logistic regression from liblinear with a cost parameter of 0.1. If time allow we will play with this parameter or with different classifiers or regressors.
+Since the LEARCH algorithm doesn't specify a convergence criteria, here we just use $T=25$ and adjust the learning rate so that it decreases with iteration.
+
 %-------------------------------------------------------------------------------
 %	RESULTS
 %-------------------------------------------------------------------------------
 
 \section{Results}
+Here we show some results with our learning algorithm. In all the following plot, the images have never been seen by the learner.
+The blue lines are human drawn example path just for reference, and purple lines are actual learned path. We see from the test results that the learner learned the human demonstrated path pretty well.
+Below are some tests of walking
+\begin{figure}[H]
+\centering
+\includegraphics[width=\columnwidth]{fig/walk1.pdf}
+\caption{walk1}
+\label{fig:walk1}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\columnwidth]{fig/walk2.pdf}
+\caption{walk2}
+\label{fig:walk2}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\columnwidth]{fig/walk3.pdf}
+\caption{walk3}
+\label{fig:walk3}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\columnwidth]{fig/walk4.pdf}
+\caption{walk4}
+\label{fig:walk4}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\columnwidth]{fig/walk5.pdf}
+\caption{walk5}
+\label{fig:walk5}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\columnwidth]{fig/walk6.pdf}
+\caption{walk6}
+\label{fig:walk6}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\columnwidth]{fig/walk7.pdf}
+\caption{walk7}
+\label{fig:walk7}
+\end{figure}
+
+
+Here are some tests of driving
+\begin{figure}[H]
+\centering
+\includegraphics[width=\columnwidth]{fig/drive1.pdf}
+\caption{drive1}
+\label{fig:drive1}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\columnwidth]{fig/drive2.pdf}
+\caption{drive2}
+\label{fig:drive2}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\columnwidth]{fig/drive3.pdf}
+\caption{drive3}
+\label{fig:drive3}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\columnwidth]{fig/drive4.pdf}
+\caption{drive4}
+\label{fig:drive4}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\columnwidth]{fig/drive5.pdf}
+\caption{drive5}
+\label{fig:drive5}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\columnwidth]{fig/drive6.pdf}
+\caption{drive6}
+\label{fig:drive6}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\columnwidth]{fig/drive7.pdf}
+\caption{drive7}
+\label{fig:drive7}
+\end{figure}
 %-------------------------------------------------------------------------------
 %	DISCUSSION
 %-------------------------------------------------------------------------------
