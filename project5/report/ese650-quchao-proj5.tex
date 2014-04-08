@@ -104,7 +104,7 @@
 \begin{multicols}{2} % Two-column layout throughout the main article text
 
 \section{Introduction}
-\lettrine[nindent=0em,lines=2]{P}lanning.
+\lettrine[nindent=0em,lines=2]{P}ath planning problems have been long studied in robotics. Planning algorithms rely on fully specified cost map that are usually manually designed and programmed. In this project, we are trying to let the robot 'learn' a cost map with examples demonstrated by human. This is called imitation learning. Here we use the LEARCH framework to learn a cost function for planning based on an aerial satellite image of the Penn campus.
 
 %-------------------------------------------------------------------------------
 %	PRE-PROCESSING
@@ -114,9 +114,18 @@
 %-------------------------------------------------------------------------------
 %	METHODS
 %-------------------------------------------------------------------------------
+Since the provide image is very big, we first subsample the image and then smooth it with a median filter to remove noise while preserve edges. After that, we crop the image to a bunch of small tiles for training and testing. We use a class MDP to represent a single training/test data. The MDP class consists of the original image, a feature matrix, loss field and a policy (or path). 
+For the feature matrix, we use the following features (might change in final submission)
+\begin{enumerate}
+\item binary mask of black and white pixels
+\item binary mask of red and green pixels
+\item probability of the pixel being vegetation, road, roof and sidewalk
+\item edge from matlab canny edge
+\end{enumerate}
+And for loss field, we use something similar to Hamming loss, which has typically 0 along the example and 1 away from the example path. The intuition of such loss field can be found in the LEARCH paper.
 
 \section{Methods}
-
+For the training part, we strictly follow the algorithm from the paper, which will be listed here
 %-------------------------------------------------------------------------------
 %	RESULTS
 %-------------------------------------------------------------------------------
