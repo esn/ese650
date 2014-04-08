@@ -27,6 +27,14 @@ classdef MDP < handle
             obj.type = type;
         end
         
+        % Remove policy
+        function removePolicy(obj)
+            obj.start(end,:) = [];
+            obj.goal(end,:) = [];
+            obj.policy(end) = [];
+            obj.L(end) = [];
+        end
+        
         % Add policy
         function addPolicy(obj)
             [new_policy, click] = obj.drawPolicy();

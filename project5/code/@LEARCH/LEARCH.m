@@ -65,7 +65,7 @@ classdef LEARCH < handle
                 end
                 % Train a regressor or classifier on the collected data set
                 % D to get h
-                option  = sprintf('-s %d -q -c %g', 5, 0.1);
+                option  = sprintf('-s %d -q -c %g', 7, 0.1);
                 model = liblinear_train(Y, sparse(X), option);
                 obj.w = obj.w + obj.a/log(t+1)*model.w(:);
             end

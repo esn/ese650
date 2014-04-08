@@ -35,7 +35,7 @@ classdef GMM < handle
                 % Append to X
                 X = [X; x];
             end
-            X = X(1:3:end,:);
+            X = X(1:4:end,:);
             X = double(X);
             % Train mixture model
             options = statset('Display', 'final');
@@ -60,7 +60,6 @@ classdef GMM < handle
                 % Append to P
                 P = [P p];
                 if vis
-                    figure(i)
                     title(obj.type)
                     subplot(1,2,1)
                     imshow(im{i});

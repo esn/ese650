@@ -8,8 +8,8 @@ load(mat_name);
 load(rgb_name);
 
 %% Instantiate MDP for diver
-n = 4:2:numel(sub);
-type = 'walk';
+n = 1:2:numel(sub);
+type = 'drive';
 for i = 1:numel(n)
     mdp(i) = MDP(sub{n(i)}, type);
     mdp(i).addPolicy();
@@ -28,3 +28,5 @@ m = floor(0.6*numel(mdp));
 learch = LEARCH(mdp(1:m-1), mdp(m:end-1), T);
 learch.train(true);
 learch.test(mdp(end));
+learch.test();
+save(['mat/learch_' type], 'learch')
