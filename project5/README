@@ -1,0 +1,5 @@
+README
+There are 3 major classes that I use for this project
+1. GMM which is basically a wrapper class for gmdistribution to train a gaussian mixture model on different features like green, sidewalk, road and roof.
+2. MDP is a markov decision process that takes in an image and generate state action paris and feature matrix. Two major methods are addPolicy and remove Policy.
+3. LEARCH is the learning to search framework which takes in a bunch of train mdp and test mdp. It trains on the train mdp and test on the test mdp or any other mdp that you put throuth the learch.test method
