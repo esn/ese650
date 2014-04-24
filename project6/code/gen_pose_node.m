@@ -39,22 +39,20 @@ h_node = figure();
 pnode.plot()
 xlabel('x [m]')
 ylabel('y [m]')
+beautify(h_node)
+title('Raw Pose Nodes')
+axis([-5 70 -30 15])
+set(gcf, 'Position', [100 100 800 500])
 
 h_scan = figure();
 pnode.plot('showScan', true)
 xlabel('x [m]')
 ylabel('y [m]')
-
-%% Save figure to ./fig
-beautify(h_node)
-title('Raw Pose Nodes')
-axis([-5 70 -30 15])
-set(gcf, 'Position', [100 100 800 500])
-if SAVE, savefig(h_node, 'fig/raw_node'); end
-
-
 beautify(h_scan)
 title('Raw Pose Nodes + Scans')
 axis([-10 75 -35 15])
 set(gcf, 'Position', [100 100 800 500])
+
+%% Save figure to ./fig
+if SAVE, savefig(h_node, 'fig/raw_node'); end
 if SAVE, savefig(h_scan, 'fig/raw_scan'); end
