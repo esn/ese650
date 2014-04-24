@@ -1,14 +1,14 @@
 % example to visualize the data
-load ../data/log.mat
+init_script
 %%
 
 % select the robot ID to visualize
-robotID = 2;
-
-for i = 1:15:numel(robot{robotID}.packet)
+num_robot = numel(robot);
+for i_robot = 1:num_robot
+for i_packet = 1:15:numel(robot{i_robot}.packet)
 
     % read the current packet and extract info
-    curPacket = robot{robotID}.packet{i};
+    curPacket = robot{i_robot}.packet{i_packet};
     location = [curPacket.pose.x, curPacket.pose.y];
     yaw = curPacket.pose.yaw;
     hLidar = curPacket.hlidar;
@@ -19,11 +19,11 @@ for i = 1:15:numel(robot{robotID}.packet)
 
     % obstacle from horizontal lidar
     pts = find(hLidar.cs > 0);
-    plot(hLidar.xs(pts), hLidar.ys(pts), '.', 'MarkerSize', 0.5, 'color',[1,0,0]);
+    plot(hLidar.xs(pts), hLidar.ys(pts), '.', 'MarkerSize', 0.5, 'color','r');
 
     % non-obstacle from horizontal lidar
     pts = find(hLidar.cs < 0);
-    plot(hLidar.xs(pts), hLidar.ys(pts), '.', 'MarkerSize', 0.5, 'color',[0,1,0]);
+    plot(hLidar.xs(pts), hLidar.ys(pts), '.', 'MarkerSize', 0.5, 'color','g');
 
     % obstacle from vertical lidar
     pts = find(vLidar.cs > 0);
@@ -39,8 +39,9 @@ for i = 1:15:numel(robot{robotID}.packet)
     plot(location(1) + [0, 5*cos(yaw)], location(2) + [0,5*sin(yaw)], 'k-');
 
     %
-    title(sprintf('Packet # %d', i));
+    title(sprintf('Packet # %d', i_packet));
     axis([-10,80,-35,15]);
     pause(0.025);
 
+end
 end

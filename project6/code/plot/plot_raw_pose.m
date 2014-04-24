@@ -1,5 +1,5 @@
 init_script
-SAVE = false;
+SAVE = true;
 
 %% Plot raw SLAM results for each robot
 figure(); hold on;
@@ -21,13 +21,13 @@ for i_robot = 1:numel(robot)
         'LineWidth', 2)
 end
 hold off
-legend(mat2cell(num2str((1:num_robot)'), ones(1,length(1:num_robot))), ...
-    'Location', 'Best')
-title('Raw SLAM Results')
+% legend(mat2cell(num2str((1:num_robot)'), ones(1,length(1:num_robot))))
+beautify(gcf);
+title('Raw Robot Trajectories')
 xlabel('x [m]')
 ylabel('y [m]')
-beautify(gcf);
-set(gcf, 'Position', [100 100 800 600])
+axis([-5 70 -30 15])
+set(gcf, 'Position', [100 100 800 500])
 
-%%
-if SAVE, savefig('fig/raw_slam'); end
+%% Save figure to ./fig
+if SAVE, savefig('fig/raw_traj'); end

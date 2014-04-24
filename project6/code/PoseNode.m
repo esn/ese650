@@ -1,7 +1,8 @@
-classdef PoseNode
+classdef PoseNode < handle
     %PoseNode
     properties (Constant)
         line_colors = lines(5);
+        scan_colors = 'bgrcm';
     end
     
     properties
@@ -43,17 +44,31 @@ classdef PoseNode
                 if ~was_held, hold('on'); end
                 
                 % Pick poses for the current robot
-                idx = ([obj.id] == ids(i));
+                ind = ([obj.id] == ids(i));
                 x_robot = [obj.x];
                 y_robot = [obj.y];
                 robot_color = obj(1).line_colors(ids(i),:);
-                plot(h, x_robot(idx), y_robot(idx), ...
+                plot(h, x_robot(ind), y_robot(ind), ...
                     '-o', ...
                     'Color', robot_color, ...
                     'MarkerFaceColor', robot_color, ...
-                    'LineWidth', 2)
-                if inputs.show_orientation
+                    'MarkerEdgeColor', 'k', ...
+                    'LineWidth', 1)
+                
+                if inputs.show_yaw
                     % Not implemented yet
+                end
+                
+                if inputs.show_scan
+                    nodes = obj(ind);
+                    for i_node = 1:numel(nodes)
+                        curr_node = nodes(i_node);
+                        x_scan = curr_node.hlidar.xs;
+                        y_scan = curr_node.hlidar.ys;
+                        plot(x_scan, y_scan, '.', ...
+                            'Color', obj(1).scan_colors(curr_node.id), ...
+                            'MarkerSize', 0.5);
+                    end
                 end
             end
         end
@@ -71,7 +86,8 @@ function [h, inputs] = parse_plot_inputs(~, varargin)
 parser = inputParser;
 parser.CaseSensitive = true;
 parser.addOptional('axis_handle', [], @ishghandle);
-parser.addParamValue('showOrientation', false, @islogical);
+parser.addParamValue('showYaw', false, @islogical);
+parser.addParamValue('showScan', false, @islogical);
 
 % Parse input
 parser.parse(varargin{:});
@@ -79,6 +95,6 @@ parser.parse(varargin{:});
 % Assign return values
 h = parser.Results.axis_handle;
 if isempty(h), h = gca; end
-inputs.show_orientation = parser.Results.showOrientation;
-
+inputs.show_yaw = parser.Results.showYaw;
+inputs.show_scan = parser.Results.showScan;
 end

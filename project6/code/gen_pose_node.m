@@ -1,7 +1,8 @@
 init_script
+SAVE = true;
 
 %% Generate Pose Node for each robot
-pose_dist = 7;
+min_pose_dist = 10;
 
 pnode = PoseNode.empty;
 
@@ -11,6 +12,7 @@ for i_robot = 1:num_robot
     
     for i_packet = 1:num_packet
         curr_packet = robot{i_robot}.packet{i_packet};
+        
         if i_packet == 1
             % Add 1st pose of each robot
             pnode(end+1) = PoseNode(curr_packet);
@@ -21,18 +23,38 @@ for i_robot = 1:num_robot
                 (curr_packet.pose.y - prev_packet.pose.y)^2);
             travel_dist = travel_dist + d;
             
-            if travel_dist > pose_dist
+            if travel_dist > min_pose_dist
                 pnode(end+1) = PoseNode(curr_packet);
                 % reset travel dist
                 travel_dist = 0;
             end
         end
+        
         prev_packet = curr_packet;
     end
 end
 
-%% Visualize result
-pnode.plot
+%% Visualize results
+h_node = figure();
+pnode.plot()
 xlabel('x [m]')
 ylabel('y [m]')
-beautify(gcf)
+
+h_scan = figure();
+pnode.plot('showScan', true)
+xlabel('x [m]')
+ylabel('y [m]')
+
+%% Save figure to ./fig
+beautify(h_node)
+title('Raw Pose Nodes')
+axis([-5 70 -30 15])
+set(gcf, 'Position', [100 100 800 500])
+if SAVE, savefig(h_node, 'fig/raw_node'); end
+
+
+beautify(h_scan)
+title('Raw Pose Nodes + Scans')
+axis([-10 75 -35 15])
+set(gcf, 'Position', [100 100 800 500])
+if SAVE, savefig(h_scan, 'fig/raw_scan'); end
