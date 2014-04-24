@@ -26,7 +26,7 @@ beautify(gcf);
 title('Raw Robot Trajectories')
 xlabel('x [m]')
 ylabel('y [m]')
-axis([-5 70 -30 15])
+axis([-10 75 -35 15])
 set(gcf, 'Position', [100 100 800 500])
 
 %% Save figure to ./fig

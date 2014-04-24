@@ -12,6 +12,7 @@ classdef PoseNode < handle
         id
         hlidar
         vlidar
+        local
     end
     
     methods
@@ -25,6 +26,17 @@ classdef PoseNode < handle
             obj.id  = packet.id;
             obj.hlidar = packet.hlidar;
             obj.vlidar = packet.vlidar;
+        end
+        
+        %
+        % genLocalScan
+        %
+        function genLocalScan(obj)
+            R = [cos(obj.yaw) -sin(obj.yaw);
+                 sin(obj.yaw)  cos(obj.yaw)];
+            xy = R' * [obj.hlidar.xs' - obj.x;
+                       obj.hlidar.ys' - obj.y;];
+            plot(xy(1,:), xy(2,:), 'b.')
         end
         
         %
