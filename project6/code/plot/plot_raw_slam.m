@@ -1,6 +1,7 @@
 init_script
+SAVE = false;
 
-%%
+%% Plot raw SLAM results for each robot
 figure(); hold on;
 
 % extract position info
@@ -15,14 +16,18 @@ for i_robot = 1:numel(robot)
             [curr_packet.pose.x, curr_packet.pose.y, curr_packet.pose.yaw];
     end
     % Plot
-    plot(pose(1,:), pose(2,:), 'Color', line_colors(i_robot,:), 'LineWidth', 2)
+    plot(pose(1,:), pose(2,:), ...
+        'Color', line_colors(i_robot,:), ...
+        'LineWidth', 2)
 end
 hold off
-set(gca, 'Box', 'On')
-grid on
 legend(mat2cell(num2str((1:num_robot)'), ones(1,length(1:num_robot))), ...
     'Location', 'Best')
 title('Raw SLAM Results')
 xlabel('x [m]')
 ylabel('y [m]')
-set(findall(gcf, '-property', 'FontSize'), 'FontSize', 12);
+beautify(gcf);
+set(gcf, 'Position', [100 100 800 600])
+
+%%
+if SAVE, savefig('fig/raw_slam'); end

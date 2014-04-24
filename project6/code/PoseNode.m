@@ -8,40 +8,52 @@ classdef PoseNode
         x
         y
         yaw
-        robot_id
+        id
+        hlidar
+        vlidar
     end
     
     methods
         %
         % Constructor
         %
-        function obj = PoseNode(x, y, yaw, robot_id)
-            obj.x = x;
-            obj.y = y;
-            obj.yaw = yaw;
-            obj.robot_id = robot_id;
+        function obj = PoseNode(packet)
+            obj.x   = packet.pose.x;
+            obj.y   = packet.pose.y;
+            obj.yaw = packet.pose.yaw;
+            obj.id  = packet.id;
+            obj.hlidar = packet.hlidar;
+            obj.vlidar = packet.vlidar;
         end
         
         %
         % plot
+        % obj.plot()
+        % obj.plot(axis_handle)
+        % obj.plot(axis_handle, 'showOrientation', true)
         %
         function plot(obj, varargin)
             % Parse inputs
             [h, inputs] = parse_plot_inputs(obj, varargin{:});
             
             % Different robots have different colors
-            robot_ids = unique([obj.robot_id]);
-            for i = 1:numel(robot_ids)
+            ids = unique([obj.id]);
+            for i = 1:numel(ids)
                 was_held = ishold;
                 if ~was_held, hold('on'); end
-                idx = ([obj.robot_id] == robot_ids(i));
+                
+                % Pick poses for the current robot
+                idx = ([obj.id] == ids(i));
                 x_robot = [obj.x];
                 y_robot = [obj.y];
-                plot(h, x_robot(idx), y_robot(idx), '-o', ...
-                    'Color', obj(1).line_colors(robot_ids(i),:), ...
+                robot_color = obj(1).line_colors(ids(i),:);
+                plot(h, x_robot(idx), y_robot(idx), ...
+                    '-o', ...
+                    'Color', robot_color, ...
+                    'MarkerFaceColor', robot_color, ...
                     'LineWidth', 2)
                 if inputs.show_orientation
-                    % Not implemented
+                    % Not implemented yet
                 end
             end
         end
@@ -49,6 +61,8 @@ classdef PoseNode
 end
 
 
+%--------------------------------------------------------------------------
+% Local functions
 %--------------------------------------------------------------------------
 function [h, inputs] = parse_plot_inputs(~, varargin)
 % PARSE_PLOT_INPUTS
@@ -66,4 +80,5 @@ parser.parse(varargin{:});
 h = parser.Results.axis_handle;
 if isempty(h), h = gca; end
 inputs.show_orientation = parser.Results.showOrientation;
+
 end
