@@ -1,10 +1,11 @@
 classdef PoseNode < handle
-    %PoseNode
+    %POSNODE
+
     properties (Constant)
         line_colors = lines(5);
         scan_colors = 'bgrcm';
     end
-    
+
     properties
         x
         y
@@ -14,7 +15,7 @@ classdef PoseNode < handle
         vlidar
         local
     end
-    
+
     methods
         %
         % Constructor
@@ -27,7 +28,7 @@ classdef PoseNode < handle
             obj.hlidar = packet.hlidar;
             obj.vlidar = packet.vlidar;
         end
-        
+
         %
         % genLocalScan
         %
@@ -36,9 +37,9 @@ classdef PoseNode < handle
                  sin(obj.yaw)  cos(obj.yaw)];
             xy = R' * [obj.hlidar.xs' - obj.x;
                        obj.hlidar.ys' - obj.y;];
-            plot(xy(1,:), xy(2,:), 'b.')
+            
         end
-        
+
         %
         % plot
         % obj.plot()
@@ -82,13 +83,12 @@ classdef PoseNode < handle
                             'MarkerSize', 0.5);
                     end
                 end
-            end
+            end  % for each robot
         end
-        
-    end
-    
-end
 
+    end  % methods
+
+end
 
 %--------------------------------------------------------------------------
 % Local functions
@@ -111,4 +111,5 @@ h = parser.Results.axis_handle;
 if isempty(h), h = gca; end
 inputs.show_yaw = parser.Results.showYaw;
 inputs.show_scan = parser.Results.showScan;
+
 end

@@ -73,8 +73,6 @@ classdef GraphSlam < handle
             
         end
         
-        
-        
         %
         % Get Methods
         %

@@ -15,12 +15,13 @@ for i = 1:numel(n)
     mdp(i).addPolicy();
     mdp(i).plot();
 end
-mdp(i+1) = MDP(im_rgb(500:1500,1000:2500,:), type);
-mdp(i+1).addPolicy();
 % save(['mat/mdp_' type], 'mdp')
 %%
 clear mdp
 load(['mat/mdp_' type])
+i = numel(mdp);
+mdp(i+1) = MDP(im_rgb(500:2000,1000:3000,:), type);
+mdp(i+1).addPolicy();
 
 %% Instantiate LEARCH
 T = 25;
@@ -33,7 +34,7 @@ learch.train(true);
 load(['mat/learch_', type]);
 
 learch.test(mdp(end));
-learch.test();
+% learch.test();
 
 %%
 mdp(end).removePolicy();
