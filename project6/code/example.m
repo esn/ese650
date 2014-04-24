@@ -1,12 +1,11 @@
 % example to visualize the data
-
 load ../data/log.mat
 %%
 
 % select the robot ID to visualize
-robotID = 1;
+robotID = 2;
 
-for i = 1:numel(robot{robotID}.packet)
+for i = 1:15:numel(robot{robotID}.packet)
 
     % read the current packet and extract info
     curPacket = robot{robotID}.packet{i};
@@ -16,7 +15,7 @@ for i = 1:numel(robot{robotID}.packet)
     vLidar = curPacket.vlidar;
 
     % visualizing...
-    figure(1),clf(1), hold on;
+    figure(1), hold on;
 
     % obstacle from horizontal lidar
     pts = find(hLidar.cs > 0);
