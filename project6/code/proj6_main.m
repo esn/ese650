@@ -6,6 +6,7 @@ graphSlam.genNode(robot, 10);
 
 %% Visualize
 h_slam = figure();
+hold on;
 graphSlam.pnode.plot('showScan', true);
 xlabel('x [m]')
 ylabel('y [m]')

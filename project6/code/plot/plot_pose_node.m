@@ -1,13 +1,15 @@
 init_script
-SAVE = true;
+SAVE = false;
 
 %% Initialize graphSlam
-graphSlam = GraphSlam(1);
-graphSlam.genNode(robot, 10);
+gslam = GraphSlam(1);
+gslam.genNode(robot);
 
 %% Visualize results
 h_node = figure();
-graphSlam.pnode.plot()
+hold on
+gslam.pnode.plot();
+hold off
 xlabel('x [m]')
 ylabel('y [m]')
 beautify(h_node)
@@ -16,7 +18,9 @@ axis([-10 75 -35 15])
 set(gcf, 'Position', [100 100 800 500])
 
 h_scan = figure();
-graphSlam.pnode.plot('showScan', true)
+hold on
+gslam.pnode.plot('showScan', true)
+hold off
 xlabel('x [m]')
 ylabel('y [m]')
 beautify(h_scan)
