@@ -3,7 +3,8 @@ close all
 clc
 
 %% Addpath
-addpath(genpath('.'))
+addpath(genpath('.'));
+addpath(genpath('../3rdparty'));
 
 %% Load project dataset
 if ~exist('robot', 'var')

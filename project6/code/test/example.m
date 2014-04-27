@@ -1,7 +1,7 @@
 % example to visualize the data
 init_script
 %%
-
+yaw_hist = [];
 % select the robot ID to visualize
 num_robot = numel(robot);
 for i_robot = 1:num_robot
@@ -14,6 +14,7 @@ for i_robot = 1:num_robot
         hLidar = curPacket.hlidar;
         vLidar = curPacket.vlidar;
         
+        yaw_hist = [yaw_hist; yaw];
         % visualizing...
         figure(1), clf, hold on
         

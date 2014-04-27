@@ -1,13 +1,13 @@
 init_script
 
 %%
-graphSlam = GraphSlam(1);
-graphSlam.genNode(robot, 10);
+gslam = GraphSlam(1);
+gslam.genNode(robot(1), Inf, pi/2);
 
 %% Visualize
 h_slam = figure();
 hold on;
-graphSlam.pnode.plot('showScan', true);
+gslam.pnode.plot('showScan', true);
 xlabel('x [m]')
 ylabel('y [m]')
 beautify(h_slam)

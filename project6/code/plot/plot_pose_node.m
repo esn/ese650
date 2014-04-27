@@ -3,7 +3,7 @@ SAVE = false;
 
 %% Initialize graphSlam
 gslam = GraphSlam(1);
-gslam.genNode(robot);
+gslam.genNode(robot, 5, 3);
 
 %% Visualize results
 h_node = figure();
@@ -19,7 +19,7 @@ set(gcf, 'Position', [100 100 800 500])
 
 h_scan = figure();
 hold on
-gslam.pnode.plot('showScan', true)
+gslam.pnode.plot('ShowScan', true)
 hold off
 xlabel('x [m]')
 ylabel('y [m]')
