@@ -1,4 +1,5 @@
 global MAP
+addpath(genpath('..'))
 
 hokuyoFile = '../data/Hokuyo20.mat';
 
@@ -72,8 +73,8 @@ x_range = [-4:4] * MAP.res;
 y_range = [-4:4] * MAP.res;
 map = MAP.map;
 map(map < 0) = 0;
-c = map_correlation(map,x_im,y_im,Y_rot([2 1 3],:),x_range,y_range);
-max(c(:))
+c = map_correlation(map,x_im,y_im,Y_rot([2 1 3],:),0,0);
+% max(c(:))
 %plot original lidar points
 figure(1);
 plot(xs1,ys1,'.')
@@ -88,5 +89,5 @@ plot((Y(1,:) + MAP.xmax)/MAP.res, (Y(2,:) + MAP.ymax)/MAP.res, 'r.')
 plot((Y_rot(1,:) + MAP.xmax)/MAP.res, (Y_rot(2,:) + MAP.ymax)/MAP.res, 'g.')
 
 %plot correlation
-figure(3);
-surf(c)
+% figure(3);
+% surf(c)

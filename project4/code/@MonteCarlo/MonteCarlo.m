@@ -1,6 +1,6 @@
 classdef MonteCarlo < handle
     %MONTECARLO Localization algorithm
-    
+
     properties
         p  % particles
         w
@@ -11,7 +11,7 @@ classdef MonteCarlo < handle
         best_p
         h_p
     end
-    
+
     methods
         % Constructor
         function MC = MonteCarlo(n_p)
@@ -20,13 +20,13 @@ classdef MonteCarlo < handle
             MC.p = zeros(3,MC.n_p);
             MC.w = ones(1,MC.n_p) ./ MC.n_p;
         end
-        
+
         % Sampling methods
         function sample_motion_model(MC, u, a)
             MC.p = MagicRobot.motion(MC.p, u, a);
             MC.motion = true;
         end
-        
+
         % Measurement methods
         function measurement_model(MC, map, xy_bound, res, ldr, eul)
             map(map < -25) = -25;
@@ -45,7 +45,7 @@ classdef MonteCarlo < handle
                 c = map_correlation(map, x_im, y_im, p_range, x_win, y_win);
                 [cs(i), cind(i)] = max(c(:));
             end
-            
+
             if sum(cs) > 0
                 MC.w = MC.w .* cs;
             end
@@ -57,7 +57,7 @@ classdef MonteCarlo < handle
             MC.renormailze_w();
             MC.measure = true;
         end
-        
+
         function resample(MC)
             w_eff = sum(MC.w)^2 / sum(MC.w.^2);
             % resample
@@ -69,11 +69,11 @@ classdef MonteCarlo < handle
             MC.measure = false;
             MC.motion = false;
         end
-        
+
         function renormailze_w(MC)
             MC.w = MC.w / sum(MC.w);
         end
-        
+
         % Visualization methods
         function plot_particle(MC, varargin)
             if isempty(MC.h_p)
@@ -85,7 +85,7 @@ classdef MonteCarlo < handle
                     'YData', MC.p(2,:));
             end
         end
-        
+
     end
-    
+
 end

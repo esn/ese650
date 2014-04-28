@@ -34,7 +34,7 @@ classdef GraphSlam < handle
         %> @param n_comb number of packet to combine around current one
         %%%
         function genNode(obj, robot, min_dist, n_comb)
-            if nargin < 4, n_comb = 2; end
+            if nargin < 4, n_comb = 25; end
             if nargin < 3, min_dist = 2.5; end
             % Initialize an empty PoseNode
             obj.pnode = PoseNode.empty;
@@ -47,35 +47,46 @@ classdef GraphSlam < handle
                     % Extract current packet and it's information
                     c_packet = c_robot.packet{i_packet};
                     id = c_packet.id;
-                    pose = [c_packet.pose.x;
-                            c_packet.pose.y;
-                            c_packet.pose.yaw];
+                    pose = [...
+                        c_packet.pose.x;
+                        c_packet.pose.y;
+                        c_packet.pose.yaw;...
+                        ];
                     t = c_packet.pose.gps.t;
                     
-                    % Combine lidar scan and subsample it
-                    gscan = [];
-                    for i = (i_packet - n_comb):(i_packet + n_comb)
-                        gscan = [gscan [c_robot.packet{i}.hlidar.xs';
-                                        c_robot.packet{i}.hlidar.ys']];
-                    end
-                    gscan = double(gscan(:,1:2*n_comb+1:end));
-                    
                     if i_packet == start_packet;
+                        gscan = double([...
+                            c_packet.hlidar.xs';
+                            c_packet.hlidar.ys';
+                            ]);
                         % Add 1st pose of each robot to node list
                         obj.pnode(end+1) = PoseNode(id, pose, t, gscan);
+                        % Reset distance changed
                         dist_changed  = 0;
                     else
                         % Add pose if robot travelled certain distance
-                        d = sqrt((c_packet.pose.x - prev_packet.pose.x)^2 ...
-                            + (c_packet.pose.y - prev_packet.pose.y)^2);
+                        d = sqrt((c_packet.pose.x - p_packet.pose.x)^2 ...
+                               + (c_packet.pose.y - p_packet.pose.y)^2);
                         dist_changed = dist_changed + d;
                         if (dist_changed > min_dist)
+                            % Combine lidar scan and subsample it
+                            % This will give a bigger map for better scan
+                            % matching
+                            gscan = [];
+                            for i = (i_packet - n_comb):(i_packet + n_comb)
+                                gscan = [gscan ...
+                                    [c_robot.packet{i}.hlidar.xs';
+                                     c_robot.packet{i}.hlidar.ys']];
+                            end
+                            % Convert to double since raw data is single
+                            gscan = double(gscan(:,1:2*n_comb+1:end));
+                            % Append this node to the graph
                             obj.pnode(end+1) = PoseNode(id, pose, t, gscan);
-                            % reset value changed to 0
+                            % reset distance changed
                             dist_changed  = 0;
                         end
                     end
-                    prev_packet = c_packet;
+                    p_packet = c_packet;
                 end  % for each packet
             end  % for each robot
         end  % genNode
@@ -86,4 +97,4 @@ classdef GraphSlam < handle
         
     end  % methods
     
-end
+end  % classdef

@@ -2,14 +2,14 @@ init_script
 l = 2;
 %%
 gslam = GraphSlam(1);
-gslam.genNode(robot(2), 5, 3);
+gslam.genNode(robot(2), 7, 30);
 
 figure()
 gslam.pnode.plot();
 beautify(gcf)
 %%
-p1 = gslam.pnode(1);
-p2 = gslam.pnode(2);
+p1 = gslam.pnode(9);
+p2 = gslam.pnode(20);
 dyaw = p2.yaw - p1.yaw;
 % First rotate pose difference into p1's frame
 R = [cos(p1.yaw) -sin(p1.yaw); sin(p1.yaw) cos(p1.yaw)];
@@ -59,3 +59,27 @@ T_fit = icpMex(s1, s2, T_guess, 1, 'point_to_point');
 % Use Tr_fit to plot
 s2_fit = bsxfun(@plus, T_fit(1:2,1:2)*p2.lscan, T_fit(1:2,3));
 plot(s2_fit(1,:), s2_fit(2,:), 'r.', 'MarkerSize', 5)
+
+%% Calculate map correlation
+res = 0.2;
+xmin = min([s1(1,:), s2_fit(1,:)]);
+xmax = max([s1(1,:), s2_fit(1,:)]);
+ymin = min([s1(2,:), s2_fit(2,:)]);
+ymax = max([s1(2,:), s2_fit(2,:)]);
+sizex = ceil((xmax - xmin) / res + 1);
+sizey = ceil((ymax - ymin) / res + 1);
+map = zeros(sizex, sizey, 'int8');
+% Convert from meters  to cells
+xis = round((s1(1,:) - xmin) ./ res);
+yis = round((s1(2,:) - ymin) ./ res);
+indGood = (xis > 1) & (yis > 1) & (xis < sizex) & (yis < sizey);
+inds = sub2ind(size(map), xis(indGood), yis(indGood));
+map(inds) = 1;
+x_im = xmin:res:xmax;
+y_im = ymin:res:ymax;
+x_range = [-1:1]*res;
+y_range = [-1:1]*res;
+c = map_correlation(map, x_im, y_im, [s2_fit; zeros(1, length(s2_fit))], ...
+    x_range, y_range);
+c = max(c(:));
+disp(c)

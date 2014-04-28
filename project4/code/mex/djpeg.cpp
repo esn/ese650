@@ -10,23 +10,20 @@
 #include "mex.h"
 #include "jpeglib.h"
 
-static void error_exit(j_common_ptr cinfo)
-{
-  (*cinfo->err->output_message) (cinfo);
+static void error_exit(j_common_ptr cinfo) {
+  (*cinfo->err->output_message)(cinfo);
   jpeg_destroy_decompress((j_decompress_ptr) cinfo);
   mexErrMsgTxt("JPEG decompression error");
 }
 
 void init_source(j_decompress_ptr cinfo) { }
 
-boolean fill_input_buffer(j_decompress_ptr cinfo)
-{
+boolean fill_input_buffer(j_decompress_ptr cinfo) {
   jpeg_destroy_decompress(cinfo);
   mexPrintf("fill_input_buffer\n");
 }
 
-void skip_input_data(j_decompress_ptr cinfo, long num_bytes)
-{
+void skip_input_data(j_decompress_ptr cinfo, long num_bytes) {
   if (num_bytes > 0) {
     while (num_bytes > (long) cinfo->src->bytes_in_buffer) {
       num_bytes -= (long) cinfo->src->bytes_in_buffer;
@@ -40,11 +37,10 @@ void skip_input_data(j_decompress_ptr cinfo, long num_bytes)
 void term_source(j_decompress_ptr cinfo) { }
 
 static mxArray *
-jpeg_to_mxarray_rgb(j_decompress_ptr cinfoPtr)
-{
+jpeg_to_mxarray_rgb(j_decompress_ptr cinfoPtr) {
   long row_stride = cinfoPtr->output_width * cinfoPtr->output_components;
   JSAMPARRAY buffer = (*cinfoPtr->mem->alloc_sarray)
-    ((j_common_ptr) cinfoPtr, JPOOL_IMAGE, row_stride, 1);
+                      ((j_common_ptr) cinfoPtr, JPOOL_IMAGE, row_stride, 1);
 
   mwSize dims[3];
   dims[0]  = cinfoPtr->output_height;
@@ -54,28 +50,27 @@ jpeg_to_mxarray_rgb(j_decompress_ptr cinfoPtr)
   mxArray *img = mxCreateNumericArray(3, dims, mxUINT8_CLASS, mxREAL);
 
   uint8_T *pr_r   = (uint8_T *) mxGetPr(img);
-  uint8_T *pr_g = pr_r + (dims[0]*dims[1]);
-  uint8_T *pr_b  = pr_r + (2*dims[0]*dims[1]);
+  uint8_T *pr_g = pr_r + (dims[0] * dims[1]);
+  uint8_T *pr_b  = pr_r + (2 * dims[0] * dims[1]);
 
   while (cinfoPtr->output_scanline < cinfoPtr->output_height) {
     int current_row = cinfoPtr->output_scanline; // temp var won't get ++'d
-    jpeg_read_scanlines(cinfoPtr, buffer,1); // by jpeg_read_scanlines
+    jpeg_read_scanlines(cinfoPtr, buffer, 1); // by jpeg_read_scanlines
     for (int i = 0; i < cinfoPtr->output_width; i++) {
-      int j=(i)*cinfoPtr->output_height+current_row;
-      pr_r[j] = buffer[0][3*i+0];
-      pr_g[j] = buffer[0][3*i+1];
-      pr_b[j] = buffer[0][3*i+2];
+      int j = (i) * cinfoPtr->output_height + current_row;
+      pr_r[j] = buffer[0][3 * i + 0];
+      pr_g[j] = buffer[0][3 * i + 1];
+      pr_b[j] = buffer[0][3 * i + 2];
     }
   }
   return img;
 }
 
 static mxArray *
-jpeg_to_mxarray_gray(j_decompress_ptr cinfoPtr)
-{
+jpeg_to_mxarray_gray(j_decompress_ptr cinfoPtr) {
   long row_stride = cinfoPtr->output_width * cinfoPtr->output_components;
   JSAMPARRAY buffer = (*cinfoPtr->mem->alloc_sarray)
-    ((j_common_ptr) cinfoPtr, JPOOL_IMAGE, row_stride, 1);
+                      ((j_common_ptr) cinfoPtr, JPOOL_IMAGE, row_stride, 1);
 
   mwSize dims[2];
   dims[0]  = cinfoPtr->output_height;
@@ -86,9 +81,9 @@ jpeg_to_mxarray_gray(j_decompress_ptr cinfoPtr)
 
   while (cinfoPtr->output_scanline < cinfoPtr->output_height) {
     int current_row = cinfoPtr->output_scanline; // temp var won't get ++'d
-    jpeg_read_scanlines(cinfoPtr, buffer,1); // by jpeg_read_scanlines
+    jpeg_read_scanlines(cinfoPtr, buffer, 1); // by jpeg_read_scanlines
     for (int i = 0; i < cinfoPtr->output_width; i++) {
-      int j=(i)*cinfoPtr->output_height+current_row;
+      int j = (i) * cinfoPtr->output_height + current_row;
       pr_gray[j]   = buffer[0][i];
     }
   }
@@ -106,7 +101,7 @@ void mexFunction(int nlhs, mxArray *plhs[],
     mexErrMsgTxt("Input must be of type uint8 or int8");
 
   char *jpegBuf = (char *) mxGetData(prhs[0]);
-  unsigned int jpegBufLen = mxGetM(prhs[0])*mxGetN(prhs[0]);
+  unsigned int jpegBufLen = mxGetM(prhs[0]) * mxGetN(prhs[0]);
 
   struct jpeg_decompress_struct cinfo;
   struct jpeg_error_mgr jerr;
@@ -116,8 +111,8 @@ void mexFunction(int nlhs, mxArray *plhs[],
   jpeg_create_decompress(&cinfo);
   if (cinfo.src == NULL) {
     cinfo.src = (struct jpeg_source_mgr *)
-      (*cinfo.mem->alloc_small) ((j_common_ptr) &cinfo, JPOOL_PERMANENT,
-				 sizeof(struct jpeg_source_mgr));
+                (*cinfo.mem->alloc_small)((j_common_ptr) &cinfo, JPOOL_PERMANENT,
+                                          sizeof(struct jpeg_source_mgr));
   }
   cinfo.src->bytes_in_buffer = jpegBufLen;
   cinfo.src->next_input_byte = (JOCTET *)jpegBuf;
@@ -132,8 +127,7 @@ void mexFunction(int nlhs, mxArray *plhs[],
   if (cinfo.output_components == 1) {
     // Grayscale
     plhs[0] = jpeg_to_mxarray_gray(&cinfo);
-  }
-  else {
+  } else {
     // RGB
     plhs[0] = jpeg_to_mxarray_rgb(&cinfo);
   }
@@ -142,3 +136,4 @@ void mexFunction(int nlhs, mxArray *plhs[],
 
   return;
 }
+

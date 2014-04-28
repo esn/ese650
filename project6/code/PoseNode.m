@@ -47,7 +47,7 @@ classdef PoseNode < handle
         %> @brief plot pose node with options
         %> Plot pose node in global frame, with options to show scan
         %>
-        %> @param varargin optional: axis_handle, param: 'showScan', logical
+        %> @param varargin optional: axis_handle, param: 'ShowScan', logical
         %%%
         function plot(obj, varargin)
             % Parse inputs
@@ -66,10 +66,6 @@ classdef PoseNode < handle
                     'MarkerFaceColor', robot_color, ...
                     'MarkerEdgeColor', 'k', ...
                     'LineWidth', 1)
-                
-                if inputs.show_yaw
-                    % Not implemented yet
-                end
                 
                 if inputs.show_scan
                     xy_global = [obj(ind).gscan];
@@ -99,7 +95,7 @@ classdef PoseNode < handle
         end
     end  % methods
     
-end
+end  % classdef
 
 %%%
 %> @brief parse input for plot method
@@ -112,7 +108,6 @@ function [h, inputs] = parse_plot_inputs(~, varargin)
 parser = inputParser;
 parser.CaseSensitive = true;
 parser.addOptional('axis_handle', [], @ishghandle);
-parser.addParamValue('ShowYaw', false, @islogical);
 parser.addParamValue('ShowScan', false, @islogical);
 
 % Parse input
@@ -121,7 +116,6 @@ parser.parse(varargin{:});
 % Assign return values
 h = parser.Results.axis_handle;
 if isempty(h), h = gca; end
-inputs.show_yaw = parser.Results.ShowYaw;
 inputs.show_scan = parser.Results.ShowScan;
 
 end

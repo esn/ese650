@@ -65,16 +65,16 @@ while(1)
         ldr.transform_range(car.s, eul);
         ldr.prune_range();
         map.plot_lidar_orig(ldr.p_range, 'b.');
-        
+
         % Measurement model
         mcl.measurement_model(map.map, map.xy_bound, map.res, ldr, eul);
-        
+
         % Transform laser into world frame
         car.update_state(mcl.best_p);
         car.append_hist();
         ldr.transform_range(car.s, [0 eul_est(2), car.s(3)]);
         ldr.prune_range();
-        
+
         ldr_ind = ldr_ind + 1;
     end
 
@@ -106,7 +106,7 @@ while(1)
         map.plot_car('bo', 'MarkerSize', 8);
         map.plot_traj('m');
         map.plot_lidar_corr(ldr.p_range, 'g.');
-        
+
         % Reset flags
     end
 
