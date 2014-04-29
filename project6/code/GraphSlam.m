@@ -5,10 +5,10 @@
 classdef GraphSlam < handle
     
     properties
-        pnode  %> Pose nodes added to graph
         iter   %> Number of iterations to run optimization
-        Omega  %> Information matrix
-        xi     %> Information vector
+        pnode  %> Pose nodes added to graph
+        H      %> Information matrix, same as Omega
+        b      %> Information vector, same as xi
     end
     
     properties (Dependent = true)
@@ -25,6 +25,7 @@ classdef GraphSlam < handle
         %%%
         function obj = GraphSlam(iter)
             obj.iter  = iter;
+            obj.pnode = PoseNode.empty;
         end
         
         %%%
@@ -36,8 +37,7 @@ classdef GraphSlam < handle
         function genNode(obj, robot, min_distance, n_combine)
             if nargin < 4, n_combine = 25; end
             if nargin < 3, min_distance = 2.5; end
-            % Initialize an empty PoseNode
-            obj.pnode = PoseNode.empty;
+
             n_robot = numel(robot);
             start_packet = n_combine + 1;
             for i_robot = 1:n_robot
@@ -85,14 +85,36 @@ classdef GraphSlam < handle
         end  % genNode
         
         %%%
-        %> @brief generates graph based on odometry and scan matching
+        %> @brief generates graph based only on raw slam (odometry)
+        %> This step assume fixed covariance
         %%%
         function genGraph(obj)
-            
+            prev_id = 0;
+            Rt  = diag([0.1^2 0.1^2 0.2^2]);  % Covariance matrix
+            Omg = inv(Rt);  % Information matrix
+            A = -eye(3);
+            B =  eye(3);
+            obj.H = zeros(obj.n_node*3);   % 3n x 3n square matrix
+            obj.b = zeros(obj.n_node*3,1); % 3n x 1  column vector
+            for i_node = 1:obj.n_node-1
+                curr_id = obj.pnode(i_node).id;
+                i_ind = (3*(i_node-1)+1):(3*i_node);
+                j_ind = (3*i_node+1):(3*(i_node+1));
+                if curr_id ~= prev_id
+                    % Starting a new robot
+                    prev_id = curr_id;
+                    
+                
+                obj.H(i_ind,i_ind) = A'*Omg*A;
+                obj.H(i_ind,j_ind) = A'*Omg*B;
+                obj.H(j_ind,j_ind) = B'*Omg*A;
+                obj.H(j_ind,j_ind) = B'*Omg*B;
+            end  % each node
         end
         
         %%%
         %> @brief close loop based on global scan matching
+        %> 
         %%%
         function closeLoop(obj)
             

@@ -2,7 +2,8 @@ init_script
 
 %%
 gslam = GraphSlam(1);
-gslam.genNode(robot(1), Inf, pi/2);
+gslam.genNode(robot, 5, 30);
+gslam.genGraph();
 
 %% Visualize
 h_slam = figure();

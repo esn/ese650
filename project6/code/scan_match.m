@@ -5,7 +5,7 @@
 %> @param pn2 template pose node where the 2nd scan was taken
 %> @param res resolution of the grid map
 %%%
-function [rt, cov, valid] = scan_match(pn1, pn2, res, verbose)
+function [rt, covar, valid] = scan_match(pn1, pn2, res, verbose)
 %SCAN_MATCH scan matching algorithm using libicp
 %  [rt, cov, score] = scan_match(pn1, pn2, res)
 if nargin < 4, verbose = false; end
@@ -66,11 +66,11 @@ if score < 0.7
     % If score is not good, just use rt_guess and a fixed covariance
     valid = false;
     rt = rt_guess;
-    cov = diag([0.2 0.2 10*pi/180].^2);
+    covar = diag([0.2 0.2 10*pi/180].^2);
 else
     % If score is good, then use rt and calculate covariance
     valid = true;
-    cov = ones(3,3);
+    covar = ones(3,3);
 end
 
 %%

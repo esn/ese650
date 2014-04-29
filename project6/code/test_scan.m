@@ -2,7 +2,7 @@ init_script
 l = 1;
 %%
 gslam = GraphSlam(1);
-gslam.genNode(robot(1), 4, 40);
+gslam.genNode(robot(2), 4, 40);
 gslam.pnode.plot();
 if 1
 %     for i = 31:gslam.n_node-1
