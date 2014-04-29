@@ -3,7 +3,7 @@ SAVE = false;
 
 %% Initialize graphSlam
 gslam = GraphSlam(1);
-gslam.genNode(robot(2), 5, 40);
+gslam.genNode(robot, 5, 30);
 
 %% Visualize results
 h_node = figure();

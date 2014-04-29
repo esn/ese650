@@ -41,6 +41,10 @@ classdef PoseNode < handle
             % Calculate scan in local frame
             R = [cos(obj.yaw) -sin(obj.yaw); sin(obj.yaw)  cos(obj.yaw)];
             obj.lscan = R' * bsxfun(@minus, obj.gscan, obj.pose(1:2));
+            % Remove scan that is too far away
+            range_ind = sum(obj.lscan.^2) < 12^2;
+            obj.gscan = obj.gscan(:,range_ind);
+            obj.lscan = obj.lscan(:,range_ind);
         end
         
         %%%
@@ -64,7 +68,7 @@ classdef PoseNode < handle
                 plot(h, x_robot, y_robot, '-o', ...
                     'Color', robot_color, ...
                     'MarkerFaceColor', robot_color, ...
-                    'MarkerEdgeColor', 'k', ...
+                    'MarkerSize', 4, ...
                     'LineWidth', 1)
                 
                 if inputs.show_scan
@@ -106,14 +110,13 @@ end  % classdef
 function [h, inputs] = parse_plot_inputs(~, varargin)
 % Initialize input parser
 parser = inputParser;
-parser.CaseSensitive = true;
 parser.addOptional('axis_handle', [], @ishghandle);
 parser.addParamValue('ShowScan', false, @islogical);
 
 % Parse input
 parser.parse(varargin{:});
 
-% Assign return values
+% Assign parsed inputs
 h = parser.Results.axis_handle;
 if isempty(h), h = gca; end
 inputs.show_scan = parser.Results.ShowScan;

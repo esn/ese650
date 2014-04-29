@@ -1,15 +1,26 @@
 init_script
-l = 2;
+l = 1;
 %%
 gslam = GraphSlam(1);
-gslam.genNode(robot(2), 7, 30);
-
-figure()
+gslam.genNode(robot(1), 4, 40);
 gslam.pnode.plot();
-beautify(gcf)
+if 1
+%     for i = 31:gslam.n_node-1
+        figure(2)
+        clf
+        hold on
+        % gslam.pnode.plot();
+        beautify(gcf)
+        n = i;
+        [rt, ~, score] = ...
+            scan_match(gslam.pnode(7), gslam.pnode(9), 0.2, true);
+%         scores(i) = score;
+        pause
+%     end
+else
 %%
-p1 = gslam.pnode(9);
-p2 = gslam.pnode(20);
+p1 = gslam.pnode(5);
+p2 = gslam.pnode(6);
 dyaw = p2.yaw - p1.yaw;
 % First rotate pose difference into p1's frame
 R = [cos(p1.yaw) -sin(p1.yaw); sin(p1.yaw) cos(p1.yaw)];
@@ -55,7 +66,7 @@ hold on
 plot(s1(1,:), s1(2,:), 'b.', 'MarkerSize', 5);
 plot(s2(1,:), s2(2,:), 'g.', 'MarkerSize', 5);
 beautify(gcf)
-T_fit = icpMex(s1, s2, T_guess, 1, 'point_to_point');
+T_fit = icpMex(s1, s2, T_guess, 1, 'point_to_plane');
 % Use Tr_fit to plot
 s2_fit = bsxfun(@plus, T_fit(1:2,1:2)*p2.lscan, T_fit(1:2,3));
 plot(s2_fit(1,:), s2_fit(2,:), 'r.', 'MarkerSize', 5)
@@ -83,3 +94,5 @@ c = map_correlation(map, x_im, y_im, [s2_fit; zeros(1, length(s2_fit))], ...
     x_range, y_range);
 c = max(c(:));
 disp(c)
+
+end
