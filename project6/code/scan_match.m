@@ -70,7 +70,7 @@ if score < 0.7
 else
     % If score is good, then use rt and calculate covariance
     valid = true;
-    covar = ones(3,3);
+    covar = diag([0.2 0.2 10*pi/180].^2);
 end
 
 %%

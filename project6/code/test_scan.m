@@ -11,11 +11,16 @@ if 1
         hold on
         % gslam.pnode.plot();
         beautify(gcf)
-        n = i;
+        p1 = gslam.pnode(5);
+        p2 = gslam.pnode(6);
         [rt, ~, score] = ...
-            scan_match(gslam.pnode(7), gslam.pnode(9), 0.2, true);
+            scan_match(p1, p2, 0.2, true);
+        dpose = p2.pose - p1.pose;
+        Ri = [cos(p1.yaw) -sin(p1.yaw); sin(p1.yaw) cos(p1.yaw)];
+        dxy = Ri * rt(1:2,3);
+        dyaw = atan2(rt(2,1),rt(1,1));
 %         scores(i) = score;
-        pause
+%         pause
 %     end
 else
 %%
