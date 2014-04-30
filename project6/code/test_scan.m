@@ -1,7 +1,7 @@
 init_script
 l = 1;
 %%
-gslam = GraphSlam(1);
+gslam = GraphSlam();
 gslam.genNode(robot(2), 4, 40);
 gslam.pnode.plot();
 if 1
@@ -11,8 +11,8 @@ if 1
         hold on
         % gslam.pnode.plot();
         beautify(gcf)
-        p1 = gslam.pnode(5);
-        p2 = gslam.pnode(6);
+        p1 = gslam.pnode(30);
+        p2 = gslam.pnode(31);
         [rt, ~, score] = ...
             scan_match(p1, p2, 0.2, true);
         dpose = p2.pose - p1.pose;

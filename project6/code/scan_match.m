@@ -1,14 +1,20 @@
 %%%
 %> @brief icp scan matching algorithm
 %> Matches scan s2 to scan s1, so that s1 = rt * s2
+%>
 %> @param pn1 reference pose node where the 1st scan was taken
 %> @param pn2 template pose node where the 2nd scan was taken
 %> @param res resolution of the grid map
+%> @param vis visualization flag
+%>
+%> @return rt    rototranslation matrix so that s1 = rt * s2
+%> @return infm  information matrix related to this match
+%> @return valid flag indicates whether this match is an edge
 %%%
-function [rt, covar, valid] = scan_match(pn1, pn2, res, verbose)
+function [rt, infm, valid] = scan_match(pn1, pn2, res, vis)
 %SCAN_MATCH scan matching algorithm using libicp
 %  [rt, cov, score] = scan_match(pn1, pn2, res)
-if nargin < 4, verbose = false; end
+if nargin < 4, vis = false; end
 if nargin < 3, res = 0.2; end
 
 % Assign variables
@@ -18,11 +24,11 @@ p1 = pn1.pose;
 p2 = pn2.pose;
 
 % Calculate pose difference in global frame
-dyaw = p2(3) - p1(3);
+dyaw  = p2(3) - p1(3);
 dxy_w = [p2(1) - p1(1); p2(2) - p1(2)];
-R = [cos(p1(3)) -sin(p1(3)); sin(p1(3)) cos(p1(3))];
+R1tow = [cos(p1(3)) -sin(p1(3)); sin(p1(3)) cos(p1(3))];
 % Transform displacement in world frame to reference frame
-dxy_1 = R'*dxy_w;
+dxy_1 = R1tow'*dxy_w;
 R2to1 = [cos(dyaw) -sin(dyaw); sin(dyaw) cos(dyaw)];
 % tr_guess is just the rototranslation matrix from 2 to 1
 rt_guess = [R2to1 dxy_1; 0 0 1];
@@ -62,19 +68,19 @@ c = map_correlation(map, x_im, y_im, ...
 score = c(1)/(length(s1) + length(s2))*2;
 
 % Calcualte covariance
-if score < 0.7
+if score < 0.85
     % If score is not good, just use rt_guess and a fixed covariance
     valid = false;
     rt = rt_guess;
-    covar = diag([0.2 0.2 10*pi/180].^2);
+    infm = diag([20 20 100]);
 else
     % If score is good, then use rt and calculate covariance
     valid = true;
-    covar = diag([0.2 0.2 10*pi/180].^2);
+    infm = diag([20 20 100]);
 end
 
 %%
-if verbose
+if vis
     % Visualization
     l = 1;
     subplot(2,2,1)
