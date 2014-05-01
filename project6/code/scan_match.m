@@ -68,15 +68,15 @@ c = map_correlation(map, x_im, y_im, ...
 score = c(1)/(length(s1) + length(s2))*2;
 
 % Calcualte covariance
-if score < 0.85
+if score < 0.8
     % If score is not good, just use rt_guess and a fixed covariance
     valid = false;
     rt = rt_guess;
-    infm = diag([20 20 100]);
+    infm = diag([5 5 5].^2);
 else
     % If score is good, then use rt and calculate covariance
     valid = true;
-    infm = diag([20 20 100]);
+    infm = diag([5 5 15].^2);
 end
 
 %%

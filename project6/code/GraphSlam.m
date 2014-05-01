@@ -10,7 +10,8 @@ classdef GraphSlam < handle
         b       %> Information vector
         n_robot %> Number of robots
         eids    %> 2 x n matrix [id_from, id_to] 
-        emeans  %> 3 xn matrix [x, y, theta]
+        emeans  %> 3 x 3 x n matrix
+        einfms  %> 3 x 3 x n matrix
     end
     
     properties (Dependent = true)
@@ -42,6 +43,7 @@ classdef GraphSlam < handle
             obj.n_robot = numel(robot);
             start_packet = n_combine + 1;
             for i_robot = 1:obj.n_robot
+                fprintf('Generating node for robot %d.\n', i_robot);
                 c_robot = robot{i_robot};
                 n_packet = numel(c_robot.packet);
                 for i_packet = start_packet:(n_packet - start_packet)
@@ -174,18 +176,31 @@ classdef GraphSlam < handle
         end
             
         %%%
-        %> @brief close    loop based on global scan matching
-        %> @param d_node   number of nodes between nodes
-        %> @param d_search search distance
+        %> @brief Close loop based on global scan matching
+        %> @param d_node   Number of nodes between nodes
+        %> @param d_search Search distance
         %%%
-        function closeLoop(obj, d_node, d_search)
-            figure();
-            hold on
-            obj.pnode.plot();
+        function closeLoop(obj, d_node, d_search, vis)            
+            if nargin < 4, vis = false; end
+            if nargin < 3, d_search = 4; end
+            if nargin < 2, d_node = 8; end
             
-            if nargin < 3, d_search = 5; end
-            if nargin < 2, d_node = 10; end
+            % Initialize plot
+            if vis
+                figure();
+                hold on;
+                obj.pnode.plot();
+                beautify(gcf);
+            end
+           
+            % Initialize variables
+            obj.eids = zeros(2,obj.n_node);
+            obj.emeans = zeros(3,3,obj.n_node);
+            obj.einfms = zeros(3,3,obj.n_node);
+            k = 0;
+            
             % Starting from a node i
+            fprintf('Detecting loop closure.\n');
             for i_node = (d_node+1):obj.n_node
                 pnd_i = obj.pnode(i_node);
                 % Search in any node from the start to d_node away from
@@ -197,17 +212,48 @@ classdef GraphSlam < handle
                     % Keep node that's within d_search distance
                     if dist < d_search^2
                         % Do scan matching
+                        % The result of this match rt, is the same as Zij
+                        % which is a rototranslation matrix from j to i
                         [rt, infm, valid] = scan_match(pnd_i, pnd_j);
                         if valid
-                            plot([pnd_i.pose(1) pnd_j.pose(1)], ...
-                                [pnd_i.pose(2) pnd_j.pose(2)], 'k')
-                            drawnow
-                        end
-                    end
+                            k = k + 1;
+                            obj.eids(:,k) = [i_node; j_node];
+                            obj.emeans(:,:,k) = rt;
+                            obj.einfms(:,:,k) = infm;
+                            if vis
+                                plot([pnd_i.pose(1) pnd_j.pose(1)], ...
+                                    [pnd_i.pose(2) pnd_j.pose(2)], 'k')
+                                drawnow
+                            end  % vis
+                        end  % valid edge
+                    end  % within d_search
+                end  % j_node
+            end  % i_node
+            
+            % Truncates variables
+            obj.eids   = obj.eids(:,1:k);
+            obj.emeans = obj.emeans(:,:,1:k);
+            obj.einfms = obj.einfms(:,:,1:k);
+            
+            fprintf('Detected loop closure: %d.', k);
+        end  % closeLoop
+
+        %%%
+        %> @brief Plot graph with edges
+        %%%
+        function plot(obj)
+            if ~isempty(obj.eids)
+                for i_edge = 1:size(obj.eids,2)
+                    i_node = obj.eids(1,i_edge);
+                    j_node = obj.eids(2,i_edge);
+                    pnd_i = obj.pnode(i_node);
+                    pnd_j = obj.pnode(j_node);
+                    plot([pnd_i.pose(1) pnd_j.pose(1)], ...
+                         [pnd_i.pose(2) pnd_j.pose(2)], 'k');
                 end
             end
         end
-            
+        
         function n_node = get.n_node(obj)
             n_node = numel(obj.pnode);
         end
@@ -215,7 +261,7 @@ classdef GraphSlam < handle
         function vertex = get.vertex(obj)
             vertex = [obj.pnode.pose];
         end
-            
+
     end  % methods
     
 end  % classdef
@@ -243,29 +289,4 @@ end
 % Convert from single to double
 gscan = double(gscan(:,1:ceil(n_packet/1.5):k));
 
-end
-
-%%%
-%> @brief  computes the homogeneous transformation A of the pose vector v
-%> @param  v pose vector
-%> @return A homogeneous transformation
-%> @author Giorgio Grisetti
-%%%
-function A = v2t(v)
-c = cos(v(3));
-s = sin(v(3));
-A = [c, -s, v(1);
-     s,  c, v(2);
-     0   0  1];
-end
-
-%%%
-%> @brief  computes the pose vector v from an homogeneous transformation A
-%> param   A homogeneous transformation
-%> return  v pose vector
-%> @author Giorgio Grisetti
-%%%
-function v = t2v(A)
-v(1:2,1) = A(1:2,3);
-v(3,1) = atan2(A(2,1), A(1,1));
 end
