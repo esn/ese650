@@ -9,7 +9,7 @@ classdef GraphSlam < handle
         H       %> Information matrix
         b       %> Information vector
         n_robot %> Number of robots
-        eids    %> 2 x n matrix [id_from, id_to] 
+        eids    %> 2 x n matrix [id_from, id_to]
         emeans  %> 3 x 3 x n matrix
         einfms  %> 3 x 3 x n matrix
     end
@@ -33,15 +33,15 @@ classdef GraphSlam < handle
         %%%
         %> @brief generates nodes from log data
         %> @param robot variable from log.mat
-        %> @param min_distance minimum distance travelled to be added to graph
+        %> @param min_distance minimum distance travelled to be added
         %> @param n_combine number of packet to combine around current one
         %%%
-        function genNode(obj, robot, min_distance, n_combine)
-            if nargin < 4, n_combine = 25; end
-            if nargin < 3, min_distance = 2.5; end
-
+        function genNode(obj, robot, min_dist, n_comb)
+            if nargin < 4, n_comb = 25; end
+            if nargin < 3, min_dist = 2.5; end
+            
             obj.n_robot = numel(robot);
-            start_packet = n_combine + 1;
+            start_packet = n_comb + 1;
             for i_robot = 1:obj.n_robot
                 fprintf('Generating node for robot %d.\n', i_robot);
                 c_robot = robot{i_robot};
@@ -59,7 +59,7 @@ classdef GraphSlam < handle
                     
                     if i_packet == start_packet
                         % Extract scan from the first packet
-                        gscan = extract_scan({c_packet});
+                        gscan = merge_scan({c_packet});
                         % Add 1st pose of each robot to node list
                         obj.pnode(end+1) = PoseNode(id, pose, t, gscan);
                         % Reset distance changed
@@ -69,13 +69,13 @@ classdef GraphSlam < handle
                         d = sqrt((c_packet.pose.x - p_packet.pose.x)^2 ...
                             + (c_packet.pose.y - p_packet.pose.y)^2);
                         distance_changed = distance_changed + d;
-                        if (distance_changed > min_distance)
+                        if (distance_changed > min_dist)
                             % Combine lidar scan and subsample it
                             % This will give a bigger map for better scan
                             % matching
                             packet_ids = ...
-                                (i_packet - n_combine):(i_packet + n_combine);
-                            gscan = extract_scan(c_robot.packet(packet_ids));
+                                (i_packet - n_comb):(i_packet + n_comb);
+                            gscan = merge_scan(c_robot.packet(packet_ids));
                             % Append this node to the graph
                             obj.pnode(end+1) = PoseNode(id, pose, t, gscan);
                             % reset distance changed
@@ -126,7 +126,7 @@ classdef GraphSlam < handle
             % zhat_ij = xj - xi
             % z_ij    = zij
             % e = zij - zhat_ij
-            Omg = diag([5 5 10].^2);
+            omega = diag([5 5 10].^2);
             A = -eye(3);
             B = +eye(3);
             
@@ -134,21 +134,27 @@ classdef GraphSlam < handle
             obj.H(1:3,1:3) = obj.H(1:3,1:3) + eye(3);
             
             for i_node = 1:obj.n_node-1
+                j_node = i_node + 1;
                 curr_id = obj.pnode(i_node).id;
                 next_id = obj.pnode(i_node+1).id;
-                i_ind = (3*(i_node-1)+1):(3*i_node);
-                j_ind = (3*i_node+1):(3*(i_node+1));
+                i_ind = id2ind(i_node);
+                j_ind = id2ind(j_node);
                 if curr_id ~= next_id
                     % We don't connect between each robots here
-                    % but we anchoring the position of the first vertex of 
+                    % but we anchoring the position of the first vertex of
                     % each robot here
                     obj.H(j_ind,j_ind) = obj.H(j_ind,j_ind) + eye(3);
                     continue;
                 end
-                obj.H(i_ind,i_ind) = A' * Omg * A;
-                obj.H(i_ind,j_ind) = A' * Omg * B;
-                obj.H(j_ind,i_ind) = B' * Omg * A;
-                obj.H(j_ind,j_ind) = B' * Omg * B;
+                % Formulate blocks
+                H_ii = A' * omega * A;
+                H_ij = A' * omega * B;
+                H_jj = B' * omega * B;
+                % Update H matrix
+                obj.H(i_ind,i_ind) = obj.H(i_ind,i_ind) + H_ii;
+                obj.H(i_ind,j_ind) = obj.H(i_ind,j_ind) + H_ij;
+                obj.H(j_ind,i_ind) = obj.H(j_ind,i_ind) + H_ij';
+                obj.H(j_ind,j_ind) = obj.H(j_ind,j_ind) + H_jj;
                 % Since there's no odometry, eij will just be zeros
             end  % each node
         end
@@ -157,30 +163,75 @@ classdef GraphSlam < handle
         %> @brief generates graph based on measurement (scan match)
         %%%
         function linearizeMeasurement(obj)
-            
+            n_edge = size(obj.eids,2);
+            for i_edge = 1:n_edge
+                i_node = obj.eids(1,i_edge);
+                j_node = obj.eids(2,i_edge);
+                i_ind  = id2ind(i_node);
+                j_ind  = id2ind(j_node);
+                omega  = obj.einfms(:,:,i_edge);
+                
+                v_i = obj.pnode(i_node).pose;
+                v_j = obj.pnode(j_node).pose;
+                T_z = obj.emeans(:,:,i_edge);
+                
+                T_i = v2t(v_i);
+                T_j = v2t(v_j);
+                R_i = T_i(1:2,1:2);
+                R_z = T_z(1:2,1:2);
+                
+                si = sin(v_i(3));
+                ci = cos(v_i(3));
+                dR_i = [-si ci; -ci -si]';
+                dt_ij = v_j(1:2) - v_i(1:2);
+                
+                % Calculate jacobians
+                A = [-R_z'*R_i' R_z'*dR_i'*dt_ij; 0 0 -1];
+                B = [R_z'*R_i' [0;0]; 0 0 1];
+                
+                % Calculate error vector
+                e = t2v(inv(T_z) * inv(T_i) * T_j);
+                
+                % Formulate blocks
+                H_ii =  A' * omega * A;
+                H_ij =  A' * omega * B;
+                H_jj =  B' * omega * B;
+                b_i  = -A' * omega * e;
+                b_j  = -B' * omega * e;
+                
+                % Update H and b matrix
+                obj.H(i_ind,i_ind) = obj.H(i_ind,i_ind) + H_ii;
+                obj.H(i_ind,j_ind) = obj.H(i_ind,j_ind) + H_ij;
+                obj.H(j_ind,i_ind) = obj.H(j_ind,i_ind) + H_ij';
+                obj.H(j_ind,j_ind) = obj.H(j_ind,j_ind) + H_jj;
+                obj.b(i_ind) = obj.b(i_ind) + b_i;
+                obj.b(j_ind) = obj.b(j_ind) + b_j;
+                
+            end
         end
         
         %%%
         %> @brief solve the linear system and update all pose node
         %%%
         function solve(obj)
-            fprintf('System size: %d x %d.\n', size(obj.H,1), size(obj.H,2));
+            fprintf('Pose: %d, Edge: %d\n', obj.n_node, size(obj.eids,2));
             H_sparse = sparse(obj.H);
             dx = H_sparse \ obj.b;
             dpose = reshape(dx, 3, obj.n_node);
             
             % Update pnode with solution
             for i_node = 1:obj.n_node
-                obj.pnode(i_node).pose = obj.pnode(i_node).pose + dpose(:,i_node);
+                obj.pnode(i_node).pose = obj.pnode(i_node).pose ...
+                    + dpose(:,i_node);
             end
         end
-            
+        
         %%%
         %> @brief Close loop based on global scan matching
         %> @param d_node   Number of nodes between nodes
         %> @param d_search Search distance
         %%%
-        function closeLoop(obj, d_node, d_search, vis)            
+        function closeLoop(obj, d_node, d_search, vis)
             if nargin < 4, vis = false; end
             if nargin < 3, d_search = 4; end
             if nargin < 2, d_node = 8; end
@@ -192,19 +243,18 @@ classdef GraphSlam < handle
                 obj.pnode.plot();
                 beautify(gcf);
             end
-           
+            
             % Initialize variables
             obj.eids = zeros(2,obj.n_node);
             obj.emeans = zeros(3,3,obj.n_node);
             obj.einfms = zeros(3,3,obj.n_node);
-            k = 0;
+            i_edge = 0;
             
             % Starting from a node i
             fprintf('Detecting loop closure.\n');
             for i_node = (d_node+1):obj.n_node
                 pnd_i = obj.pnode(i_node);
-                % Search in any node from the start to d_node away from
-                % i_node
+                % Search in nodes from start to d_node away from i_node
                 for j_node = 1:(i_node-d_node)
                     % Calculate the distance from j_node to i_node
                     pnd_j = obj.pnode(j_node);
@@ -215,11 +265,12 @@ classdef GraphSlam < handle
                         % The result of this match rt, is the same as Zij
                         % which is a rototranslation matrix from j to i
                         [rt, infm, valid] = scan_match(pnd_i, pnd_j);
+                        % Add valid loop closure to graph
                         if valid
-                            k = k + 1;
-                            obj.eids(:,k) = [i_node; j_node];
-                            obj.emeans(:,:,k) = rt;
-                            obj.einfms(:,:,k) = infm;
+                            i_edge = i_edge + 1;
+                            obj.eids(:,i_edge) = [i_node; j_node];
+                            obj.emeans(:,:,i_edge) = rt;
+                            obj.einfms(:,:,i_edge) = infm;
                             if vis
                                 plot([pnd_i.pose(1) pnd_j.pose(1)], ...
                                     [pnd_i.pose(2) pnd_j.pose(2)], 'k')
@@ -231,13 +282,13 @@ classdef GraphSlam < handle
             end  % i_node
             
             % Truncates variables
-            obj.eids   = obj.eids(:,1:k);
-            obj.emeans = obj.emeans(:,:,1:k);
-            obj.einfms = obj.einfms(:,:,1:k);
+            obj.eids   = obj.eids(:,1:i_edge);
+            obj.emeans = obj.emeans(:,:,1:i_edge);
+            obj.einfms = obj.einfms(:,:,1:i_edge);
             
-            fprintf('Detected loop closure: %d.', k);
+            fprintf('Detected loop closure: %d.\n', i_edge);
         end  % closeLoop
-
+        
         %%%
         %> @brief Plot graph with edges
         %%%
@@ -249,7 +300,7 @@ classdef GraphSlam < handle
                     pnd_i = obj.pnode(i_node);
                     pnd_j = obj.pnode(j_node);
                     plot([pnd_i.pose(1) pnd_j.pose(1)], ...
-                         [pnd_i.pose(2) pnd_j.pose(2)], 'k');
+                        [pnd_i.pose(2) pnd_j.pose(2)], 'k');
                 end
             end
         end
@@ -261,17 +312,18 @@ classdef GraphSlam < handle
         function vertex = get.vertex(obj)
             vertex = [obj.pnode.pose];
         end
-
+        
     end  % methods
     
 end  % classdef
 
 %%%
-%> @brief  extract and combine scans from multiple packet
+%> @brief  extract and merge scans from multiple packet
 %> @param  packet  input packets
 %> @return gscan   combined laser scans in world frame
 %%%
-function gscan = extract_scan(packet)
+function gscan = merge_scan(packet)
+% MERGE_SCAN
 % Initialize a big enough gscan
 n_packet = numel(packet);
 % Assume 1000 scans in each packet
@@ -289,4 +341,10 @@ end
 % Convert from single to double
 gscan = double(gscan(:,1:ceil(n_packet/1.5):k));
 
+end
+
+
+function ind = id2ind(id)
+%ID2IND
+ind = (3*(id-1)+1):(3*id);
 end
