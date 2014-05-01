@@ -8,7 +8,7 @@ gslam.closeLoop();
 %% Visualize
 h_slam = figure();
 hold on;
-gslam.pnode.plot('ShowScan', true);
+gslam.pnode.plot();
 gslam.plot();
 xlabel('x [m]')
 ylabel('y [m]')
