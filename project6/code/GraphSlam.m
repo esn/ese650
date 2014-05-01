@@ -32,9 +32,9 @@ classdef GraphSlam < handle
         
         %%%
         %> @brief generates nodes from log data
-        %> @param robot variable from log.mat
-        %> @param min_distance minimum distance travelled to be added
-        %> @param n_combine number of packet to combine around current one
+        %> @param robot Variable from log.mat
+        %> @param min_dist Minimum distance travelled to be added
+        %> @param n_comb Number of packet to combine around current one
         %%%
         function genNode(obj, robot, min_dist, n_comb)
             if nargin < 4, n_comb = 25; end
@@ -89,11 +89,13 @@ classdef GraphSlam < handle
         
         %%%
         %> @brief pose graph optimization
+        %> @param n_iter Number of iteration to optimizae
         %%%
         function optimize(obj, n_iter)
             for i_iter = 1:n_iter
                 fprintf('Pose Graph Optimization, Iteration %d.\n', i_iter);
                 obj.iterate();
+                fprintf('Iteration %d done.\n', i_iter);
             end
         end
         
@@ -114,8 +116,6 @@ classdef GraphSlam < handle
             
             fprintf('Solving.\n');
             obj.solve();
-            
-            fprintf('Iteration done.\n');
         end
         
         %%%
@@ -206,7 +206,6 @@ classdef GraphSlam < handle
                 obj.H(j_ind,j_ind) = obj.H(j_ind,j_ind) + H_jj;
                 obj.b(i_ind) = obj.b(i_ind) + b_i;
                 obj.b(j_ind) = obj.b(j_ind) + b_j;
-                
             end
         end
         

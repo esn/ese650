@@ -18,7 +18,7 @@ axis([-10 75 -35 15])
 set(gcf, 'Position', [100 100 800 500])
 
 %% Optimize
-gslam.optimize(10); % Do some number of iterations
+gslam.optimize(15); % Do some number of iterations
 
 %% Visualize
 h_slam = figure();
@@ -28,6 +28,6 @@ gslam.plot();
 xlabel('x [m]')
 ylabel('y [m]')
 beautify(h_slam)
-title('Raw Pose Nodes')
+title('Optimized Pose Nodes')
 axis([-10 75 -35 15])
 set(gcf, 'Position', [100 100 800 500])
