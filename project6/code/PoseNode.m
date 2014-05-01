@@ -59,12 +59,12 @@ classdef PoseNode < handle
             
             % Different robots have different colors
             ids = unique([obj.id]);
-            for i = 1:numel(ids)
+            for i_robot = 1:numel(ids)
                 % Pick poses for the current robot
-                ind = ([obj.id] == ids(i));
+                ind = ([obj.id] == ids(i_robot));
                 x_robot = [obj(ind).x];
                 y_robot = [obj(ind).y];
-                robot_color = PoseNode.colors(ids(i),:);
+                robot_color = PoseNode.colors(ids(i_robot),:);
                 plot(h, x_robot, y_robot, '-o', ...
                     'Color', robot_color, ...
                     'MarkerFaceColor', robot_color, ...
@@ -72,11 +72,19 @@ classdef PoseNode < handle
                     'LineWidth', 1)
                 
                 if inputs.show_scan
-                    xy_global = [obj(ind).gscan];
-                    plot(h, xy_global(1,:), xy_global(2,:), '.', ...
-                        'Color', robot_color, ...
-                        'MarkerSize', 1);
-                end
+                    pnodes = obj(ind);
+                    for i_node = 1:numel(pnodes)
+                        x_i = pnodes(i_node).pose;
+                        T_i = v2t(x_i);
+                        n_scan = size(pnodes(i_node).lscan,2);
+                        xy_global = ...
+                            T_i * [pnodes(i_node).lscan; ones(1,n_scan)];
+                        plot(h, xy_global(1,:), xy_global(2,:), '.', ...
+                            'Color', robot_color, ...
+                            'MarkerSize', 1);
+                    end
+                end  % plot scan
+                
             end  % for each robot
         end  % plot
         
