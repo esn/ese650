@@ -1,0 +1,15 @@
+For running this project, you need to make sure
+1. Compile libicp in 3rdparty
+2. put log.mat file in data folder
+3. run proj6_main.m
+
+There are two major classes I wrote for this project
+1. PoseNode
+2. GraphSlam
+Both of them are heavily documented and there should be no difficulty in reading
+and understanding them.
+
+I also include ls-slam, which is an implementation from G. Grisetti for his class.
+The data set he used is g2o format. I'm planning to convert my GraphSlam class to
+read g2o dataset.
+
